@@ -1,0 +1,21 @@
+.profile {
+  position: absolute;
+  top: 120%;
+  right: 2rem;
+  background-color: var(--white);
+  border-radius: .5rem;
+  padding: 2rem;
+  text-align: center;
+  width: 30rem;
+}
+.profile img{
+    height: 10rem;
+    width: 10rem;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: .5rem;
+}
+.profile h3 {
+    font-size: 2rem;
+    color: var(--black);
+}
