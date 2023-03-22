@@ -18,7 +18,6 @@ class BaseModel(Base):
         Integer(), nullable=False,
         unique=True, primary_key=True, autoincrement=True
     )
-    created_at = _(DateTime, nullable=False, default=datetime.utcnow)
 
 
 engine = create_engine(settings.DATABASE_URL)
@@ -30,10 +29,12 @@ def get_db(request: Request):
 
 
 class BaseCrud:
-    def __init__(self, db: Session = Depends(get_db)):
-        self.db = db
+    def __init__(self, session: Session = Depends(get_db)):
+        self.session = session
+
+
 
     def create_item(self, item):
-        self.db.add(item)
-        self.db.commit()
-        self.db.refresh(item)
+        self.session.add(item)
+        self.session.commit()
+        self.session.refresh(item)

@@ -1,67 +1,24 @@
-from fastapi import APIRouter, Path, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends
 
-from src.auth.models import User
-from src.course.crud import create_news_item
+from src.course.crud import CourseCrud
 from src.course.models import Course
 from src.course.shemas import CourseShow, CreateCourse
-from src.database import get_db
 
 router = APIRouter(tags=['Главная страничка курсов'])
 
-dummy = [
-    {'title': 'title', 'description': 'description', 'author': 3,
-     'rating': 3,
-     'lessons': [{
-         'body': ' fake body'
-     },
-         {
-             'body': ' fake body'
-         },
-         {
-             'body': ' fake body'
-         },
-     ]
-     },
-    {'title': 'title', 'description': 'description', 'author': 3,
-     'rating': 3,
-     'lessons': [{
-         'body': ' fake body'
-     },
-         {
-             'body': ' fake body'
-         },
-         {
-             'body': ' fake body'
-         },
-     ]
-     },
-    {'title': 'title', 'description': 'description', 'author': 3,
-     'rating': 3,
-     'lessons': [{
-         'body': ' fake body'
-     },
-         {
-             'body': ' fake body'
-         },
-         {
-             'body': ' fake body'
-         },
-     ]
-     }
-]
+
+@router.get('/', response_model=list[CourseShow])
+def get_all_courses(course_crud: CourseCrud = Depends()):
+    return course_crud.get_all_items()
 
 
-@router.get('/{course_pk}', response_model=CourseShow)
-def get_user_page(course_pk: int = Path(le=len(dummy))):
-    if course_pk:
-        return dummy[course_pk]
-    return dummy
+@router.get('/{course_pk}')
+def get_courses_lesons(course_id: int, course_crud: CourseCrud = Depends()):
+    return course_crud.get_course_lessons(course_id)
 
 
 @router.post('/')
-def get_user_page(course_data: CreateCourse,
-                  db: Session = Depends(get_db)):
-    # print(db.query(Course).first())
-    create_news_item(db, course_data)
+def create_course(course_data: CreateCourse,
+                  course_crud: CourseCrud = Depends()):
+    course_crud.create_item(course_data)
     return course_data

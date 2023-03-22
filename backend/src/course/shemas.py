@@ -4,19 +4,19 @@ from pydantic import BaseModel, Field
 class CourseBase(BaseModel):
     title: str
     description: str
-    author_id: int
+    teacher_id: int
+    rating: int
 
     class Config:
         orm_mode = True
 
 
 class LessonBase(BaseModel):
-    body: str
+    content: str
 
 
 class CourseShow(CourseBase):
-    lessons: list[LessonBase] | None = []
-    rating: int
+    pass
 
 
 class CreateCourse(CourseBase):
@@ -34,3 +34,7 @@ class CreateCourse(CourseBase):
                 'rating': 4
             }
         }
+
+
+class CourseShowDetail(CourseBase):
+    lessons: list[LessonBase] | None = []
