@@ -1,0 +1,16 @@
+.footer{
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background-color: #fff;
+    border-top: var(--border);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    color: var(--black);
+    font-size: 2rem;
+    margin-top: 2rem;
+    z-index: 1000;
+}
+.footer span {
+    color: var(--main_color);
+}

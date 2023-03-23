@@ -3,19 +3,43 @@
   top: 120%;
   right: 2rem;
   background-color: var(--white);
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   padding: 2rem;
   text-align: center;
   width: 30rem;
+  transform: scale(0);
+  transform-origin: top right;
+  transition: 0.2s linear;
 }
-.profile img{
-    height: 10rem;
-    width: 10rem;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: .5rem;
+.profile img {
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
 }
 .profile h3 {
-    font-size: 2rem;
-    color: var(--black);
+  font-size: 2rem;
+  color: var(--black);
+}
+
+.profile span {
+  font-size: 1.5rem;
+  color: var(--light-bg);
+}
+
+.flex_btn {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.active {
+  transform: scale(1);
+}
+
+@media(max-width:450px) {
+  .flex_btn{
+    flex-flow: column;
+    gap: 0;
+  }
 }

@@ -6,7 +6,7 @@
   --black: #2c2c2c;
   --light_dark: #888;
   --light_bg: #eee;
-  --border: 0.1rem solid rrgba(0, 0, 0, 0.2);
+  --border: 0.1rem solid rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -43,10 +43,39 @@ html {
 
 body {
   background-color: var(--light_bg);
+  padding-left: 30rem;
 }
-
+.active_bar {
+  padding-left: 0;
+}
 section {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* Media queries */
+
+@media (max-width: 120px) {
+  body {
+    padding-left: 0;;
+  }
+}
+
+
+@media (max-width: 991px) {
+  html {
+    font-size: 55%;
+  }
+}
+@media (max-width: 760px) {
+  html {
+    font-size: 50%;
+  }
+}
+
+@media (max-width: 450px) {
+  html {
+    font-size: 50%;
+  }
 }
