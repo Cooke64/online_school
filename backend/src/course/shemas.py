@@ -22,15 +22,15 @@ class CourseShow(CourseBase):
 class CreateCourse(CourseBase):
     rating: int = Field(
         gt=0, le=5,
-        title="The rating of the current curse",
-        description="The rating must be greater than zero and equal or less than five"
+        title='The rating of the current curse',
+        description='The rating must be greater than zero and equal or less than five'
     )
 
     class Config:
         schema_extra = {
-            "example": {
-                "author_id": 1, 'title': 'title',
-                "description": 'description',
+            'example': {
+                'author_id': 1, 'title': 'title',
+                'description': 'description',
                 'rating': 4
             }
         }

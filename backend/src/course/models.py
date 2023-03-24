@@ -1,8 +1,8 @@
 from sqlalchemy import Column as _, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
-from src.auth.models import Teacher
 from src.database import BaseModel
+from src.teachers.models import Teacher
 
 
 class Course(BaseModel):
@@ -31,4 +31,4 @@ class Lesson(BaseModel):
                   )
 
     def __repr__(self) -> str:
-        return f"Lesson(id={self.id!r}"
+        return f'Lesson(id={self.id!r}'

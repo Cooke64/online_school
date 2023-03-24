@@ -32,8 +32,6 @@ class BaseCrud:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-
-
     def create_item(self, item):
         self.session.add(item)
         self.session.commit()

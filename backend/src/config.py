@@ -16,6 +16,11 @@ class ProjSettings(AdvancedBaseSettings):
     DEBUG: str = Field(..., env="DEBUG")
     REDIS_HOST: str = Field(..., env="REDIS_HOST")
     REDIS_PORT: str = Field(..., env="REDIS_PORT")
+    BACKEND_CORS_ORIGINS: str = Field(..., env='BACKEND_CORS_ORIGINS')
+
+    @property
+    def allowed_cors(self):
+        return self.BACKEND_CORS_ORIGINS.split(', ')
 
 
 class PostgresSettings(AdvancedBaseSettings):
@@ -44,3 +49,18 @@ class Settings(ProjSettings, PostgresSettings):
 
 
 settings = Settings()
+
+
+class AdminData(AdvancedBaseSettings):
+    username: str = Field(...)
+    email: str = Field(...)
+    password: str = Field(...)
+    first_name: str = Field(...)
+    last_name: str = Field(...)
+
+
+    class Config:
+        env_prefix = "ADMIN_"
+
+
+admin_data = AdminData()
