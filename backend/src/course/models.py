@@ -10,9 +10,14 @@ class Course(BaseModel):
     title = _(String(199), nullable=False)
     description = _(String, nullable=False)
     teacher_id = _(Integer, ForeignKey('teachers.id'))
-    teacher = relationship(Teacher, back_populates='course', lazy=True)
+    teacher = relationship(Teacher, backref='course_for_teacher')
     rating = _(Integer, default=5)
-    lesson = relationship('Lesson', backref='course', lazy=True)
+    lesson = relationship('Lesson', backref='course_for_lesson')
+
+    course = relationship(
+        'Student', secondary='student_courses',
+        backref='course_for_student',
+    )
 
     def __repr__(self) -> str:
         return f"Course(title={self.title!r}," \

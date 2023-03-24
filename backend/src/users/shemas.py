@@ -1,25 +1,45 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
-    username: str
+    email: EmailStr
 
 
 class StaffShow(UserBase):
+    username: str
     staff_role: str
-    firstname: str | None = None
-    last_name: str | None = None
-    email: str
-    password: str
-    is_active: bool
 
     class Config:
         orm_mode = True
 
 
 class UserCreate(UserBase):
-    email: str
+    username: str
+    first_name: str | None = None
+    last_name: str | None = None
     password: str
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            'example': {
+                'username': 'user',
+                'first_name': 'firstname',
+                'last_name': 'last_name',
+                'email': 'email@mail.com',
+                'password': 'password'
+            }
+        }
+
+
+class UserLogin(UserBase):
+    password: str
+
+    class Config:
+        orm_mode = True
+        schema_extra = {
+            'example': {
+                'email': 'email@mail.com',
+                'password': 'password'
+            }
+        }

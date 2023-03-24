@@ -29,11 +29,12 @@ class CreateCourse(CourseBase):
     class Config:
         schema_extra = {
             'example': {
-                'author_id': 1, 'title': 'title',
+                'teacher_id': 1, 'title': 'title',
                 'description': 'description',
                 'rating': 4
             }
         }
+        orm_mode = True
 
 
 class CourseShowDetail(CourseBase):

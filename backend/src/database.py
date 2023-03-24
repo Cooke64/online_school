@@ -10,6 +10,7 @@ from src.config import settings
 Base = declarative_base()
 
 
+
 class BaseModel(Base):
     __abstract__ = True
     id = _(
@@ -29,6 +30,9 @@ def get_db(request: Request):
 class BaseCrud:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
+
+    def get_all_items(self, Model):
+        return self.session.query(Model).all()
 
     def get_current_item(self, id_item, Model):
         return self.session.query(Model).filter(Model.id == id_item).first()

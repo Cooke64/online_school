@@ -3,7 +3,7 @@ from src.database import BaseCrud
 
 
 class CourseCrud(BaseCrud):
-    def create_news_item(self, course_data) -> None:
+    def create_new_course(self, course_data) -> None:
         news_item = Course(**course_data.dict())
         self.create_item(news_item)
 
