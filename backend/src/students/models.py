@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from sqlalchemy import Column as _, Integer, String, Table, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
-from src.auth.models import User
+from src.users.models import  Role
 from src.course.models import Course
-from src.database import Base
-
+from src.database import Base, BaseModel
 
 StudentCourse = Table('student_courses',
                       Base.metadata,
@@ -17,7 +16,7 @@ StudentCourse = Table('student_courses',
                       )
 
 
-class Student(User):
+class Student(BaseModel):
     __tablename__ = 'students'
     phone = _(String(50), unique=True, nullable=False)
     student_course = relationship(
@@ -27,3 +26,4 @@ class Student(User):
         backref='student',
         lazy='dynamic'
     )
+    role = relationship(Role, backref=backref('student', uselist=False))

@@ -17,6 +17,13 @@ class ProjSettings(AdvancedBaseSettings):
     REDIS_HOST: str = Field(..., env="REDIS_HOST")
     REDIS_PORT: str = Field(..., env="REDIS_PORT")
     BACKEND_CORS_ORIGINS: str = Field(..., env='BACKEND_CORS_ORIGINS')
+    ALLOW_METHODS: str = Field(..., env='BACKEND_CORS_ORIGINS')
+    ALGORITHM: str = Field(..., env='ALGORITHM')
+    SECRET_KEY: str = Field(..., env='SECRET_KEY')
+
+    @property
+    def allowed_methods(self):
+        return self.ALLOW_METHODS.split(', ')
 
     @property
     def allowed_cors(self):
@@ -57,7 +64,6 @@ class AdminData(AdvancedBaseSettings):
     password: str = Field(...)
     first_name: str = Field(...)
     last_name: str = Field(...)
-
 
     class Config:
         env_prefix = "ADMIN_"

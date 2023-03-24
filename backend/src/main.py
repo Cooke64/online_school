@@ -1,16 +1,14 @@
 from fastapi import FastAPI
-
-from src.auth.router import router as auth_router
-from src.course.router import router as course_router
-from src.students.router import router as student_router
 from starlette.requests import Request
-from starlette.responses import Response
 
+from src.course.router import router as course_router
 from src.database import SessionLocal
+from src.students.router import router as student_router
+from src.users.router import router as user_router
 
 
 def incculde_routers(my_app):
-    my_app.include_router(auth_router)
+    my_app.include_router(user_router)
     my_app.include_router(course_router)
     my_app.include_router(student_router)
 
@@ -24,10 +22,10 @@ def get_application() -> FastAPI:
 
     # application.add_middleware(
     #     CORSMiddleware,
-    #     allow_origins=['localhost'],
+    #     allow_origins=settings.allowed_cors,
     #     allow_credentials=True,
-    #     allow_methods=('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'),
-    #     allow_headers=['http://localhost:3000']
+    #     allow_methods=settings.allowed_methods,
+    #     allow_headers=['*']
     # )
     incculde_routers(application)
     return application
