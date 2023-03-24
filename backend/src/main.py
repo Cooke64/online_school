@@ -1,6 +1,11 @@
+import warnings
+
 from fastapi import FastAPI
+from sqlalchemy import exc as sa_exc
+from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
+from .config import settings
 from src.course.router import router as course_router
 from src.database import SessionLocal
 from src.students.router import router as student_router
@@ -14,21 +19,25 @@ def incculde_routers(my_app):
 
 
 def get_application() -> FastAPI:
-    application = FastAPI(
-        title='myAppp',
-        description='Проект',
-        version='1.0.1'
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
+        warnings.simplefilter('ignore', category=sa_exc.SAWarning)
+        application = FastAPI(
+            title='myAppp',
+            description='Проект',
+            version='1.0.1'
+        )
 
-    # application.add_middleware(
-    #     CORSMiddleware,
-    #     allow_origins=settings.allowed_cors,
-    #     allow_credentials=True,
-    #     allow_methods=settings.allowed_methods,
-    #     allow_headers=['*']
-    # )
-    incculde_routers(application)
-    return application
+        application.add_middleware(
+            CORSMiddleware,
+            allow_origins=settings.allowed_cors,
+            allow_credentials=True,
+            allow_methods=settings.allowed_methods,
+            allow_headers=['*']
+        )
+        incculde_routers(application)
+
+        return application
 
 
 app = get_application()

@@ -2,22 +2,19 @@ from sqlalchemy import Column as _, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
 from src.database import BaseModel
-from src.teachers.models import Teacher
 
 
 class Course(BaseModel):
     __tablename__ = 'courses'
     title = _(String(199), nullable=False)
     description = _(String, nullable=False)
-    teacher_id = _(Integer, ForeignKey('teachers.id'))
-    teacher = relationship(Teacher, backref='course_for_teacher')
+    teacher = relationship(
+        'Teacher',
+        secondary='teacher_courses',
+        back_populates='course'
+    )
     rating = _(Integer, default=5)
     lesson = relationship('Lesson', backref='course_for_lesson')
-
-    course = relationship(
-        'Student', secondary='student_courses',
-        backref='course_for_student',
-    )
 
     def __repr__(self) -> str:
         return f"Course(title={self.title!r}," \

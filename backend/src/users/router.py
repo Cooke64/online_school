@@ -21,7 +21,7 @@ def login_user():
 def sign_up_user(user: UserCreate = Body(
     ..., description="Данные пользователя при регистрации."
 ), user_crud: UserCrud = Depends()):
-    user_crud.create_student_user(user)
+    user_crud.get_user(user.email)
     return create_jwt(user.email)
 
 
