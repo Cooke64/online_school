@@ -5,7 +5,7 @@ from sqlalchemy import Column as _, Integer, String, ForeignKey, \
 from sqlalchemy.orm import relationship, backref
 
 from src.database import BaseModel
-from src.users.models import Role
+from src.users.models import User
 
 
 class StudentCourse(BaseModel):
@@ -18,12 +18,13 @@ class StudentCourse(BaseModel):
 class Student(BaseModel):
     __tablename__ = 'students'
     phone = _(String(50), unique=True, nullable=False)
+
+    course_id = _(Integer, ForeignKey('courses.id'))
     course = relationship(
         'Course', secondary='student_courses',
-        backref='student',
+        back_populates='student',
     )
-    role_id = _(Integer, ForeignKey('rols.id'))
-    role = relationship(Role, backref=backref('student', uselist=False))
 
-    def __repr__(self) -> str:
-        return f'Staff(role_id={self.role_id!r},)'
+    user_id = _(Integer, ForeignKey('users.id'))
+    user = relationship(User, backref=backref('student', uselist=False))
+

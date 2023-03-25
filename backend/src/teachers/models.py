@@ -2,21 +2,28 @@ from sqlalchemy import Column as _, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 from src.database import BaseModel
-from src.users.models import Role
+from src.users.models import User
 
 
 class TeacherCourse(BaseModel):
     __tablename__ = "teacher_courses"
     user_id = _(Integer, ForeignKey('teachers.id'))
-    project_id = _(Integer, ForeignKey('courses.id'))
+    course_id = _(Integer, ForeignKey('courses.id'))
 
 
 class Teacher(BaseModel):
     __tablename__ = 'teachers'
     description = _(String, nullable=True)
 
-    course = relationship('Course', secondary='teacher_courses',
-                          back_populates='teacher'
-                          )
-    role = relationship(Role, backref=backref('teacher', uselist=False))
-    role_id = _(Integer, ForeignKey('rols.id'))
+    course_id = _(Integer, ForeignKey('courses.id'))
+    course = relationship(
+        'Course',
+        secondary='teacher_courses',
+        back_populates='teacher'
+    )
+
+    user_id = _(Integer, ForeignKey('users.id'))
+    user = relationship(
+        User,
+        backref=backref('teacher', uselist=False)
+    )

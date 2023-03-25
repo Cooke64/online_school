@@ -1,5 +1,7 @@
+from typing import Any
+
 from fastapi import Depends
-from sqlalchemy import Column as _, Integer
+from sqlalchemy import Column as _, Integer, exists
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, Session
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +12,6 @@ from src.config import settings
 Base = declarative_base()
 
 
-
 class BaseModel(Base):
     __abstract__ = True
     id = _(
@@ -18,6 +19,8 @@ class BaseModel(Base):
         unique=True, primary_key=True, autoincrement=True
     )
 
+    def __repr__(self):
+        return "<{0.__class__.__name__}(id={0.id!r})>".format(self)
 
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -47,3 +50,8 @@ class BaseCrud:
         item = self.get_current_item(id_item, Model)
         self.session.delete(item)
         self.session.commit()
+
+    def check_item_exists(self, id_item: int, Model: Any) -> bool:
+        is_exists = self.session.query(
+            exists().where(Model.id == id_item)).scalar()
+        return is_exists

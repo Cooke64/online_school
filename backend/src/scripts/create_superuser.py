@@ -1,6 +1,7 @@
 from src.config import admin_data
 from src.database import SessionLocal
-from src.users.models import StaffType, Staff, User, Role
+from src.users.models import StaffType, Staff, User
+from students.models import Student
 
 
 def get_user(session, email):
@@ -10,8 +11,7 @@ def get_user(session, email):
 def create_superuser():
     session = SessionLocal()
     staff_role = StaffType.superuser.value
-    user = get_user(session, admin_data.email)
-    if user:
+    if get_user(session, admin_data.email):
         return 0
     user = User(
         is_active=True,
@@ -20,19 +20,11 @@ def create_superuser():
     session.add(user)
     session.commit()
     user_id = get_user(session, admin_data.email).id
-    role_super = Role(
-        user_id=user_id
-    )
-    session.add(role_super)
-    session.commit()
-    role_id = session.query(Role).filter(Role.user_id == user_id).first().id
     superuser = Staff(
-        role_id=role_id,
+        user_id=user_id,
         staff_role=staff_role
     )
     session.add(superuser)
     session.commit()
     return 1
 
-
-print(create_superuser())

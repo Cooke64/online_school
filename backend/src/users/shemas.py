@@ -18,6 +18,7 @@ class UserCreate(UserBase):
     first_name: str | None = None
     last_name: str | None = None
     password: str
+    phone: str
 
     class Config:
         orm_mode = True
@@ -27,7 +28,8 @@ class UserCreate(UserBase):
                 'first_name': 'firstname',
                 'last_name': 'last_name',
                 'email': 'email@mail.com',
-                'password': 'password'
+                'password': 'password',
+                'phone': '12345678'
             }
         }
 

@@ -1,29 +1,36 @@
 from fastapi import APIRouter, Body, Depends
 
+from src.course.models import Course
 from src.auth.utils.create_jwt import create_jwt
 from .crud import UserCrud
-from .shemas import UserCreate
+from .models import User
+from .shemas import UserCreate, UserLogin
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
 
-@router.get('/')
-def get_user_page():
-    return {"access_token": 123, "token_type": "bearer"}
+@router.get('/all_users')
+def get_user_page(user_crud: UserCrud = Depends()):
+    data = user_crud.get_all_users()
+    return data
 
 
-@router.get('/login')
-def login_user():
-    return {"access_token": 123, "token_type": "bearer"}
+@router.post('/login')
+def login_user(user: UserLogin, user_crud: UserCrud = Depends()):
+    if user_crud.get_user(user.email):
+        return {"access_token": 123, "token_type": "bearer"}
+    return {'no user': 'no user'}
 
 
 @router.post('/sign_up')
 def sign_up_user(user: UserCreate = Body(
     ..., description="Данные пользователя при регистрации."
 ), user_crud: UserCrud = Depends()):
-    user_crud.get_user(user.email)
+    """
+    Создание нового пользователя, добаляет в бд нового пользователя с ролью Student.
+    Создает запись в модели Student. Поле is_active = False.
+    first_name, last_name, username необязательные поля
+    пользователь должен указать номер телефона. Номер телефона должен быть уникальным
+    """
+    user_crud.create_student_user(user)
     return create_jwt(user.email)
-
-
-def check_user():
-    pass

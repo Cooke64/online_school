@@ -12,7 +12,7 @@ def get_base_for_alembic():
     from src.course.models import Course, Lesson
     from src.students.models import Student
     from src.teachers.models import Teacher
-    from src.users.models import User, Role, Staff
+    from src.users.models import User,  Staff
     from src.database import Base
     return Base
 
