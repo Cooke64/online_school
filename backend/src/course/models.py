@@ -16,7 +16,8 @@ class Lesson(BaseModel):
     __tablename__ = 'lessons'
     title = _(String(199), nullable=False)
     content = _(Text, nullable=False)
-    course_id = _(Integer,
-                  ForeignKey('courses.id', ondelete='CASCADE'),
-                  nullable=False
-                  )
+    course_id = _(
+        Integer,
+        ForeignKey('courses.id', ondelete='CASCADE'),
+        nullable=False
+        )

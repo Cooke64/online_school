@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Body, Depends
 
-from src.course.models import Course
 from src.auth.utils.create_jwt import create_jwt
 from .crud import UserCrud
-from .models import User
 from .shemas import UserCreate, UserLogin
+
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
@@ -32,5 +31,6 @@ def sign_up_user(user: UserCreate = Body(
     first_name, last_name, username необязательные поля
     пользователь должен указать номер телефона. Номер телефона должен быть уникальным
     """
-    user_crud.create_student_user(user)
-    return create_jwt(user.email)
+    hashed_password = create_jwt(user.email)
+    user_crud.create_student_user(user, hashed_password)
+    return hashed_password

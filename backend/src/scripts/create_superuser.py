@@ -1,7 +1,7 @@
+from src.course.models import Course
 from src.config import admin_data
 from src.database import SessionLocal
 from src.users.models import StaffType, Staff, User
-from students.models import Student
 
 
 def get_user(session, email):
@@ -28,3 +28,16 @@ def create_superuser():
     session.commit()
     return 1
 
+
+def create_fake_courses():
+    session = SessionLocal()
+    for i in range(3):
+        course = Course(
+            title='title',
+            description='description'
+        )
+        session.add(course)
+        session.commit()
+
+
+create_fake_courses()

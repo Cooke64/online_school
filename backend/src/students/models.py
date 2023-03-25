@@ -22,7 +22,7 @@ class Student(BaseModel):
     course_id = _(Integer, ForeignKey('courses.id'))
     course = relationship(
         'Course', secondary='student_courses',
-        back_populates='student',
+        backref='student',
     )
 
     user_id = _(Integer, ForeignKey('users.id'))

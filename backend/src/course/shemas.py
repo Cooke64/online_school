@@ -1,18 +1,16 @@
 from pydantic import BaseModel, Field
 
+from src.lessons.shemas import LessonBase
+
 
 class CourseBase(BaseModel):
     title: str
     description: str
-    teacher_id: int
+    # teacher_id: int
     rating: int
 
     class Config:
         orm_mode = True
-
-
-class LessonBase(BaseModel):
-    content: str
 
 
 class CourseShow(CourseBase):
@@ -29,7 +27,7 @@ class CreateCourse(CourseBase):
     class Config:
         schema_extra = {
             'example': {
-                'teacher_id': 1, 'title': 'title',
+                'title': 'title',
                 'description': 'description',
                 'rating': 4
             }
@@ -38,4 +36,5 @@ class CreateCourse(CourseBase):
 
 
 class CourseShowDetail(CourseBase):
+    id: int
     lessons: list[LessonBase] | None = []

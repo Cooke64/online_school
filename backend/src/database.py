@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Hashable
 
 from fastapi import Depends
 from sqlalchemy import Column as _, Integer, exists
@@ -22,6 +22,7 @@ class BaseModel(Base):
     def __repr__(self):
         return "<{0.__class__.__name__}(id={0.id!r})>".format(self)
 
+
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
@@ -34,7 +35,7 @@ class BaseCrud:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-    def get_all_items(self, Model):
+    def get_all_items(self, Model) -> list:
         return self.session.query(Model).all()
 
     def get_current_item(self, id_item, Model):
@@ -46,7 +47,7 @@ class BaseCrud:
         self.session.refresh(item)
         return item
 
-    def remove_item(self, id_item, Model):
+    def remove_item(self, id_item: int, Model):
         item = self.get_current_item(id_item, Model)
         self.session.delete(item)
         self.session.commit()
