@@ -1,3 +1,6 @@
+from typing import Dict
+
+from src.auth.utils.create_jwt import create_jwt
 from src.database import BaseCrud
 from src.students.models import Student
 from .models import User, Staff
@@ -6,8 +9,9 @@ from .shemas import UserCreate
 
 class UserCrud(BaseCrud):
 
+    @staticmethod
     def __update_userdata_and_get_phone(
-            self, _dict: UserCreate, hashed_password: str
+            _dict: UserCreate
     ) -> tuple[dict[str], str]:
         """
         Удаляет из данных пользователя телефон,
@@ -17,7 +21,7 @@ class UserCrud(BaseCrud):
         dict_copy: dict = _dict.dict()
         phone = dict_copy.pop('phone')
         dict_copy.pop('password')
-        dict_copy.update({'password': hashed_password})
+        dict_copy.update({'password': create_jwt(_dict.password)})
         return dict_copy, phone
 
     def get_all_users(self) -> list[User]:
@@ -28,10 +32,9 @@ class UserCrud(BaseCrud):
 
     def create_student_user(
             self, user_data: UserCreate,
-            haashed_password: str,
-    ) -> None:
+    ) -> dict[str]:
         user_dict, phone = self.__update_userdata_and_get_phone(
-            user_data, haashed_password
+            user_data
         )
         if not self.get_user(user_data.email):
             new_user = User(**user_dict)
@@ -41,3 +44,4 @@ class UserCrud(BaseCrud):
             phone=phone, user_id=user_id.id,
         )
         self.create_item(student)
+        return user_dict

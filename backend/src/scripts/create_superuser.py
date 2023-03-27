@@ -1,5 +1,5 @@
-from src.course.models import Course
 from src.config import admin_data
+from src.course.models import Course
 from src.database import SessionLocal
 from src.users.models import StaffType, Staff, User
 
@@ -33,11 +33,15 @@ def create_fake_courses():
     session = SessionLocal()
     for i in range(3):
         course = Course(
-            title='title',
-            description='description'
+            title=f'title{i}',
+            description=f'description {i}'
         )
         session.add(course)
         session.commit()
 
 
-create_fake_courses()
+# create_superuser()
+# create_fake_courses()
+
+session = SessionLocal()
+print(session.query(Course).first())

@@ -1,3 +1,6 @@
+from typing import Dict, Any
+
+from src.course.models import Course
 from src.database import BaseCrud
 from src.exceptions import NotFound
 from src.students.models import StudentCourse
@@ -5,17 +8,20 @@ from src.users.models import User
 
 
 class StudentCrud(BaseCrud):
-    def get_student(self, email: str) -> User | NotFound:
+    def get_student(self, email: str) -> User:
         query = self.session.query(User).filter(
             User.email == email
         ).first()
         return query
 
-    def get_students_courses(self, email):
-        user_id = self.get_student(email).student.id
-        return self.session.query(StudentCourse).filter(
-            StudentCourse.student_id == user_id
-        ).all()
-
-    def add_course_to_stident(self, email):
-        user_id = self.get_student(email).id
+    def get_students_courses(self, email: str) -> dict[
+            User, list[Course], str | None]:
+        user = self.get_student(email)
+        courses = self.session.query(Course).join(
+            StudentCourse).filter(
+            StudentCourse.student_id == user.student.id).all()
+        return {
+            'user': user,
+            'courses': courses,
+            'phone': user.student.phone
+        }

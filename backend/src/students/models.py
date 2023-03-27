@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Column as _, Integer, String, ForeignKey, \
-    DateTime
+    DateTime, Boolean
 from sqlalchemy.orm import relationship, backref
 
 from src.database import BaseModel
@@ -13,18 +13,18 @@ class StudentCourse(BaseModel):
     student_id = _(Integer, ForeignKey('students.id'))
     course_id = _(Integer, ForeignKey('courses.id'))
     course_start = _(DateTime, nullable=False, default=datetime.utcnow)
+    has_paid = _(Boolean, nullable=False, default=True)
 
 
 class Student(BaseModel):
     __tablename__ = 'students'
     phone = _(String(50), unique=True, nullable=False)
 
-    course_id = _(Integer, ForeignKey('courses.id'))
-    course = relationship(
-        'Course', secondary='student_courses',
-        backref='student',
+    courses = relationship(
+        'Course',
+        secondary='student_courses',
+        back_populates='students'
     )
 
     user_id = _(Integer, ForeignKey('users.id'))
     user = relationship(User, backref=backref('student', uselist=False))
-

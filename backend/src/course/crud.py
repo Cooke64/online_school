@@ -1,5 +1,8 @@
-from src.course.models import Course, Lesson
+from fastapi import HTTPException, status
+
+from src.course.models import Course
 from src.database import BaseCrud
+from src.students.models import Student
 from src.users.models import User
 
 
@@ -9,21 +12,23 @@ class CourseCrud(BaseCrud):
         self.create_item(news_item)
 
     def get_all_items(self):
+        query = self.session.query(Course).first()
+        query.lessons
         return self.session.query(Course).all()
 
-    def get_course_lessons(self, course_id):
-        return self.session.query(Lesson).join(Course).filter(
-            Lesson.course_id == course_id).all()
+    def get_course_by_id(self, course_id):
+        # Почему-то так выдается правильный ответ, где есть lessons в ответе
+        query = self.session.query(Course).first()
+        query.lessons
+        query = self.session.query(Course).filter(
+            Course.id == course_id
+        ).first()
+        return query
 
     def add_course_by_user(self, course_id: int, email: str):
-        user = self.session.query(User).filter(
+        student = self.session.query(Student).join(User).filter(
             User.email == email
         ).first()
-        print(user)
-        # course = self.session.query(Course).filter(
-        #     Course.id == course_id
-        # ).first()
-        #
-        # user.student.course.append(course)
-        # self.session.add(user)
-        # self.session.commit()
+        course = self.get_course_by_id(course_id)
+        student.courses.append(course)
+        self.session.commit()

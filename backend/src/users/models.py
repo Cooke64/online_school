@@ -1,6 +1,7 @@
 from enum import Enum
 
-from sqlalchemy import Column as _, String, Boolean, Integer, ForeignKey
+from sqlalchemy import Column as _, String, Boolean, Integer, ForeignKey, \
+    PrimaryKeyConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 
 from src.database import BaseModel
@@ -15,6 +16,12 @@ class User(BaseModel):
     email = _(String(99), unique=True, nullable=False)
     password = _(String, nullable=False)
     is_active = _(Boolean, default=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('id', name='user_pk'),
+        UniqueConstraint('username'),
+        UniqueConstraint('email'),
+    )
 
 
 class StaffType(Enum):

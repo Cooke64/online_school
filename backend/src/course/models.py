@@ -9,15 +9,17 @@ class Course(BaseModel):
     title = _(String(199), nullable=False)
     description = _(String, nullable=False)
     rating = _(Integer, default=5)
-    lesson = relationship('Lesson', backref='course')
+    lessons = relationship('Lesson', back_populates='course')
+
+    students = relationship(
+        'Student', secondary='student_courses',
+        back_populates='courses'
+    )
 
 
 class Lesson(BaseModel):
     __tablename__ = 'lessons'
     title = _(String(199), nullable=False)
     content = _(Text, nullable=False)
-    course_id = _(
-        Integer,
-        ForeignKey('courses.id', ondelete='CASCADE'),
-        nullable=False
-        )
+    course_id = _(Integer, ForeignKey('courses.id'))
+    course = relationship('Course', back_populates='lessons')

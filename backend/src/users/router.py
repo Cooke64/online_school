@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Body, Depends
 
-from src.auth.utils.create_jwt import create_jwt
 from .crud import UserCrud
-from .shemas import UserCreate, UserLogin
-
+from .shemas import UserCreate, UserLogin, UserCreateShowResult
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
@@ -21,7 +19,7 @@ def login_user(user: UserLogin, user_crud: UserCrud = Depends()):
     return {'no user': 'no user'}
 
 
-@router.post('/sign_up')
+@router.post('/sign_up', response_model=UserCreateShowResult)
 def sign_up_user(user: UserCreate = Body(
     ..., description="Данные пользователя при регистрации."
 ), user_crud: UserCrud = Depends()):
@@ -31,6 +29,5 @@ def sign_up_user(user: UserCreate = Body(
     first_name, last_name, username необязательные поля
     пользователь должен указать номер телефона. Номер телефона должен быть уникальным
     """
-    hashed_password = create_jwt(user.email)
-    user_crud.create_student_user(user, hashed_password)
-    return hashed_password
+    user = user_crud.create_student_user(user)
+    return user

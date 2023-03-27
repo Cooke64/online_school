@@ -19,6 +19,7 @@ class PermissionDenied(DetailedHTTPException):
 
 class NotFound(DetailedHTTPException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
+    DETAIL = 'Такого объекта не существует'
 
 
 class BadRequest(DetailedHTTPException):

@@ -1,9 +1,9 @@
-from typing import Any, Hashable
+from typing import Any
 
 from fastapi import Depends
 from sqlalchemy import Column as _, Integer, exists
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy.orm import declarative_base, Session, Query
 from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
 
@@ -38,8 +38,16 @@ class BaseCrud:
     def get_all_items(self, Model) -> list:
         return self.session.query(Model).all()
 
-    def get_current_item(self, id_item, Model):
-        return self.session.query(Model).filter(Model.id == id_item).first()
+    def get_current_item(self, id_item: int, Model: Any) -> Query:
+        """Возвращает Объект построения SQL на уровне ORM.
+        :param id_item: первичный ключ
+        :type id_item: int
+        :param Model: класс модели базы данных
+        :type Model: Any
+        :rtype: Query
+        :return: ORM-level SQL construction object.
+        """
+        return self.session.query(Model).filter(Model.id == id_item)
 
     def create_item(self, item):
         self.session.add(item)

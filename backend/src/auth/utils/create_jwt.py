@@ -3,15 +3,20 @@ This file is responsible for signing, creating or decode and returning JWTds.
 """
 import json
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
 
 import jwt
+from pydantic import BaseModel, EmailStr
 
 from src.config import settings
 
-Token = dict[str]
+
+class TokenShema(BaseModel):
+    email: EmailStr
+    expire: datetime
 
 
-def token_response(token: str) -> Token:
+def token_response(token: TokenShema):
     """The function returns ready JWT token"""
     return {'access token': token}
 
@@ -32,10 +37,11 @@ def create_jwt(email: str, expires_delta: timedelta = None) -> token_response:
     return encoded_jwt
 
 
-def decode_jwt_token(token: str) -> str | None:
+def decode_jwt_token(token: TokenShema) -> str | None:
     """The function decode JWT token"""
     decode_token = jwt.decode(
-        token, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+        token, settings.SECRET_KEY,
+        algorithms='HS256'
     )
-    return decode_token if decode_token['expires'] >= datetime.utcnow() else None
+    return decode_token
 

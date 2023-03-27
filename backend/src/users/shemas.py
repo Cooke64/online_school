@@ -34,6 +34,10 @@ class UserCreate(UserBase):
         }
 
 
+class UserCreateShowResult(UserBase):
+    username: str
+
+
 class UserLogin(UserBase):
     password: str
 
