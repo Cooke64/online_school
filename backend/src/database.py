@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
 
 from src.config import settings
+from src.exceptions import NotFound
 
 Base = declarative_base()
 
@@ -47,16 +48,25 @@ class BaseCrud:
         :rtype: Query
         :return: ORM-level SQL construction object.
         """
-        return self.session.query(Model).filter(Model.id == id_item)
+        query = self.session.query(Model).filter(Model.id == id_item)
+        if not query:
+            raise NotFound
+        return query
 
     def create_item(self, item):
+        """
+        Создает объект и возвращает его объект.
+        :param item: любой объект модели, который может быть добавлен в бд
+        """
         self.session.add(item)
         self.session.commit()
         self.session.refresh(item)
         return item
 
     def remove_item(self, id_item: int, Model):
-        item = self.get_current_item(id_item, Model)
+        item = self.get_current_item(id_item, Model).first()
+        if not item:
+            raise NotFound
         self.session.delete(item)
         self.session.commit()
 
@@ -64,3 +74,13 @@ class BaseCrud:
         is_exists = self.session.query(
             exists().where(Model.id == id_item)).scalar()
         return is_exists
+
+    def update_item(self, item_id, Model, data_to_update):
+        """
+        Partial update or put data in model.
+        """
+        item = self.get_current_item(item_id, Model).first()
+        for var, value in vars(data_to_update).items():
+            setattr(item, var, value) if value else None
+        self.create_item(item)
+        return item

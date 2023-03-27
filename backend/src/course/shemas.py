@@ -38,3 +38,9 @@ class CreateCourse(CourseBase):
 class CourseShowDetail(CourseBase):
     id: int
     lessons: list[LessonBase] | None = []
+
+
+class UpdateCourse(BaseModel):
+    title: str | None
+    description: str | None
+    rating: int | None
