@@ -1,7 +1,7 @@
 from src.config import admin_data
 from src.course.models import Course
 from src.database import SessionLocal
-from src.users.models import StaffType, Staff, User
+from src.users.models import StaffType, Staff, User, RolesType
 
 
 def get_user(session, email):
@@ -15,6 +15,7 @@ def create_superuser():
         return 0
     user = User(
         is_active=True,
+        staff_role=RolesType.staff,
         **admin_data.dict()
     )
     session.add(user)
@@ -41,7 +42,4 @@ def create_fake_courses():
 
 
 # create_superuser()
-# create_fake_courses()
-
-session = SessionLocal()
-print(session.query(Course).first())
+create_fake_courses()

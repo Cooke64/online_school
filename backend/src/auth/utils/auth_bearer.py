@@ -1,4 +1,5 @@
 import time
+import typing
 
 from fastapi import Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -6,6 +7,8 @@ from jose import jwt
 
 from ...config import settings
 from ...exceptions import NotAuthenticated
+from ...users.crud import UserCrud
+from ...users.models import RolesType
 
 
 def decode_jwt(token: str) -> dict:
@@ -38,21 +41,35 @@ class JWTBearer(HTTPBearer):
             raise NotAuthenticated
 
     def verify_jwt(self, jwtoken: str) -> bool:
-        isTokenValid: bool = False
         try:
             payload = decode_jwt(jwtoken)
         except:
             payload = None
         if payload:
-            isTokenValid = True
-        return isTokenValid
+            return True
+        return False
 
 
 async def get_current_user(token: str = Depends(JWTBearer())) -> dict:
-    # skipping verify since its already verified in JWTBearer
     payload = jwt.decode(
         token=token,
         key=settings.SECRET_KEY,
         algorithms=settings.ALGORITHM
     )
     return payload.get("sub")
+
+
+class UserPermission(typing.NamedTuple):
+    has_perm: bool
+    role: str
+    user_email: str
+
+
+async def get_permission(
+        email: str = Depends(get_current_user),
+        user_crud: UserCrud = Depends()
+) -> UserPermission:
+    user = user_crud.get_user(email)
+    if user and user.role in (RolesType.staff.value, RolesType.teacher.value):
+        return UserPermission(True, user.role, email)
+    return UserPermission(False, user.role)

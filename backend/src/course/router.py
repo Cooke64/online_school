@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Path, Body
 
-from src.auth.utils.auth_bearer import JWTBearer
+from src.auth.utils.auth_bearer import JWTBearer, get_permission, \
+    UserPermission, get_current_user
 from src.course.crud import CourseCrud
 from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow
-from src.exceptions import NotFound
+from src.exceptions import NotFound, PermissionDenied
 
 router = APIRouter(prefix='/course', tags=['Главная страничка курсов'])
 
@@ -45,25 +46,42 @@ def add_course_in_users_list(
     return {'course': 'added'}
 
 
-@router.post('/')
+@router.post('/', dependencies=[Depends(JWTBearer())])
 def create_course(
         course_data: CreateCourse,
-        course_crud: CourseCrud = Depends()
+        course_crud: CourseCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
 ):
-    course_crud.create_new_course(course_data)
-    return course_data
+    if not permission.has_perm:
+        raise PermissionDenied
+    # Создть функцию получения учителя по емейлу у авторизованного.
+    teacher = course_crud.get_course_by_id(permission.user_email)
+    # Обновить функцию. Курс добавляется зарегестрированным, авторизованным преподавателем
+    # course_crud.create_new_course(course_data)
+    # return course_data
 
 
-@router.put('/{course_id}', status_code=202)
+@router.put('/{course_id}', status_code=202,
+            dependencies=[Depends(JWTBearer())])
 def update_course(course_id: int,
                   course_data: UpdateCourse,
-                  course_crud: CourseCrud = Depends()):
+                  course_crud: CourseCrud = Depends(),
+                  permission: UserPermission = Depends(get_permission)
+                  ):
+    if not permission.has_perm:
+        raise PermissionDenied
+    # Добавить проверку, что обнавляет автор курса.
     return course_crud.update_course(course_id, course_data)
 
 
-@router.delete('/{course_id}', status_code=204, dependencies=[Depends(JWTBearer())])
+@router.delete('/{course_id}', status_code=204,
+               dependencies=[Depends(JWTBearer())])
 def delete_course(
         course_id: int,
-        course_crud: CourseCrud = Depends()
+        course_crud: CourseCrud = Depends(),
+        permission: UserPermission = Depends(get_permission)
 ):
+    if not permission.has_perm:
+        raise PermissionDenied
+    # Добавить проверку, что удаляет автор курса.
     course_crud.delete_course(course_id)

@@ -17,7 +17,7 @@ def get_user_page(
         email=Depends(get_current_user),
         user_crud: UserCrud = Depends()
 ):
-    return user_crud.get_user(email), user_crud.get_user(email).student.courses
+    return user_crud.get_user(email), user_crud.get_user(email)
 
 
 class UserType(str, Enum):
@@ -58,7 +58,6 @@ def login_user(form_data: UserLogin,
         - password:
         """
     user = user_crud.get_user(form_data.email)
-    print(form_data)
     if not user or not verify_password(form_data.password, user.password):
         raise NotFound
     access_token = create_jwt(data={"sub": user.email})
