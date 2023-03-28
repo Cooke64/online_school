@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, Path, Body
 
+from src.auth.utils.auth_bearer import JWTBearer
 from src.course.crud import CourseCrud
-from src.course.shemas import CreateCourse, UpdateCourse
+from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow
 from src.exceptions import NotFound
 
 router = APIRouter(prefix='/course', tags=['Главная страничка курсов'])
 
 
-@router.get('/')
+@router.get('/', response_model=list[CourseListShow])
 def get_all_courses(course_crud: CourseCrud = Depends()):
     return course_crud.get_all_items()
 
@@ -60,8 +61,9 @@ def update_course(course_id: int,
     return course_crud.update_course(course_id, course_data)
 
 
-@router.delete('/{course_id}', status_code=204)
+@router.delete('/{course_id}', status_code=204, dependencies=[Depends(JWTBearer())])
 def delete_course(
         course_id: int,
-        course_crud: CourseCrud = Depends()):
+        course_crud: CourseCrud = Depends()
+):
     course_crud.delete_course(course_id)

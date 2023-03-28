@@ -15,15 +15,14 @@ class Teacher(BaseModel):
     __tablename__ = 'teachers'
     description = _(String, nullable=True)
 
-    course_id = _(Integer, ForeignKey('courses.id'))
-    course = relationship(
+    courses = relationship(
         'Course',
         secondary='teacher_courses',
-        back_populates='teacher'
+        back_populates='teachers'
     )
 
     user_id = _(Integer, ForeignKey('users.id'))
     user = relationship(
         User,
-        backref=backref('teacher', uselist=False)
+        backref=backref('teacher', uselist=False),
     )

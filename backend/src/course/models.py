@@ -12,9 +12,17 @@ class Course(BaseModel):
     lessons = relationship('Lesson', back_populates='course')
 
     students = relationship(
-        'Student', secondary='student_courses',
+        'Student',
+        secondary='student_courses',
         back_populates='courses'
     )
+    teachers = relationship(
+        'Teacher',
+        secondary='teacher_courses',
+        back_populates='courses'
+    )
+
+
 
 
 class Lesson(BaseModel):

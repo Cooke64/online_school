@@ -2,18 +2,24 @@ from src.course.models import Course
 from src.database import BaseCrud
 from src.exceptions import NotFound
 from src.students.models import Student
+from src.teachers.models import Teacher
 from src.users.models import User
 
 
 class CourseCrud(BaseCrud):
-    def create_new_course(self, course_data) -> None:
-        news_item = Course(**course_data.dict())
-        self.create_item(news_item)
+    def create_new_course(self, course_data, teacher_id=1) -> None:
+        new_item = Course(**course_data.dict())
+        teacher = self.get_current_item(teacher_id, Teacher)
+        new_item.teachers.append(teacher.first())
+        self.create_item(new_item)
 
     def get_all_items(self):
-        query = self.session.query(Course).first()
-        query.lessons
-        return self.session.query(Course).all()
+        course = self.session.query(Course).first()
+        if course:
+            course.lessons
+            [t.user.username for t in course.teachers]
+            return self.session.query(Course).all()
+        return None
 
     def get_course_by_id(self, course_id):
         # Почему-то так выдается правильный ответ, где есть lessons в ответе

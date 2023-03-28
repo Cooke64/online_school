@@ -55,3 +55,4 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 #  uvicorn src.api:app --reload
+token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjIzQG1haWwucnUiLCJleHAiOjE2ODAwMjQ0NDB9.WAVF0Bia9vBViOtIFIdzxUuVz5nJtqjOTsXn43XQg5M'

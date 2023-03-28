@@ -14,8 +14,7 @@ class StudentCrud(BaseCrud):
         ).first()
         return query
 
-    def get_students_courses(self, email: str) -> dict[
-            User, list[Course], str | None]:
+    def get_students_courses(self, email: str) -> dict[str, User | Any]:
         user = self.get_student(email)
         courses = self.session.query(Course).join(
             StudentCourse).filter(

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -34,18 +34,19 @@ class UserCreate(UserBase):
         }
 
 
+class UserLogin(BaseModel):
+    email: EmailStr = Field(...)
+    password: str = Field(...)
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "email": "1223@mail.ru",
+                "password": "password"
+            }
+        }
+
+
 class UserCreateShowResult(UserBase):
     username: str
 
-
-class UserLogin(UserBase):
-    password: str
-
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            'example': {
-                'email': 'email@mail.com',
-                'password': 'password'
-            }
-        }

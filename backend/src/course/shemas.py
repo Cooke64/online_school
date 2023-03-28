@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
 
 from src.lessons.shemas import LessonBase
+from src.teachers.shemas import ShowTeacherInCourseList
 
 
 class CourseBase(BaseModel):
     title: str
     description: str
-    # teacher_id: int
     rating: int
 
     class Config:
@@ -44,3 +44,12 @@ class UpdateCourse(BaseModel):
     title: str | None
     description: str | None
     rating: int | None
+
+
+class CourseListShow(BaseModel):
+    title: str
+    lessons: list[LessonBase] | None
+    teachers: list[ShowTeacherInCourseList] | None
+
+    class Config:
+        orm_mode = True
