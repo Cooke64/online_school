@@ -1,7 +1,7 @@
 from src.auth.utils.create_jwt import create_jwt
 from src.database import BaseCrud
 from src.students.models import Student
-from .models import User, Staff
+from .models import User, Staff, RolesType
 from .shemas import UserCreate
 from ..auth.utils.hasher import get_password_hash
 from ..teachers.models import Teacher
@@ -54,7 +54,9 @@ class UserCrud(BaseCrud):
             user_data
         )
         if not self.get_user(user_data.email):
-            new_user = User(**user_dict)
+            new_user = User(
+                role=RolesType.teacher.value,
+                **user_dict)
             self.create_item(new_user)
         user_id = self.get_user(user_data.email)
         student = Teacher(

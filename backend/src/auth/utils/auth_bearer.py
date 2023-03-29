@@ -72,4 +72,10 @@ async def get_permission(
     user = user_crud.get_user(email)
     if user and user.role in (RolesType.staff.value, RolesType.teacher.value):
         return UserPermission(True, user.role, email)
-    return UserPermission(False, user.role)
+    return UserPermission(False, user.role, user.email)
+
+
+async def get_student_permission(
+        role: UserPermission = Depends(get_permission)):
+    return role.role == RolesType.student.value
+
