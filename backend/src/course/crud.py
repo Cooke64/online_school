@@ -41,15 +41,17 @@ class CourseCrud(BaseCrud):
     def get_all_items(self) -> list[Course] | None:
         course = self.session.query(Course).first()
         if course:
-            course.lessons
-            [t.user.username for t in course.teachers]
+            if course.lessons and course.teachers:
+                course.lessons
+                [t.user.username for t in course.teachers]
             return self.session.query(Course).all()
         return None
 
     def get_course_by_id(self, course_id: int) -> Course:
         # Почему-то так выдается правильный ответ, где есть lessons в ответе
         query = self.session.query(Course).first()
-        query.lessons
+        if query.lessons:
+            query.lessons
         query = self.session.query(Course).filter(
             Course.id == course_id
         ).first()

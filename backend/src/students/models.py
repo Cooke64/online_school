@@ -18,7 +18,7 @@ class StudentCourse(BaseModel):
 
 class Student(BaseModel):
     __tablename__ = 'students'
-    phone = _(String(50), unique=True, nullable=False)
+    phone = _(String(50), unique=True, nullable=True)
 
     courses = relationship(
         'Course',

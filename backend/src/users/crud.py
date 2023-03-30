@@ -36,7 +36,6 @@ class UserCrud(BaseCrud):
         user_dict, phone = self.__update_userdata_and_get_phone(
             user_data
         )
-        print(user_dict, phone)
         if not self.get_user(user_data.email):
             new_user = User(**user_dict)
             self.create_item(new_user)
@@ -58,9 +57,15 @@ class UserCrud(BaseCrud):
                 role=RolesType.teacher.value,
                 **user_dict)
             self.create_item(new_user)
+
         user_id = self.get_user(user_data.email)
-        student = Teacher(
-            user_id=user_id.id,
-        )
-        self.create_item(student)
+        if RolesType.teacher.value:
+            item = Teacher(
+                user_id=user_id.id,
+            )
+        else:
+            item = Student(
+                user_id=user_id.id,
+            )
+        self.create_item(item)
         return user_dict
