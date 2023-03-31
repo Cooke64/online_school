@@ -1,8 +1,11 @@
-from src.course.models import Course
+from sqlalchemy import func, exists, and_
+from sqlalchemy.orm import joinedload
+
+from src.course.models import Course, CourseRating
 from src.course.shemas import CreateCourse
 from src.database import BaseCrud
-from src.exceptions import NotFound
-from src.students.models import Student
+from src.exceptions import NotFound, BadRequest
+from src.students.models import Student, StudentCourse
 from src.teachers.models import Teacher
 from src.users.models import User
 
@@ -25,6 +28,38 @@ class CourseCrud(BaseCrud):
             raise NotFound
         return student
 
+    def _get_course_rating(self, course_id):
+        rating = self.session.query(func.avg(
+            CourseRating.rating).label('average')).join(Course).filter(
+            CourseRating.course_id == course_id).first()
+        if rating[0]:
+            return round(rating[0], 2)
+        return 0
+
+    def add_rating_to_course(self, user_email, course_id, rating):
+        student = self.get_student_by_email(user_email).id
+        course = self.get_current_item(course_id, Course).first()
+        if self.session.query(exists().where(and_(
+                CourseRating.course_id == course_id,
+                CourseRating.student_id == student)
+        )).scalar():
+            raise BadRequest()
+        if not course:
+            raise NotFound
+        course_rating = CourseRating(
+            student_id=student,
+            course_id=course.id,
+            rating=rating.value)
+        self.create_item(course_rating)
+
+    def update_rating(self, user_email, course_id, new_rating):
+        student = self.get_student_by_email(user_email).id
+        self.session.query(CourseRating).filter(and_(
+            CourseRating.course_id == course_id,
+            CourseRating.student_id == student)
+        ).update({'rating': new_rating.value}, synchronize_session='fetch')
+        self.session.commit()
+
     def create_new_course(
             self,
             course_data: CreateCourse,
@@ -39,25 +74,14 @@ class CourseCrud(BaseCrud):
         return self.create_item(new_item)
 
     def get_all_items(self) -> list[Course] | None:
-        course = self.session.query(Course).first()
-        if course:
-            if course.lessons and course.teachers:
-                course.lessons
-                [t.user.username for t in course.teachers]
-            return self.session.query(Course).all()
-        return None
+        return self.session.query(Course).options(joinedload(Course.students)).all()
 
-    def get_course_by_id(self, course_id: int) -> Course:
-        # Почему-то так выдается правильный ответ, где есть lessons в ответе
-        query = self.session.query(Course).first()
-        if query.lessons:
-            query.lessons
-        query = self.session.query(Course).filter(
-            Course.id == course_id
-        ).first()
-        if not query:
-            raise NotFound
-        return query
+    def get_course_by_id(self, course_id: int):
+        query = self.session.query(Course).options(joinedload(Course.teachers).options(joinedload(Teacher.user))).where(Course.id == course_id).first()
+
+        query.lessons
+        rating_to_show = self._get_course_rating(query.id)
+        return {'course': query, 'rating': rating_to_show}
 
     def add_course_by_user(self, course_id: int, email: str):
         """
@@ -67,9 +91,20 @@ class CourseCrud(BaseCrud):
             - передается емейл авторизованного пользователя, полученный по его токену.
         """
         student = self.get_student_by_email(email)
-        course = self.get_course_by_id(course_id)
+        course = self.get_current_item(course_id, Course).first()
         student.courses.append(course)
         self.session.commit()
+
+    def pay_for_course(self, course_id, user_email):
+        user = self.get_user_by_email(User, user_email)
+        course = self.get_current_item(course_id, Course)
+        if user and course:
+            self.session.query(StudentCourse).filter(and_(
+                StudentCourse.course_id == course.id,
+                StudentCourse.student_id == user.student.id)
+            ).update({'has_paid': True}, synchronize_session='fetch')
+            return
+        raise NotFound
 
     def update_course(self, course_id, data_to_update):
         query = self.update_item(course_id, Course, data_to_update)
@@ -80,12 +115,9 @@ class CourseCrud(BaseCrud):
         self.remove_item(course_id, Course)
 
     def remove_course_from_list(self, course_id: int, user_email: str):
-        course = self.get_course_by_id(course_id)
+        course = self.get_current_item(course_id, Course).first()
         student = self.get_student_by_email(user_email)
         if course not in student.courses:
             raise NotFound
         student.courses.remove(course)
         self.create_item(student)
-
-
-

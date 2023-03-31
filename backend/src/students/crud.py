@@ -1,5 +1,7 @@
 from typing import Dict, Any
 
+from sqlalchemy.orm import joinedload
+
 from src.course.models import Course
 from src.database import BaseCrud
 from src.exceptions import NotFound

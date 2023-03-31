@@ -36,6 +36,9 @@ class BaseCrud:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
+    def get_user_by_email(self, Model, email):
+        return self.session.query(Model).filter(Model.email == email).first()
+
     def get_all_items(self, Model) -> list:
         return self.session.query(Model).all()
 

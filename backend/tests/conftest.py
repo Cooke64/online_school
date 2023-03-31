@@ -12,7 +12,8 @@ from sqlalchemy.orm import sessionmaker
 
 from src.database import Base, get_db
 from src.main import incculde_routers
-from tests.utils.users import auth_teachers, auth_students
+from tests.utils.create_fake_bd import create_fake_bd
+from tests.utils.users import auth_teachers, auth_students, UserHeaders
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -53,22 +54,30 @@ def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
 def client(
         app: FastAPI, db_session: SessionTesting
 ) -> Generator[TestClient, Any, None]:
-    def _get_test_db():
+    def get_test_db():
         try:
             yield db_session
         finally:
             pass
 
-    app.dependency_overrides[get_db] = _get_test_db
+    app.dependency_overrides[get_db] = get_test_db
     with TestClient(app) as client:
         yield client
 
 
 @pytest.fixture(scope="function")
-def auth_teacher(client: TestClient, db_session: Session):
+def auth_teacher(client: TestClient, db_session: Session) -> UserHeaders:
+    """Авторизация преподавателя"""
     return auth_teachers(client, session=db_session)
 
 
 @pytest.fixture(scope="function")
-def auth_student(client: TestClient, db_session: Session):
+def auth_student(client: TestClient, db_session: Session) -> UserHeaders:
+    """Авторизация студента"""
     return auth_students(client, session=db_session)
+
+
+@pytest.fixture(scope="function")
+def get_fake_db(client: TestClient, db_session: Session) -> UserHeaders:
+    """Авторизация студента"""
+    return create_fake_bd(db_session)

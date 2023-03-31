@@ -4,6 +4,7 @@ from src.students.models import Student
 from .models import User, Staff, RolesType
 from .shemas import UserCreate
 from ..auth.utils.hasher import get_password_hash
+from ..course.models import Lesson, Course
 from ..teachers.models import Teacher
 
 
@@ -28,7 +29,12 @@ class UserCrud(BaseCrud):
         return self.session.query(User).join(Staff).all()
 
     def get_user(self, email: str) -> User:
-        return self.session.query(User).filter(User.email == email).first()
+        query = self.session.query(User).filter(User.email == email).first()
+        if query.role == RolesType.student.value:
+            query.student.courses
+        else:
+            query.teacher.courses
+        return query
 
     def create_student_user(
             self, user_data: UserCreate,

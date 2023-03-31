@@ -38,9 +38,9 @@ def get_user_by_email(email: str, session: Session):
 
 def create_teacher(user_id: int, session: Session):
     new_teacher = Teacher(user_id=user_id)
-    create_item(new_teacher, session)
+    return create_item(new_teacher, session)
 
 
 def create_student(user_id: int, session: Session):
     new_student = Student(user_id=user_id)
-    create_item(new_student, session)
+    return create_item(new_student, session)

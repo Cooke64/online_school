@@ -17,7 +17,7 @@ def get_user_page(
         email=Depends(get_current_user),
         user_crud: UserCrud = Depends()
 ):
-    return user_crud.get_user(email), user_crud.get_user(email)
+    return user_crud.get_user(email)
 
 
 class UserType(str, Enum):
