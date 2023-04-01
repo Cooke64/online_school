@@ -151,12 +151,28 @@ class CourseCrud(BaseCrud):
             return {'result': 'Оплачено'}
         raise NotFound
 
-    def update_course(self, course_id, data_to_update):
+    def update_course(self, course_id, data_to_update, permission: UserPermission):
+        if not permission.has_perm:
+            raise PermissionDenied
+        course = self.get_current_item(course_id, Course).first()
+        teacher = self.get_teacher_by_email(permission.user_email)
+        if not course or not teacher:
+            raise NotFound
+        if teacher not in course.teachers:
+            raise PermissionDenied
         query = self.update_item(course_id, Course, data_to_update)
         if query:
             return query
 
-    def delete_course(self, course_id: int):
+    def delete_course(self, course_id: int, permission: UserPermission):
+        if not permission.has_perm:
+            raise PermissionDenied
+        course = self.get_current_item(course_id, Course).first()
+        teacher = self.get_teacher_by_email(permission.user_email)
+        if not course:
+            raise NotFound
+        if teacher not in course.teachers:
+            raise PermissionDenied
         self.remove_item(course_id, Course)
 
     def remove_course_from_list(self, course_id: int, user_email: str):

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Path
 from src.auth.utils.auth_bearer import JWTBearer, get_permission, \
     UserPermission
 from src.course.crud import CourseCrud
+from src.course.models import Course
 from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow, \
     CourseDetail
 from src.course.utils import Rating
@@ -153,15 +154,7 @@ def update_course(course_id: int,
                   course_crud: CourseCrud = Depends(),
                   permission: UserPermission = Depends(get_permission)
                   ):
-    # Проверка авторизации пользователя
-    if not permission.has_perm:
-        raise PermissionDenied
-    course = course_crud.get_course_by_id(course_id)
-    teacher = course_crud.get_teacher_by_email(permission.user_email)
-    # Проверка, что учитель явлется одним из авторов курса
-    if teacher not in course.teachers:
-        raise PermissionDenied
-    return course_crud.update_course(course_id, course_data)
+    return course_crud.update_course(course_id, course_data, permission)
 
 
 @router.delete(
@@ -175,10 +168,7 @@ def delete_course(
         course_crud: CourseCrud = Depends(),
         permission: UserPermission = Depends(get_permission)
 ):
-    if not permission.has_perm:
-        raise PermissionDenied
-    course = course_crud.get_course_by_id(course_id)
-    teacher = course_crud.get_teacher_by_email(permission.user_email)
-    if teacher not in course.teachers:
-        raise PermissionDenied
-    course_crud.delete_course(course_id)
+    """Удаление курса. Доступно авторизованному пользователю со статусом Учитель.
+        - Учитель должен быть в списке учителей курса.
+    """
+    course_crud.delete_course(course_id, permission)

@@ -24,7 +24,7 @@ def get_user_page(
 
 
 class UserType(str, Enum):
-    student = "user"
+    student = "student"
     teacher = "teacher"
 
 

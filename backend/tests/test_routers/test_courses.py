@@ -13,11 +13,10 @@ def test_create_course(client, auth_teacher: UserHeaders):
     assert response.json()['title'] == 'title'
 
 
-def test_get_course_by_id(client, auth_teacher):
-    client.post('/course', json=data, headers=auth_teacher.user_1)
+def test_get_course_by_id(client, get_fake_db):
     response = client.get('/course/1')
     assert response.status_code == 200
-    assert response.json()['title'] == 'title'
+    assert response.json().get('course')['title'] == 'title'
 
 
 def test_not_auth_make_course(client):
@@ -30,7 +29,6 @@ def test_create_course_list(client, auth_teacher):
         client.post('/course/', json=data, headers=auth_teacher.user_1)
     client.post('/course/', json=data, headers=auth_teacher.user_2)
     response = client.get('/course/')
-    assert response.status_code == 201
     assert len(response.json()) == 4
 
 
@@ -85,14 +83,18 @@ def test_update_course(client, auth_teacher, auth_student):
     assert response.status_code == 403
 
 
-def test_add_course_in_user_list(client, auth_student, get_fake_db):
-    response = client.post('/course/add/1', headers=auth_student.user_1)
+def test_add_and_buy_course(client, auth_student, get_fake_db):
+    client.post('/course/add/1', headers=auth_student.user_1)
+    response = client.post('/course/add/1/pay', headers=auth_student.user_1)
     assert response.status_code == 201
     # В списке курсов студента действительно добавился курса
-    response = client.get('/user/me', headers=auth_student.user_1)
-    assert len(response.json().get('student').get('courses')) == 1
+    response = client.get('/student/my_courses', headers=auth_student.user_1)
+    assert len(response.json().get('purchased_courses')) == 1
+    response = client.post('/course/add/1')
+    assert response.status_code == 403
 
 
+# Проверить тесты дальше отсюда
 def test_remove_course_in_user_list(client, auth_student, get_fake_db):
     client.post('/course/add/1', headers=auth_student.user_1)
     response = client.delete('/course/remove/1', headers=auth_student.user_1)

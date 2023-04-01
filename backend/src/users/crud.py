@@ -30,10 +30,6 @@ class UserCrud(BaseCrud):
 
     def get_user(self, email: str) -> User:
         query = self.session.query(User).filter(User.email == email).first()
-        if query.role == RolesType.student.value:
-            query.student.courses
-        else:
-            query.teacher.courses
         return query
 
     def create_student_user(
