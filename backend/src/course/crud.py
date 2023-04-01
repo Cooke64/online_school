@@ -5,10 +5,10 @@ from src.auth.utils.auth_bearer import UserPermission
 from src.course.models import Course, CourseRating, Lesson
 from src.course.shemas import CreateCourse
 from src.database import BaseCrud
-from src.exceptions import NotFound, BadRequest, PermissionDenied
-from src.students.models import Student, StudentCourse
+from src.exceptions import NotFound, BadRequest, PermissionDenied, AddExisted
+from src.students.models import Student, StudentCourse, StudentPassedLesson
 from src.teachers.models import Teacher
-from src.users.models import User, RolesType
+from src.users.models import User
 
 
 class CourseCrud(BaseCrud):
@@ -81,7 +81,8 @@ class CourseCrud(BaseCrud):
         return self.create_item(new_item)
 
     def get_all_items(self) -> list[Course] | None:
-        return self.session.query(Course).options(joinedload(Course.teachers)).all()
+        return self.session.query(Course).options(
+            joinedload(Course.teachers)).all()
 
     def get_course_by_id(self, course_id: int):
         result = self.session.query(Course).options(
@@ -94,6 +95,26 @@ class CourseCrud(BaseCrud):
             return {'course': result, 'rating': rating_to_show}
         raise NotFound
 
+    def _update_user_passed_lessons(
+            self, student_id: int, lessons_list: list[Lesson]
+    ) -> None:
+        if lessons_list:
+            first_lesson = lessons_list[0]
+            open_lesson = StudentPassedLesson(
+                student_id=student_id,
+                lesson_id=first_lesson.id,
+                has_pass=True
+            )
+            self.create_item(open_lesson)
+            for num in range(1, len(lessons_list)):
+                lesson_item = lessons_list[num]
+                item_to_create = StudentPassedLesson(
+                    student_id=student_id,
+                    lesson_id=lesson_item.id,
+                    has_pass=True
+                )
+                self.create_item(item_to_create)
+
     def add_course_by_user(self, course_id: int, email: str):
         """
         Добавляет курс в список курсов студента.
@@ -103,8 +124,14 @@ class CourseCrud(BaseCrud):
         """
         student = self.get_student_by_email(email)
         course = self.get_current_item(course_id, Course).first()
+        if not student or not course:
+            raise NotFound
+        if course in student.courses:
+            raise AddExisted
         student.courses.append(course)
         self.session.commit()
+        if course.lessons:
+            self._update_user_passed_lessons(student.id, course.lessons)
 
     def pay_for_course(self, course_id, user_email):
         """Оплата курса пользователем. has_payd = True"""

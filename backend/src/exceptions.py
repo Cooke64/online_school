@@ -33,3 +33,8 @@ class NotAuthenticated(DetailedHTTPException):
 
     def __init__(self) -> None:
         super().__init__(headers={"WWW-Authenticate": "Bearer"})
+
+
+class AddExisted(DetailedHTTPException):
+    STATUS_CODE = status.HTTP_400_BAD_REQUEST
+    DETAIL = "Такой объект уже добавлен"
