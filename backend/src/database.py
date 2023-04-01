@@ -79,9 +79,6 @@ class BaseCrud:
         return is_exists
 
     def update_item(self, item_id, Model, data_to_update):
-        """
-        Partial update or put data in model.
-        """
         item = self.get_current_item(item_id, Model).first()
         for var, value in vars(data_to_update).items():
             setattr(item, var, value) if value else None

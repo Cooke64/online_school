@@ -76,6 +76,7 @@ async def get_permission(
 
 
 async def get_student_permission(
-        role: UserPermission = Depends(get_permission)):
+        role: UserPermission = Depends(get_permission)
+) -> bool:
     return role.role == RolesType.student.value
 

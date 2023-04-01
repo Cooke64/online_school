@@ -1,13 +1,14 @@
 from sqlalchemy import func, exists, and_
 from sqlalchemy.orm import joinedload
 
-from src.course.models import Course, CourseRating
+from src.auth.utils.auth_bearer import UserPermission
+from src.course.models import Course, CourseRating, Lesson
 from src.course.shemas import CreateCourse
 from src.database import BaseCrud
-from src.exceptions import NotFound, BadRequest
+from src.exceptions import NotFound, BadRequest, PermissionDenied
 from src.students.models import Student, StudentCourse
 from src.teachers.models import Teacher
-from src.users.models import User
+from src.users.models import User, RolesType
 
 
 class CourseCrud(BaseCrud):
@@ -63,25 +64,35 @@ class CourseCrud(BaseCrud):
     def create_new_course(
             self,
             course_data: CreateCourse,
-            teacher: Teacher) -> Course:
+            permission: UserPermission
+    ) -> Course:
         """
         Создает новый курс.
             - Добавляет автора по его емейлу
             - Возвращает объект модели Course
         """
+        if not permission.has_perm:
+            raise PermissionDenied
+        teacher = self.get_teacher_by_email(permission.user_email)
+        if not teacher:
+            raise NotFound
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
 
     def get_all_items(self) -> list[Course] | None:
-        return self.session.query(Course).options(joinedload(Course.students)).all()
+        return self.session.query(Course).options(joinedload(Course.teachers)).all()
 
     def get_course_by_id(self, course_id: int):
-        query = self.session.query(Course).options(joinedload(Course.teachers).options(joinedload(Teacher.user))).where(Course.id == course_id).first()
-
-        query.lessons
-        rating_to_show = self._get_course_rating(query.id)
-        return {'course': query, 'rating': rating_to_show}
+        result = self.session.query(Course).options(
+            joinedload(Course.lessons)).options(
+            joinedload(Course.teachers).options(
+                joinedload(Teacher.user))
+        ).filter(Course.id == course_id).first()
+        if result:
+            rating_to_show = self._get_course_rating(result.id)
+            return {'course': result, 'rating': rating_to_show}
+        raise NotFound
 
     def add_course_by_user(self, course_id: int, email: str):
         """
@@ -96,14 +107,21 @@ class CourseCrud(BaseCrud):
         self.session.commit()
 
     def pay_for_course(self, course_id, user_email):
+        """Оплата курса пользователем. has_payd = True"""
         user = self.get_user_by_email(User, user_email)
-        course = self.get_current_item(course_id, Course)
-        if user and course:
-            self.session.query(StudentCourse).filter(and_(
-                StudentCourse.course_id == course.id,
-                StudentCourse.student_id == user.student.id)
-            ).update({'has_paid': True}, synchronize_session='fetch')
-            return
+        if user:
+            user_course = self.session.query(
+                StudentCourse).filter(
+                and_(
+                    StudentCourse.course_id == course_id,
+                    StudentCourse.student_id == user.student.id
+                )
+            )
+            user_course.update({'has_paid': True}, synchronize_session='fetch')
+            self.session.commit()
+            if user_course.first().has_paid:
+                return {'result': 'Уже оплачено'}
+            return {'result': 'Оплачено'}
         raise NotFound
 
     def update_course(self, course_id, data_to_update):

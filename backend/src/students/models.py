@@ -19,6 +19,16 @@ class StudentCourse(BaseModel):
     has_paid = _(Boolean, nullable=False, default=False)
 
 
+class StudentPassedLesson(BaseModel):
+    __tablename__ = 'student_passed_lessons'
+    __table_args__ = (
+        UniqueConstraint('student_id', 'lesson_id'),
+    )
+    student_id = _(Integer, ForeignKey('students.id'))
+    lesson_id = _(Integer, ForeignKey('lessons.id'))
+    has_pass = _(Boolean, nullable=False, default=False)
+
+
 class Student(BaseModel):
     __tablename__ = 'students'
     phone = _(String(50), unique=True, nullable=True)
@@ -36,4 +46,10 @@ class Student(BaseModel):
         'Course',
         secondary='courses_rating',
         back_populates='ratings'
+    )
+
+    pass_lesson = relationship(
+        'Lesson',
+        secondary='student_passed_lessons',
+        back_populates='student_pass'
     )

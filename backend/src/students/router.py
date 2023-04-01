@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends
 
+from src.auth.utils.auth_bearer import JWTBearer, get_current_user
 from src.students.crud import StudentCrud
 from src.students.shemas import ShowUserProfile
 
 router = APIRouter(prefix='/student', tags=['Данные о студенте'])
 
 
-@router.get('/me', response_model=ShowUserProfile,
-            response_model_exclude_unset=True
-            )
+@router.get('/my_courses', dependencies=[Depends(JWTBearer())])
 def get_all_users_courses(
-        email: str, user_crud: StudentCrud = Depends()
+        email=Depends(get_current_user),
+        user_crud: StudentCrud = Depends()
 ):
     """
     Возвращает информацию о пользователе.

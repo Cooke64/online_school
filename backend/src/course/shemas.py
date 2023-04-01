@@ -5,9 +5,9 @@ from src.teachers.shemas import ShowTeacherInCourseList
 
 
 class CourseBase(BaseModel):
-    id: int
     title: str
     description: str
+    is_free: bool = False
 
     class Config:
         orm_mode = True
@@ -19,6 +19,7 @@ class CreateCourse(CourseBase):
             'example': {
                 'title': 'title',
                 'description': 'description',
+                'is_free': False
             }
         }
         orm_mode = True
@@ -41,7 +42,18 @@ class UpdateCourse(BaseModel):
 class CourseListShow(BaseModel):
     id: int
     title: str
+    is_free: bool = False
     teachers: list[ShowTeacherInCourseList] | None
 
     class Config:
         orm_mode = True
+
+
+class CourseInDetail(CourseBase):
+    teachers: list[ShowTeacherInCourseList] | None
+    lessons: list[LessonBase] | None
+
+
+class CourseDetail(BaseModel):
+    course: CourseInDetail
+    rating: int

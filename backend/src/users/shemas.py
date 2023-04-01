@@ -41,8 +41,8 @@ class UserLogin(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "email": "1223@mail.ru",
-                "password": "password"
+                "email": "2@2.com",
+                "password": "2"
             }
         }
 
@@ -50,3 +50,11 @@ class UserLogin(BaseModel):
 class UserCreateShowResult(UserBase):
     username: str
 
+
+class UserShowProfile(UserBase):
+    username: str
+    first_name: str
+    last_name: str
+
+    class Config:
+        orm_mode = True

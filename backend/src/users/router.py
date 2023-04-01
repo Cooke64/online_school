@@ -3,7 +3,8 @@ from enum import Enum
 from fastapi import APIRouter, Body, Depends
 
 from .crud import UserCrud
-from .shemas import UserCreate, UserCreateShowResult, UserLogin
+from .shemas import UserCreate, UserCreateShowResult, UserLogin, \
+    UserShowProfile
 from ..auth.utils.auth_bearer import JWTBearer, get_current_user
 from ..auth.utils.create_jwt import create_jwt
 from ..auth.utils.hasher import verify_password
@@ -12,11 +13,13 @@ from ..exceptions import NotFound
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
 
-@router.get('/me', dependencies=[Depends(JWTBearer())])
+@router.get('/me', dependencies=[Depends(JWTBearer())], response_model=UserShowProfile)
 def get_user_page(
         email=Depends(get_current_user),
         user_crud: UserCrud = Depends()
 ):
+    """Данные о пользователе. Данные о студенет/преподавателе
+    выводятся через отдельный эндпоинт"""
     return user_crud.get_user(email)
 
 

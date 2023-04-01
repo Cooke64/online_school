@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, Path
 from src.auth.utils.auth_bearer import JWTBearer, get_permission, \
     UserPermission
 from src.course.crud import CourseCrud
-from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow
+from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow, \
+    CourseDetail
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
 from src.users.models import RolesType
@@ -28,7 +29,10 @@ def get_all_courses(course_crud: CourseCrud = Depends()):
     return course_crud.get_all_items()
 
 
-@router.get('/{course_id}', summary='Получить курсов по его id')
+@router.get(
+    '/{course_id}',
+    response_model=CourseDetail,
+    summary='Получить курсов по его id')
 def get_course_by_id(
         course_id: int = Path(..., description='The id of current post'),
         course_crud: CourseCrud = Depends()
@@ -106,7 +110,7 @@ def pay_for_course_in_user_list(
     StudentCourse.has_payd на True default = False
     """
     _check_params(course_id, permission, course_crud)
-    course_crud.pay_for_course(course_id, permission.user_email)
+    return course_crud.pay_for_course(course_id, permission.user_email)
 
 
 @router.delete(
@@ -139,11 +143,7 @@ def create_course(
         course_crud: CourseCrud = Depends(),
         permission: UserPermission = Depends(get_permission),
 ):
-    if not permission.has_perm or permission.role == RolesType.teacher.value:
-        raise PermissionDenied
-    teacher = course_crud.get_teacher_by_email(permission.user_email)
-    course_crud.create_new_course(course_data, teacher)
-    return course_data
+    return course_crud.create_new_course(course_data, permission)
 
 
 @router.put('/{course_id}', status_code=202,
