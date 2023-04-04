@@ -72,4 +72,4 @@ class LessonCrud(BaseCrud):
     def make_lessone_done(self,  course_id, lessons_id, permission: UserPermission):
         user: User = self.get_user_by_email(User, permission.user_email)
         course: Course = self.get_current_item(course_id, Course).first()
-        return 1
+        raise NotImplementedError

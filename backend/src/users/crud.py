@@ -1,3 +1,5 @@
+from starlette.responses import JSONResponse
+
 from src.auth.utils.create_jwt import create_jwt
 from src.database import BaseCrud
 from src.students.models import Student

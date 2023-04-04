@@ -75,7 +75,7 @@ class CourseCrud(BaseCrud):
             raise PermissionDenied
         teacher = self.get_teacher_by_email(permission.user_email)
         if not teacher:
-            raise NotFound
+            return self.get_json_reposnse('Такого преподавателя не существует', 404)
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
@@ -93,7 +93,7 @@ class CourseCrud(BaseCrud):
         if result:
             rating_to_show = self._get_course_rating(result.id)
             return {'course': result, 'rating': rating_to_show}
-        raise NotFound
+        return self.get_json_reposnse('Такого курса не существует', 404)
 
     def _update_user_passed_lessons(
             self, student_id: int, lessons_list: list[Lesson]

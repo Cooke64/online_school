@@ -9,6 +9,7 @@ from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow, \
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
 from src.users.models import RolesType
+from src.utils.base_schemas import ErrorMessage
 
 router = APIRouter(prefix='/course', tags=['Главная страничка курсов'])
 
@@ -33,15 +34,14 @@ def get_all_courses(course_crud: CourseCrud = Depends()):
 @router.get(
     '/{course_id}',
     response_model=CourseDetail,
-    summary='Получить курсов по его id')
+    responses={404: {"model": ErrorMessage}},
+    summary='Получить курс по его id'
+)
 def get_course_by_id(
-        course_id: int = Path(..., description='The id of current post'),
+        course_id: int = Path(...),
         course_crud: CourseCrud = Depends()
 ):
-    query = course_crud.get_course_by_id(course_id)
-    if not query:
-        raise NotFound
-    return query
+    return course_crud.get_course_by_id(course_id)
 
 
 @router.post('/{course_id}/add_rating', status_code=201, summary='Поставить оценку курсу. От 1 до 5')
@@ -73,7 +73,7 @@ def update_rating_to_course(
     """
     _check_params(course_id, permission, course_crud)
     course_crud.update_rating(permission.user_email, course_id, new_rating)
-    return {'done': 'done'}
+    return course_crud.get_json_reposnse('Курса добавлен', 201)
 
 
 @router.post('/add/{course_id}',

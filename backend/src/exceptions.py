@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi import HTTPException, status
+from starlette.responses import JSONResponse
 
 
 class DetailedHTTPException(HTTPException):

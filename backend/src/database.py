@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, Session, Query
 from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from src.config import settings
 from src.exceptions import NotFound
@@ -52,7 +53,7 @@ class BaseCrud:
         :return: ORM-level SQL construction object.
         """
         query = self.session.query(Model).filter(Model.id == id_item)
-        if not query:
+        if not query.first():
             raise NotFound
         return query
 
@@ -84,3 +85,7 @@ class BaseCrud:
             setattr(item, var, value) if value else None
         self.create_item(item)
         return item
+
+    @staticmethod
+    def get_json_reposnse(message, status_code):
+        return JSONResponse(status_code=status_code, content={"message": message})
