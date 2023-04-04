@@ -54,3 +54,6 @@ class Lesson(BaseModel):
         secondary='student_passed_lessons',
         back_populates='pass_lesson'
     )
+    videos = relationship('LessonVideo', back_populates='lesson_content')
+    photos = relationship('LessonPhoto', back_populates='lesson_content')
+

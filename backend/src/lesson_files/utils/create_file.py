@@ -12,17 +12,19 @@ BASE_DIRECTORY = pathlib.Path(__file__).absolute().parent
 def upload_file_and_push_to_db(
         file_obj: UploadFile,
         media_crud: MediaCrud,
-        is_photo: bool = True,
-        folder_name: str | None = None) -> None:
-    DIR = f'{BASE_DIRECTORY}/{folder_name}/' if folder_name else BASE_DIRECTORY
-    with open(f'{DIR}/{file_obj.filename}', 'wb') as buffer:
+        lesson_id: int,
+        is_photo: bool = True) -> None:
+
+    with open(f'{BASE_DIRECTORY}/{file_obj.filename}', 'wb') as buffer:
         shutil.copyfileobj(file_obj.file, buffer)
-    with open(f'{DIR}/{file_obj.filename}', 'rb') as file:
+    with open(f'{BASE_DIRECTORY}/{file_obj.filename}', 'rb') as file:
         data_to_save = file.read()
         media_crud.upload_content(
-            blob=data_to_save, file_type=file_obj.content_type,
+            blob=data_to_save,
+            file_type=file_obj.content_type,
+            lesson_id=lesson_id,
             photo_content=is_photo)
-    os.remove(f'{DIR}/{file_obj.filename}')
+    os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
 
 
 def get_type_content(file_type: str):

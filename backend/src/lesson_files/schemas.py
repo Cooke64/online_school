@@ -1,19 +1,23 @@
 from pydantic import BaseModel
 
 
-class UploadVideo(BaseModel):
-    title: str
-    description: str
+class LessonVideo(BaseModel):
+    id: int
+
+    class Config:
+        orm_mode = True
 
 
-class PhotoItem(UploadVideo):
-    pass
+class LessonPhoto(BaseModel):
+    id: int
 
-
-class VideoItem(UploadVideo):
-    pass
+    class Config:
+        orm_mode = True
 
 
 class LessonContentList(BaseModel):
-    photos: list[PhotoItem] | None
-    videos: list[VideoItem] | None
+    photos: list[LessonVideo] | None
+    videos: list[LessonPhoto] | None
+
+    class Config:
+        orm_mode = True
