@@ -15,10 +15,10 @@ def get_application() -> FastAPI:
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         warnings.simplefilter('ignore', category=sa_exc.SAWarning)
-        application = FastAPI(
-            title='myAppp',
-            description='Проект',
-            version='1.0.1'
+        application: FastAPI = FastAPI(
+            title='OnlineEducation School',
+            description='Онлайн образовательный проект',
+            version='1.2'
         )
 
         application.add_middleware(

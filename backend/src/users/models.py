@@ -27,6 +27,7 @@ class User(BaseModel):
     is_active = _(Boolean, default=False)
     role = _(ChoiceType(roles_as_dict), nullable=False,
              default=RolesType.student.value)
+    verify_code = relationship('Verification', back_populates='user_to_verify')
 
     __table_args__ = (
         PrimaryKeyConstraint('id', name='user_pk'),

@@ -41,7 +41,19 @@ class PostgresSettings(AdvancedBaseSettings):
         env_prefix = "DB_"
 
 
-class Settings(ProjSettings, PostgresSettings):
+class EmailSettings(AdvancedBaseSettings):
+    HOST: str = Field(...)
+    PORT: int = Field(...)
+    USERNAME:  str = Field(...)
+    PASSWORD:  str = Field(...)
+    FROM:  str = Field(default='konstantin.saratovsky@yandex.ru')
+    BASE_URL: str = Field(default='http://127.0.0.1:8000/')
+
+    class Config:
+        env_prefix = "EMAIL_"
+
+
+class Settings(ProjSettings, PostgresSettings, EmailSettings):
     @property
     def DATABASE_URL(self) -> str:
         if self.DEBUG:

@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from src.config import settings
 from src.exceptions import NotFound
 
+
 Base = declarative_base()
 
 

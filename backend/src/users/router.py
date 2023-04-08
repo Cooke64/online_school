@@ -1,26 +1,55 @@
 from enum import Enum
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Path
+from starlette.responses import RedirectResponse
 
 from .crud import UserCrud
-from .shemas import UserCreate, UserCreateShowResult, UserLogin, \
+from .models import User
+from .shemas import (
+    UserCreate,
+    UserCreateShowResult,
+    UserLogin,
     UserShowProfile
-from ..auth.utils.auth_bearer import JWTBearer, get_current_user
+)
+from ..auth.utils.auth_bearer import get_current_user, \
+    get_permission, UserPermission
 from ..auth.utils.create_jwt import create_jwt
 from ..auth.utils.hasher import verify_password
-from ..exceptions import NotFound
+from ..exceptions import NotFound, BadRequest
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
 
-@router.get('/me', dependencies=[Depends(JWTBearer())], response_model=UserShowProfile)
+@router.get(
+    '/me',
+    response_model=UserShowProfile,
+    summary='Страница данных о пользователе',
+)
 def get_user_page(
-        email=Depends(get_current_user),
+
+        permission: UserPermission = Depends(get_permission),
         user_crud: UserCrud = Depends()
 ):
     """Данные о пользователе. Данные о студенет/преподавателе
     выводятся через отдельный эндпоинт"""
-    return user_crud.get_user(email)
+    return user_crud.get_user(permission.user_email)
+
+
+@router.get(
+    '/verify_user/{link}',
+    status_code=302,
+    summary='Верификация пользователя'
+)
+def verify_new_user(
+        link: str = Path(...),
+        email=Depends(get_current_user),
+        user_crud: UserCrud = Depends()
+):
+    """Верификация пользователя. Пользователь должен быть авторизован.
+    При успешной авторизации редирект на страницу с курсами.
+    """
+    user_crud.verify_user(email, link)
+    return RedirectResponse('/course')
 
 
 class UserType(str, Enum):
@@ -28,7 +57,8 @@ class UserType(str, Enum):
     teacher = "teacher"
 
 
-@router.post('/sign_up/{user_type}', response_model=UserCreateShowResult)
+@router.post('/sign_up/{user_type}', response_model=UserCreateShowResult,
+             summary='Регистрация')
 def sign_up_user(user: UserCreate = Body(
     ..., description="Данные пользователя при регистрации."),
         *,
@@ -40,28 +70,20 @@ def sign_up_user(user: UserCreate = Body(
     first_name, last_name, username необязательные поля
     пользователь должен указать номер телефона. Номер телефона должен быть уникальным
     """
-    match user_type:
-        case UserType.student.value:
-            user = user_crud.create_student_user(user)
-        case UserType.teacher.value:
-            user = user_crud.create_teacher_user(user)
+    if user_crud.get_user_by_email(User, user.email):
+        raise BadRequest
+    user = user_crud.create_user(user_type, user)
     return user
 
 
-@router.post('/login')
-def login_user(form_data: UserLogin,
-               user_crud: UserCrud = Depends()):
-    """Processes user's authentication and returns a token
-        on successful authentication.
-
-        request body:
-
-        - email: Unique identifier for a user email,
-
-        - password:
-        """
+@router.post('/login', summary='Авторизация пользователя')
+def login_user(
+        form_data: UserLogin,
+        user_crud: UserCrud = Depends(),
+):
     user = user_crud.get_user(form_data.email)
     if not user or not verify_password(form_data.password, user.password):
         raise NotFound
     access_token = create_jwt(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    headers = {'Authorization': f'Bearer {access_token}'}
+    return headers

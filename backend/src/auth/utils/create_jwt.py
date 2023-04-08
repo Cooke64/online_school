@@ -19,3 +19,4 @@ def create_jwt(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY,
                              algorithm=settings.ALGORITHM)
     return encoded_jwt
+

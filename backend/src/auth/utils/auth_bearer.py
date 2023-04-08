@@ -6,7 +6,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
 from ...config import settings
-from ...exceptions import NotAuthenticated
+from ...exceptions import NotAuthenticated, NotFound
 from ...users.crud import UserCrud
 from ...users.models import RolesType
 
@@ -70,13 +70,22 @@ async def get_permission(
         user_crud: UserCrud = Depends()
 ) -> UserPermission:
     user = user_crud.get_user(email)
-    if user and user.role in (RolesType.staff.value, RolesType.teacher.value):
-        return UserPermission(True, user.role, email)
-    return UserPermission(False, user.role, user.email)
+    if not user:
+        raise NotFound
+    if user and not user.is_active:
+        raise NotAuthenticated
+    return UserPermission(True, user.role, email)
 
 
-async def get_student_permission(
-        role: UserPermission = Depends(get_permission)
-) -> bool:
-    return role.role == RolesType.student.value
+async def get_student_email(
+        permission: UserPermission = Depends(get_permission)
+) -> str | None:
+    if permission.role == RolesType.student.value:
+        return permission.user_email
 
+
+async def get_teacher_permission(
+        permission: UserPermission = Depends(get_permission)
+) -> str | None:
+    if permission.role == RolesType.teacher.value:
+        return permission.user_email

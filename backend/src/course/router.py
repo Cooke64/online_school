@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, Path
 
-from src.auth.utils.auth_bearer import JWTBearer, get_permission, \
+from src.auth.utils.auth_bearer import (
+    JWTBearer,
+    get_permission,
     UserPermission
+)
 from src.course.crud import CourseCrud
-from src.course.models import Course
-from src.course.shemas import CreateCourse, UpdateCourse, CourseListShow, \
+from src.course.shemas import (
+    CreateCourse,
+    UpdateCourse,
+    CourseListShow,
     CourseDetail
+)
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
 from src.users.models import RolesType
@@ -38,13 +44,17 @@ def get_all_courses(course_crud: CourseCrud = Depends()):
     summary='Получить курс по его id'
 )
 def get_course_by_id(
-        course_id: int = Path(...),
+        course_id: int = Path(..., gt=0),
         course_crud: CourseCrud = Depends()
 ):
     return course_crud.get_course_by_id(course_id)
 
 
-@router.post('/{course_id}/add_rating', status_code=201, summary='Поставить оценку курсу. От 1 до 5')
+@router.post(
+    '/{course_id}/add_rating',
+    status_code=201,
+    summary='Поставить оценку курсу. От 1 до 5'
+)
 def add_rating_to_course(
         course_id: int = Path(..., description='The id of current post'),
         course_crud: CourseCrud = Depends(),
