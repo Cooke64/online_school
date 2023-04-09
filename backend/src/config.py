@@ -42,10 +42,10 @@ class PostgresSettings(AdvancedBaseSettings):
 
 
 class EmailSettings(AdvancedBaseSettings):
-    HOST: str = Field(...)
-    PORT: int = Field(...)
-    USERNAME:  str = Field(...)
-    PASSWORD:  str = Field(...)
+    EMAIL_HOST: str = Field(..., env="EMAIL_HOST")
+    EMAIL_PORT: int = Field(..., env="EMAIL_PORT")
+    EMAIL_USERNAME:  str = Field(..., env="EMAIL_USERNAME")
+    EMAIL_PASSWORD:  str = Field(..., env="EMAIL_PASSWORD")
     FROM:  str = Field(default='konstantin.saratovsky@yandex.ru')
     BASE_URL: str = Field(default='http://127.0.0.1:8000/')
 

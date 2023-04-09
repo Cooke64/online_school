@@ -1,5 +1,4 @@
 from sqlalchemy import and_
-from starlette.responses import RedirectResponse
 
 from src.database import BaseCrud
 from src.students.models import Student
@@ -29,6 +28,14 @@ class UserCrud(BaseCrud, SendMail):
         dict_copy.update({'password': get_password_hash(_dict.password)})
         return dict_copy, phone
 
+    @staticmethod
+    def __get_role_type(uesr_type):
+        if uesr_type.value == RolesType.teacher.value:
+            role = RolesType.teacher.value
+        else:
+            role = RolesType.student.value
+        return role
+
     def get_all_users(self) -> list[User]:
         return self.session.query(User).join(Staff).all()
 
@@ -53,20 +60,16 @@ class UserCrud(BaseCrud, SendMail):
         self.__create_and_send_verification_letter(user_id.id)
         return user_dict
 
-    def __create_and_send_verification_letter(self, user_id):
+    def __create_and_send_verification_letter(self, user_id, email):
         code = Verification(
             user_to_verify_id=user_id
         )
         item_in_bd: Verification = self.create_item(code)
-        self._send_verification_mail(item_in_bd.link)
+        self._send_verification_mail(
+            email,
+            item_in_bd.link
+        )
         print(item_in_bd.link)
-
-    def __get_role_type(self, uesr_type):
-        if uesr_type.value == RolesType.teacher.value:
-            role = RolesType.teacher.value
-        else:
-            role = RolesType.student.value
-        return role
 
     def create_user(self, user_type, user_data: UserCreate) -> [
             dict[str]]:
@@ -86,7 +89,9 @@ class UserCrud(BaseCrud, SendMail):
             else:
                 item = Student(user_id=user_id.id)
             self.create_item(item)
-            self.__create_and_send_verification_letter(user_id.id)
+            self.__create_and_send_verification_letter(
+                user.email, user.id
+            )
         return user_dict
 
     def verify_user(self, email: str, link: str):
@@ -101,4 +106,3 @@ class UserCrud(BaseCrud, SendMail):
             raise NotFound
         user.is_active = True
         self.session.commit()
-

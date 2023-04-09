@@ -1,3 +1,4 @@
+import logging
 import warnings
 
 from fastapi import FastAPI
@@ -9,6 +10,16 @@ from starlette.requests import Request
 from .config import settings
 from .database import SessionLocal
 from .utils.create_router import create_router
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s, %(levelname)s, %(name)s, %(message)s'
+)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.FileHandler('loger_data.log'))
+logger.addHandler(logging.StreamHandler())
 
 
 def get_application() -> FastAPI:
