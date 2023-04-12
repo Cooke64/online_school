@@ -1,4 +1,4 @@
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
 from src.auth.utils.auth_bearer import UserPermission
@@ -6,7 +6,7 @@ from src.course.models import Course, Lesson
 from src.database import BaseCrud
 from src.exceptions import NotFound, PermissionDenied
 from src.lessons.shemas import LessonBase
-from src.students.models import StudentCourse
+from src.students.models import StudentCourse, StudentPassedLesson
 from src.users.models import User
 
 
@@ -69,7 +69,19 @@ class LessonCrud(BaseCrud):
             lesson = self._create_lesson_instanse(course.id, lesson_data)
             return lesson
 
-    def make_lessone_done(self,  course_id, lessons_id, permission: UserPermission):
+    def make_lessone_done(
+            self,
+            lessons_id: int,
+            permission: UserPermission
+    ) -> StudentPassedLesson | None:
         user: User = self.get_user_by_email(User, permission.user_email)
-        course: Course = self.get_current_item(course_id, Course).first()
-        raise NotImplementedError
+        passed_lesson: StudentPassedLesson = self.session.query(StudentPassedLesson).filter(
+            student_id=user.student.id,
+            lesson_id=lessons_id,
+        ).first()
+        if not passed_lesson:
+            raise NotFound
+        passed_lesson.when_pass = func.now()
+        passed_lesson.has_pass = True
+        self.session.commit()
+        return passed_lesson

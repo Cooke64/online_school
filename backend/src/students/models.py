@@ -27,6 +27,7 @@ class StudentPassedLesson(BaseModel):
     student_id = _(Integer, ForeignKey('students.id'))
     lesson_id = _(Integer, ForeignKey('lessons.id'))
     has_pass = _(Boolean, nullable=False, default=False)
+    when_pass = _(DateTime(timezone=True), nullable=True)
 
 
 class Student(BaseModel):

@@ -103,7 +103,8 @@ class CourseCrud(BaseCrud):
             open_lesson = StudentPassedLesson(
                 student_id=student_id,
                 lesson_id=first_lesson.id,
-                has_pass=True
+                has_pass=True,
+                when_pass=func.current_date()
             )
             self.create_item(open_lesson)
             for num in range(1, len(lessons_list)):
@@ -144,10 +145,10 @@ class CourseCrud(BaseCrud):
                     StudentCourse.student_id == user.student.id
                 )
             )
-            user_course.update({'has_paid': True}, synchronize_session='fetch')
-            self.session.commit()
             if user_course.first().has_paid:
                 return {'result': 'Уже оплачено'}
+            user_course.update({'has_paid': True}, synchronize_session='fetch')
+            self.session.commit()
             return {'result': 'Оплачено'}
         raise NotFound
 

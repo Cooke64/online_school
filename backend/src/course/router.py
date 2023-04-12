@@ -83,7 +83,7 @@ def update_rating_to_course(
     """
     _check_params(course_id, permission, course_crud)
     course_crud.update_rating(permission.user_email, course_id, new_rating)
-    return course_crud.get_json_reposnse('Курса добавлен', 201)
+    return course_crud.get_json_reposnse('Рейтинг для курса изменен', 201)
 
 
 @router.post('/add/{course_id}',
@@ -157,7 +157,8 @@ def create_course(
     return course_crud.create_new_course(course_data, permission)
 
 
-@router.put('/{course_id}', status_code=202,
+@router.put('/{course_id}',
+            status_code=202,
             dependencies=[Depends(JWTBearer())])
 def update_course(course_id: int,
                   course_data: UpdateCourse,

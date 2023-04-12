@@ -44,7 +44,6 @@ class Lesson(BaseModel):
     __tablename__ = 'lessons'
     title = sa.Column(sa.String(199), nullable=False)
     content = sa.Column(sa.Text, nullable=False)
-    # content = relationship('LessonContent', back_populates='lesson', uselist=False)
     course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id'))
     course = relationship('Course', back_populates='lessons')
     is_trial = sa.Column(sa.Boolean, nullable=False, default=False)

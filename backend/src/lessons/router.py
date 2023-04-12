@@ -47,14 +47,14 @@ def add_lessons_to_course(
     return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
 
 
-@router.post('/{course_id}/pass/{lessons_id}', dependencies=[Depends(JWTBearer())],)
+@router.post('/pass/{lessons_id}', dependencies=[Depends(JWTBearer())],)
 def pass_lesson(
-        course_id: int,
         lessons_id: int,
         lesson_crud: LessonCrud = Depends(),
         permission: UserPermission = Depends(get_permission)
 ):
     """
     Делает пометку в бд, что студент прошел данный урок и текущего курса.
+    Обновляет время прохождения урока.
     """
-    return lesson_crud.get_lesson_from_course(course_id, lessons_id, permission.user_email)
+    return lesson_crud.get_lesson_from_course(lessons_id, permission.user_email)
