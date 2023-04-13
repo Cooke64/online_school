@@ -44,6 +44,7 @@ class CourseListShow(BaseModel):
     title: str
     is_free: bool = False
     teachers: list[ShowTeacherInCourseList] | None
+    review: list[dict| None]
 
     class Config:
         orm_mode = True

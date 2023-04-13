@@ -54,3 +54,7 @@ class Student(BaseModel):
         secondary='student_passed_lessons',
         back_populates='student_pass'
     )
+    course_review = relationship(
+        'CourseReview',
+        back_populates='student'
+    )

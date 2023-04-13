@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -29,9 +31,27 @@ class Course(BaseModel):
         back_populates='courses_rating'
     )
 
+    reviews = relationship(
+        'CourseReview',
+        back_populates='course'
+    )
+
+
+class CourseReview(BaseModel):
+    __tablename__ = 'courses_review'
+    __table_args__ = (
+        UniqueConstraint('student_id', 'course_id'),
+    )
+    student_id = sa.Column(sa.Integer, sa.ForeignKey('students.id'))
+    course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id'))
+    text = sa.Column(sa.Text, nullable=False)
+    created_at = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    course = relationship('Course', back_populates='reviews')
+    student = relationship('Student', back_populates='course_review')
+
 
 class CourseRating(BaseModel):
-    __tablename__ = "courses_rating"
+    __tablename__ = 'courses_rating'
     __table_args__ = (
         UniqueConstraint('student_id', 'course_id'),
     )
@@ -55,4 +75,3 @@ class Lesson(BaseModel):
     )
     videos = relationship('LessonVideo', back_populates='lesson_content')
     photos = relationship('LessonPhoto', back_populates='lesson_content')
-

@@ -2,7 +2,7 @@ from sqlalchemy import func, exists, and_
 from sqlalchemy.orm import joinedload
 
 from src.auth.utils.auth_bearer import UserPermission
-from src.course.models import Course, CourseRating, Lesson
+from src.course.models import Course, CourseRating, Lesson, CourseReview
 from src.course.shemas import CreateCourse
 from src.database import BaseCrud
 from src.exceptions import NotFound, BadRequest, PermissionDenied, AddExisted
@@ -75,14 +75,19 @@ class CourseCrud(BaseCrud):
             raise PermissionDenied
         teacher = self.get_teacher_by_email(permission.user_email)
         if not teacher:
-            return self.get_json_reposnse('Такого преподавателя не существует', 404)
+            return self.get_json_reposnse('Такого преподавателя не существует',
+                                          404)
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
 
     def get_all_items(self) -> list[Course] | None:
-        return self.session.query(Course).options(
-            joinedload(Course.teachers)).all()
+        q = self.session.query(Course).options(
+            joinedload(Course.reviews)).all()
+        print(q)
+        # q = self.session.query(Course).options(
+        #     joinedload(Course.teachers).options(joinedload(Teacher.user))).options(joinedload(Course.reviews)).all()
+        return q
 
     def get_course_by_id(self, course_id: int):
         result = self.session.query(Course).options(
@@ -152,7 +157,8 @@ class CourseCrud(BaseCrud):
             return {'result': 'Оплачено'}
         raise NotFound
 
-    def update_course(self, course_id, data_to_update, permission: UserPermission):
+    def update_course(self, course_id, data_to_update,
+                      permission: UserPermission):
         if not permission.has_perm:
             raise PermissionDenied
         course = self.get_current_item(course_id, Course).first()
@@ -183,3 +189,13 @@ class CourseCrud(BaseCrud):
             raise NotFound
         student.courses.remove(course)
         self.create_item(student)
+
+    def add_review_to_course(self, course_id: int, user_email: str, text):
+        course = self.get_current_item(course_id, Course).first()
+        student = self.get_student_by_email(user_email)
+        new_review = CourseReview(
+            student_id=student.id,
+            course_id=course.id,
+            text=text
+        )
+        self.create_item(new_review)

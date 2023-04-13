@@ -30,7 +30,6 @@ def _check_params(course_id, permission, course_crud):
 
 @router.get(
     '/',
-    response_model=list[CourseListShow],
     summary='Получить список всех курсов'
 )
 def get_all_courses(course_crud: CourseCrud = Depends()):
@@ -70,7 +69,8 @@ def add_rating_to_course(
     return {'done': 'done'}
 
 
-@router.put('/{course_id}/update_rating', status_code=201, summary='Изменить рейтинг курса')
+@router.put('/{course_id}/update_rating', status_code=201,
+            summary='Изменить рейтинг курса')
 def update_rating_to_course(
         course_id: int = Path(..., description='The id of current post'),
         course_crud: CourseCrud = Depends(),
@@ -183,3 +183,15 @@ def delete_course(
         - Учитель должен быть в списке учителей курса.
     """
     course_crud.delete_course(course_id, permission)
+
+
+@router.post(
+    '/{course_id}/add_review',
+    status_code=201,
+    description='Добавить отзыв курсу по его id.'
+)
+def add_review_to_course_by_student(
+        course_id: int,
+        course_crud: CourseCrud = Depends(),
+):
+    course_crud.add_review_to_course(course_id, '2@2.com', 'permission')
