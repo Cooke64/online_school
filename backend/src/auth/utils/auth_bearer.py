@@ -6,7 +6,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
 from ...config import settings
-from ...exceptions import NotAuthenticated, NotFound
+from ...exceptions import NotAuthenticated, NotFound, PermissionDenied
 from ...users.crud import UserCrud
 from ...users.models import RolesType
 
@@ -31,6 +31,7 @@ class JWTBearer(HTTPBearer):
     async def __call__(self, request: Request):
         credentials: HTTPAuthorizationCredentials = await super(
             JWTBearer, self).__call__(request)
+
         if credentials:
             if not credentials.scheme == "Bearer":
                 raise NotAuthenticated
@@ -60,7 +61,6 @@ async def get_current_user(token: str = Depends(JWTBearer())) -> dict:
 
 
 class UserPermission(typing.NamedTuple):
-    has_perm: bool
     role: str
     user_email: str
 
@@ -72,9 +72,9 @@ async def get_permission(
     user = user_crud.get_user(email)
     if not user:
         raise NotFound
-    if user and not user.is_active:
+    if not user.is_active:
         raise NotAuthenticated
-    return UserPermission(True, user.role, email)
+    return UserPermission(user.role, email)
 
 
 async def get_student_email(
@@ -89,3 +89,4 @@ async def get_teacher_permission(
 ) -> str | None:
     if permission.role == RolesType.teacher.value:
         return permission.user_email
+    raise PermissionDenied

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, constr, validator
 
 
 class UserBase(BaseModel):
@@ -14,11 +14,11 @@ class StaffShow(UserBase):
 
 
 class UserCreate(UserBase):
-    username: str
-    first_name: str | None = None
-    last_name: str | None = None
+    username: constr(regex="^[A-Za-z0-9-_]+$", to_lower=True, strip_whitespace=True)
+    first_name: str = Field(min_length=1, max_length=128)
+    last_name: str = Field(min_length=1, max_length=128)
     password: str
-    phone: str
+    phone: str | None
 
     class Config:
         orm_mode = True
@@ -32,6 +32,12 @@ class UserCreate(UserBase):
                 'phone': '12345678'
             }
         }
+
+    @validator('username')
+    def validate_username(cls, username: str):
+        if username == 'me':
+            raise ValueError('Надо выбрать другоеr')
+        return username
 
 
 class UserLogin(BaseModel):

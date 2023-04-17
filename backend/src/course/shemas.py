@@ -39,12 +39,23 @@ class UpdateCourse(BaseModel):
     description: str | None
 
 
+class ReviewBase(BaseModel):
+    text: str
+
+
+class ShowReview(ReviewBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
 class CourseListShow(BaseModel):
     id: int
     title: str
     is_free: bool = False
     teachers: list[ShowTeacherInCourseList] | None
-    review: list[dict| None]
+    reviews: list[ShowReview] | None
 
     class Config:
         orm_mode = True

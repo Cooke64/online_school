@@ -20,7 +20,7 @@ class PermissionDenied(DetailedHTTPException):
 
 class NotFound(DetailedHTTPException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
-    DETAIL = 'Такого объекта не существует'
+    DETAIL = 'Not found'
 
 
 class BadRequest(DetailedHTTPException):
@@ -34,8 +34,3 @@ class NotAuthenticated(DetailedHTTPException):
 
     def __init__(self) -> None:
         super().__init__(headers={"WWW-Authenticate": "Bearer"})
-
-
-class AddExisted(DetailedHTTPException):
-    STATUS_CODE = status.HTTP_400_BAD_REQUEST
-    DETAIL = "Такой объект уже добавлен"

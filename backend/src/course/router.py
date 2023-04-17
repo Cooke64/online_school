@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, status
 
 from src.auth.utils.auth_bearer import (
     JWTBearer,
     get_permission,
-    UserPermission
+    UserPermission, get_teacher_permission
 )
 from src.course.crud import CourseCrud
 from src.course.shemas import (
     CreateCourse,
     UpdateCourse,
     CourseListShow,
-    CourseDetail
+    CourseDetail, ReviewBase
 )
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
@@ -30,7 +30,8 @@ def _check_params(course_id, permission, course_crud):
 
 @router.get(
     '/',
-    summary='Получить список всех курсов'
+    summary='Получить список всех курсов',
+    response_model=list[CourseListShow]
 )
 def get_all_courses(course_crud: CourseCrud = Depends()):
     return course_crud.get_all_items()
@@ -51,7 +52,7 @@ def get_course_by_id(
 
 @router.post(
     '/{course_id}/add_rating',
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     summary='Поставить оценку курсу. От 1 до 5'
 )
 def add_rating_to_course(
@@ -69,7 +70,7 @@ def add_rating_to_course(
     return {'done': 'done'}
 
 
-@router.put('/{course_id}/update_rating', status_code=201,
+@router.put('/{course_id}/update_rating', status_code=status.HTTP_201_CREATED,
             summary='Изменить рейтинг курса')
 def update_rating_to_course(
         course_id: int = Path(..., description='The id of current post'),
@@ -88,7 +89,7 @@ def update_rating_to_course(
 
 @router.post('/add/{course_id}',
              dependencies=[Depends(JWTBearer())],
-             status_code=201,
+             status_code=status.HTTP_201_CREATED,
              summary='Добавление курса в список курсов пользователя'
              )
 def add_course_in_users_list(
@@ -106,7 +107,7 @@ def add_course_in_users_list(
 
 @router.post('/add/{course_id}/pay',
              dependencies=[Depends(JWTBearer())],
-             status_code=201,
+             status_code=status.HTTP_201_CREATED,
              summary='Оплата курса курса, который добавлен пользователем'
              )
 def pay_for_course_in_user_list(
@@ -126,8 +127,7 @@ def pay_for_course_in_user_list(
 
 @router.delete(
     '/remove/{course_id}',
-    dependencies=[Depends(JWTBearer())],
-    status_code=204,
+    status_code=status.HTTP_204_NO_CONTENT,
     summary='Удаление курса из списка курсов студента.'
 )
 def remove_course_from_users_list(
@@ -148,18 +148,17 @@ def remove_course_from_users_list(
     )
 
 
-@router.post('/', dependencies=[Depends(JWTBearer())], status_code=201)
+@router.post('/', status_code=status.HTTP_201_CREATED,)
 def create_course(
         course_data: CreateCourse,
         course_crud: CourseCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
+        email: UserPermission = Depends(get_teacher_permission),
 ):
-    return course_crud.create_new_course(course_data, permission)
+    return course_crud.create_new_course(course_data, email)
 
 
 @router.put('/{course_id}',
-            status_code=202,
-            dependencies=[Depends(JWTBearer())])
+            status_code=status.HTTP_202_ACCEPTED)
 def update_course(course_id: int,
                   course_data: UpdateCourse,
                   course_crud: CourseCrud = Depends(),
@@ -170,8 +169,7 @@ def update_course(course_id: int,
 
 @router.delete(
     '/{course_id}',
-    status_code=204,
-    dependencies=[Depends(JWTBearer())],
+    status_code=status.HTTP_204_NO_CONTENT,
     description='Удаление курса по его id одним из создателей курса.'
 )
 def delete_course(
@@ -187,11 +185,29 @@ def delete_course(
 
 @router.post(
     '/{course_id}/add_review',
-    status_code=201,
-    description='Добавить отзыв курсу по его id.'
+    status_code=status.HTTP_201_CREATED,
+    description='Добавить отзыв курсу по его id.',
+    summary='Добавить отзыв'
 )
 def add_review_to_course_by_student(
-        course_id: int,
+        review_data: ReviewBase,
+        course_id: int = Path(..., gt=0),
         course_crud: CourseCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
 ):
-    course_crud.add_review_to_course(course_id, '2@2.com', 'permission')
+    course_crud.add_review_to_course(course_id, permission.user_email, review_data)
+
+
+@router.delete(
+    '/{course_id}/delete_review/{review_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Удалить отзыв по id у курса по его id.',
+    summary='Удалить отзыв'
+)
+def add_review_to_course_by_student(
+        course_id: int = Path(..., gt=0),
+        review_id: int = Path(..., gt=0),
+        course_crud: CourseCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
+):
+    course_crud.delete_review(permission.user_email, review_id, course_id)
