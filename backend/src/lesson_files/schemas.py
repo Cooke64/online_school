@@ -1,23 +1,16 @@
 from pydantic import BaseModel
 
+from src.utils.base_schemas import OrmBaseModel
 
-class LessonVideo(BaseModel):
+
+class LessonVideo(OrmBaseModel):
     id: int
 
-    class Config:
-        orm_mode = True
 
-
-class LessonPhoto(BaseModel):
+class LessonPhoto(OrmBaseModel):
     id: int
 
-    class Config:
-        orm_mode = True
 
-
-class LessonContentList(BaseModel):
+class LessonContentList(OrmBaseModel):
     photos: list[LessonVideo] | None
     videos: list[LessonPhoto] | None
-
-    class Config:
-        orm_mode = True

@@ -2,18 +2,16 @@ from pydantic import BaseModel
 
 from src.lessons.shemas import LessonBase
 from src.teachers.shemas import ShowTeacherInCourseList
+from src.utils.base_schemas import OrmBaseModel
 
 
-class CourseBase(BaseModel):
+class CourseBase(OrmBaseModel):
     title: str
     description: str
     is_free: bool = False
 
-    class Config:
-        orm_mode = True
 
-
-class CreateCourse(CourseBase):
+class CreateCourse(OrmBaseModel):
     class Config:
         schema_extra = {
             'example': {
@@ -22,7 +20,6 @@ class CreateCourse(CourseBase):
                 'is_free': False
             }
         }
-        orm_mode = True
 
 
 class CourseShow(CourseBase):
@@ -43,22 +40,16 @@ class ReviewBase(BaseModel):
     text: str
 
 
-class ShowReview(ReviewBase):
+class ShowReview(OrmBaseModel):
     id: int
 
-    class Config:
-        orm_mode = True
 
-
-class CourseListShow(BaseModel):
+class CourseListShow(OrmBaseModel):
     id: int
     title: str
     is_free: bool = False
     teachers: list[ShowTeacherInCourseList] | None
     reviews: list[ShowReview] | None
-
-    class Config:
-        orm_mode = True
 
 
 class CourseInDetail(CourseBase):

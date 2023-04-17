@@ -1,19 +1,18 @@
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
+from src.utils.base_schemas import OrmBaseModel
+
 
 class UserBase(BaseModel):
     email: EmailStr
 
 
-class StaffShow(UserBase):
+class StaffShow(OrmBaseModel):
     username: str
     staff_role: str
 
-    class Config:
-        orm_mode = True
 
-
-class UserCreate(UserBase):
+class UserCreate(OrmBaseModel):
     username: constr(regex="^[A-Za-z0-9-_]+$", to_lower=True, strip_whitespace=True)
     first_name: str = Field(min_length=1, max_length=128)
     last_name: str = Field(min_length=1, max_length=128)
@@ -21,7 +20,6 @@ class UserCreate(UserBase):
     phone: str | None
 
     class Config:
-        orm_mode = True
         schema_extra = {
             'example': {
                 'username': 'user',
@@ -57,10 +55,7 @@ class UserCreateShowResult(UserBase):
     username: str
 
 
-class UserShowProfile(UserBase):
+class UserShowProfile(OrmBaseModel):
     username: str
     first_name: str
     last_name: str
-
-    class Config:
-        orm_mode = True

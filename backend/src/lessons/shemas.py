@@ -1,13 +1,12 @@
-from pydantic import BaseModel
+from src.utils.base_schemas import OrmBaseModel
 
 
-class LessonBase(BaseModel):
+class LessonBase(OrmBaseModel):
     title: str
     content: str
     is_trial: bool = False
 
     class Config:
-        orm_mode = True
         schema_extra = {
             'example': {
                 'title': 'The title of the lesson',

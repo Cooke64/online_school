@@ -1,29 +1,18 @@
-from pydantic import BaseModel
-
-from src.users.shemas import UserBase
+from src.utils.base_schemas import OrmBaseModel
 
 
-class UserCoursesShow(BaseModel):
+class UserCoursesShow(OrmBaseModel):
     title: str
     rating: int
 
-    class Config:
-        orm_mode = True
 
-
-class StudentShow(UserBase):
+class StudentShow(OrmBaseModel):
     username: str
     first_name: str | None = None
     last_name: str | None = None
 
-    class Config:
-        orm_mode = True
 
-
-class ShowUserProfile(BaseModel):
+class ShowUserProfile(OrmBaseModel):
     user: StudentShow
     courses: list[UserCoursesShow]
     phone: str | None
-
-    class Config:
-        orm_mode = True
