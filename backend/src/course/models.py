@@ -13,7 +13,6 @@ class Course(BaseModel):
     description = sa.Column(sa.Text, nullable=False)
     lessons = relationship('Lesson', back_populates='course')
     is_free = sa.Column(sa.Boolean, default=False)
-
     students = relationship(
         'Student',
         secondary='student_courses',
@@ -35,6 +34,16 @@ class Course(BaseModel):
         'CourseReview',
         back_populates='course'
     )
+    course_preview = relationship('LessonPhoto', back_populates='lesson_content', uselist=False)
+
+
+class CoursePreviewImage(BaseModel):
+    __tablename__ = 'course_preview_photos'
+    photo_blob = sa.Column(sa.LargeBinary, nullable=False)
+    photo_type = sa.Column(sa.String, nullable=True)
+    course_id = sa.Column(
+        sa.Integer, sa.ForeignKey('courses.id'))
+    course = relationship('Course', back_populates='course_preview',)
 
 
 class CourseReview(BaseModel):
@@ -45,7 +54,8 @@ class CourseReview(BaseModel):
     student_id = sa.Column(sa.Integer, sa.ForeignKey('students.id'))
     course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id'))
     text = sa.Column(sa.Text, nullable=False)
-    created_at = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = sa.Column(sa.DateTime, nullable=False,
+                           default=datetime.utcnow)
     course = relationship('Course', back_populates='reviews')
     student = relationship('Student', back_populates='course_review')
 

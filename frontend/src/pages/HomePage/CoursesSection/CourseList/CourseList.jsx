@@ -6,11 +6,16 @@ import api from "../../../../api/api";
 
 export default function CourseList() {
 const [courses, setCoursesList] = useState([])
+const [coursesPhoto, setCoursesPhoto] = useState('')
 
   useEffect(()=> {
     api.getCoursesList().then((res) => {
         setCoursesList([...res]);
       });
+      api.getLessonPhoto().then((res) => {
+        setCoursesPhoto(res);
+      });
+
   }, [courses])
 
   return (
@@ -24,6 +29,7 @@ const [courses, setCoursesList] = useState([])
             course_title={item.title}
             is_free={item.is_free}
             teacher_name={item.teachers[0].user_data.username}
+            photo_data={coursesPhoto}
           />
         ))}
       </div>

@@ -25,7 +25,17 @@ class Api {
       )
       .then(this.checkResponse)
     }
+    getLessonPhoto () {
+      return fetch(
+        `http://127.0.0.1:8000/lesson/content/1/photo/1`,
+        {
+          method: 'GET',
+        }
+      )
+      .then(this.checkResponse)
+    }
 }
+
 
 export default new Api({ 
   'content-type': 'application/json',

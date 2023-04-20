@@ -1,3 +1,5 @@
+import base64
+
 from fastapi import APIRouter, UploadFile, File, Depends, Path
 from starlette.background import BackgroundTasks
 from starlette.responses import FileResponse, StreamingResponse
@@ -97,7 +99,9 @@ def get_photo_from_lesson(
     blob = media_crud.get_photo_item(photo_id, lesson_id)
     file_type = get_type_content(blob.photo_type)
     file_path = read_and_show_file(blob.photo_blob, file_type)
-    return FileResponse(file_path)
+    with open(file_path, 'rb') as f:
+        base64image = base64.b64encode(f.read())
+    return base64image
 
 
 @router.get('/{lesson_id}/video/{video_id}')

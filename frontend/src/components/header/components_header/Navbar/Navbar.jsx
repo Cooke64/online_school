@@ -32,11 +32,11 @@ export default function Navbar({ navbarVisibility, changeSideBarVisibility }) {
       </div>
 
       <div className={cls.side_bar}>
-        <a href="http://">
+        <a href="/">
           <FontAwesomeIcon icon={faHome} className={cls.side_icon} />{" "}
           <span>home</span>
         </a>
-        <a href="http://">
+        <a href="/about">
           <FontAwesomeIcon icon={faQuestion} className={cls.side_icon} />{" "}
           <span>about</span>
         </a>

@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="48938969-1bf0-4acd-ae1a-9e19cb1d1cdb" name="Changes" comment="Набросал основную концепцию базы данных, первичный crud для курсов" />
+    <list default="true" id="48938969-1bf0-4acd-ae1a-9e19cb1d1cdb" name="Changes" comment="Связал фронт с беком. Отображение курсов с бд. Главная страничка приложения">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/migrations/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/migrations/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/course/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/course/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/course/router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/course/router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/lesson_files/router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/lesson_files/router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/lesson_files/utils/create_file.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/lesson_files/utils/create_file.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/header/components_header/Navbar/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/header/components_header/Navbar/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/AppRoutes.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AppRoutes.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage/CoursesSection/CourseItem/CourseItem.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage/CoursesSection/CourseItem/CourseItem.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage/CoursesSection/CourseList/CourseList.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage/CoursesSection/CourseList/CourseList.jsx" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -29,14 +41,14 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../work_helper" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\DEV\Online_school\backend\migrations" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.config">
+  <component name="RunManager" selected="Python.main">
     <configuration name="config" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Online_school" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -59,7 +71,6 @@
       <method v="2" />
     </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="Online_school" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -67,9 +78,10 @@
       </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -115,7 +127,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679496627190</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Связал фронт с беком. Отображение курсов с бд. Главная страничка приложения">
+      <created>1681898308263</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1681898308263</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -133,6 +152,7 @@
     <MESSAGE value="start app" />
     <MESSAGE value="added database" />
     <MESSAGE value="Набросал основную концепцию базы данных, первичный crud для курсов" />
-    <option name="LAST_COMMIT_MESSAGE" value="Набросал основную концепцию базы данных, первичный crud для курсов" />
+    <MESSAGE value="Связал фронт с беком. Отображение курсов с бд. Главная страничка приложения" />
+    <option name="LAST_COMMIT_MESSAGE" value="Связал фронт с беком. Отображение курсов с бд. Главная страничка приложения" />
   </component>
 </project>

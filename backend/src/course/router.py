@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, Path, status, UploadFile, File
+from starlette.background import BackgroundTasks
 
 from src.auth.utils.auth_bearer import (
     JWTBearer,
@@ -14,6 +15,9 @@ from src.course.shemas import (
 )
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
+from src.lesson_files.crud import MediaCrud
+from src.lesson_files.utils.create_file import upload_file_and_push_to_db, \
+    create_preview_to_course
 from src.users.models import RolesType
 from src.utils.base_schemas import ErrorMessage
 
@@ -211,3 +215,23 @@ def add_review_to_course_by_student(
         permission: UserPermission = Depends(get_permission),
 ):
     course_crud.delete_review(permission.user_email, review_id, course_id)
+
+
+@router.post(
+    '/{course_id}/add_preview_photo',
+    status_code=status.HTTP_201_CREATED,
+    description='Добавить курсу фотографию на превью.',
+    summary='Добавить превью'
+)
+def add_review_to_course_by_student(
+        course_id: int,
+        task: BackgroundTasks,
+        photo: UploadFile = File(...),
+        media_crud: MediaCrud = Depends(),
+):
+    task.add_task(
+        create_preview_to_course,
+        file_obj=photo,
+        course_id=course_id,
+    )
+    return media_crud.get_json_reposnse('Успешно загружен', 201)
