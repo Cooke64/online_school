@@ -34,7 +34,7 @@ class Course(BaseModel):
         'CourseReview',
         back_populates='course'
     )
-    course_preview = relationship('LessonPhoto', back_populates='lesson_content', uselist=False)
+    course_preview = relationship('CoursePreviewImage', back_populates='course', uselist=False)
 
 
 class CoursePreviewImage(BaseModel):
@@ -43,7 +43,7 @@ class CoursePreviewImage(BaseModel):
     photo_type = sa.Column(sa.String, nullable=True)
     course_id = sa.Column(
         sa.Integer, sa.ForeignKey('courses.id'))
-    course = relationship('Course', back_populates='course_preview',)
+    course = relationship('Course', back_populates='course_preview')
 
 
 class CourseReview(BaseModel):

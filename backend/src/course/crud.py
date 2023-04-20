@@ -3,7 +3,13 @@ from sqlalchemy.orm import joinedload
 
 from src.auth.utils.auth_bearer import UserPermission
 from src.course import exceptions as ex
-from src.course.models import Course, CourseRating, Lesson, CourseReview
+from src.course.models import (
+    Course,
+    CourseRating,
+    Lesson,
+    CourseReview,
+    CoursePreviewImage
+)
 from src.course.shemas import CreateCourse, ReviewBase
 from src.database import BaseCrud
 from src.students.models import Student, StudentCourse, StudentPassedLesson
@@ -81,7 +87,8 @@ class CourseCrud(BaseCrud):
         return self.create_item(new_item)
 
     def get_all_items(self) -> list[Course]:
-        query = self.session.query(Course).options(
+        query: list[Course] = self.session.query(Course).options(
+            joinedload(Course.course_preview)).options(
             joinedload(Course.reviews)).options(
             joinedload(Course.teachers).options(
                 joinedload(Teacher.user))).all()
@@ -204,8 +211,20 @@ class CourseCrud(BaseCrud):
             review_id: int,
             course_id: int
     ):
-        review: CourseReview = self.get_current_item(review_id, CourseReview).first()
+        review: CourseReview = self.get_current_item(review_id,
+                                                     CourseReview).first()
         student = self.get_student_by_email(user_email)
-        if not (review.student_id == student.id and review.course_id == course_id):
+        if not (
+                review.student_id == student.id and review.course_id == course_id):
             raise ex.HasNotPermission
         self.remove_item(review.id, CourseReview)
+
+    def add_preview(self, course_id: int, file_obj: bytes, file_type: str,
+                    teacher_emal: str = '1@1.com'):
+        course = self.get_current_item(course_id, Course).first()
+        item = CoursePreviewImage(
+            photo_blob=file_obj,
+            photo_type=file_type,
+            course_id=course_id
+        )
+        self.create_item(item)

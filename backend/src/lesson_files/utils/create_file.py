@@ -1,3 +1,4 @@
+import base64
 import os
 import pathlib
 import shutil
@@ -33,9 +34,15 @@ def upload_file_and_push_to_db(
     os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
 
 
-def create_preview_to_course(file_obj: UploadFile, course_id, course_crud: CourseCrud = Depends(),):
+def create_preview_to_course(file_obj: UploadFile, course_id: int, course_crud: CourseCrud = Depends()):
     data_to_save = create_blob_obj(file_obj)
-    print(data_to_save)
+    file_type = get_type_content(file_obj.content_type)
+    file_path = read_and_show_file(data_to_save, file_type)
+    with open(file_path, 'rb') as f:
+        base64image = base64.b64encode(f.read())
+    course_crud.add_preview(
+        course_id, base64image, file_obj.content_type
+    )
 
 
 def get_type_content(file_type: str):

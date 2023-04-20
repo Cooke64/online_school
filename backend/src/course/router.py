@@ -15,9 +15,7 @@ from src.course.shemas import (
 )
 from src.course.utils import Rating
 from src.exceptions import NotFound, PermissionDenied
-from src.lesson_files.crud import MediaCrud
-from src.lesson_files.utils.create_file import upload_file_and_push_to_db, \
-    create_preview_to_course
+from src.lesson_files.utils.create_file import create_preview_to_course
 from src.users.models import RolesType
 from src.utils.base_schemas import ErrorMessage
 
@@ -35,7 +33,7 @@ def _check_params(course_id, permission, course_crud):
 @router.get(
     '/',
     summary='Получить список всех курсов',
-    response_model=list[CourseListShow]
+    # response_model=list[CourseListShow]
 )
 def get_all_courses(course_crud: CourseCrud = Depends()):
     return course_crud.get_all_items()
@@ -227,11 +225,12 @@ def add_review_to_course_by_student(
         course_id: int,
         task: BackgroundTasks,
         photo: UploadFile = File(...),
-        media_crud: MediaCrud = Depends(),
+        course_crud: CourseCrud = Depends(),
 ):
     task.add_task(
         create_preview_to_course,
         file_obj=photo,
         course_id=course_id,
+        course_crud=course_crud
     )
-    return media_crud.get_json_reposnse('Успешно загружен', 201)
+    return course_crud.get_json_reposnse('Успешно загружен', 201)
