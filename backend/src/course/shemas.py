@@ -44,12 +44,19 @@ class ShowReview(OrmBaseModel):
     id: int
 
 
+class CoursePreview(OrmBaseModel):
+    id: int
+    photo_blob: str
+    photo_type: str
+
+
 class CourseListShow(OrmBaseModel):
     id: int
     title: str
     is_free: bool = False
     teachers: list[ShowTeacherInCourseList] | None
     reviews: list[ShowReview] | None
+    course_preview: CoursePreview | None
 
 
 class CourseInDetail(CourseBase):

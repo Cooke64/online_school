@@ -5,7 +5,7 @@ import ErrorPapge from './ErrorPage';
 import Layout from './Layout';
 import HomePage from './HomePage/HomePage';
 import AboutPage from './AboutPage/AboutPage';
-
+import CourseDetail from './CourseDetail/CourseDetail';
 
 export default function AppRoutes() {
     return (
@@ -13,6 +13,7 @@ export default function AppRoutes() {
           <Route path="/" element={<Layout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/course/:id" element={<CourseDetail />} />
           </Route>
           <Route path="*" element={<ErrorPapge />} />
         </Routes>

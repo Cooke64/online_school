@@ -219,9 +219,23 @@ class CourseCrud(BaseCrud):
             raise ex.HasNotPermission
         self.remove_item(review.id, CourseReview)
 
-    def add_preview(self, course_id: int, file_obj: bytes, file_type: str,
-                    teacher_emal: str = '1@1.com'):
-        course = self.get_current_item(course_id, Course).first()
+    def add_preview(
+            self,
+            course_id: int,
+            file_obj: bytes,
+            file_type: str,
+            teacher_emal: str = '1@1.com'):
+        """Добавить фото превью к уроку."""
+        course: Course = self.get_current_item(course_id, Course).first()
+        teacher = self.get_teacher_by_email(teacher_emal)
+        if teacher not in course.teachers:
+            raise ex.HasNotPermission
+        if course.course_preview:
+            course_prev: CoursePreviewImage = self.get_current_item(course.course_preview.id, CoursePreviewImage).first()
+            course_prev.photo_blob = file_obj
+            course_prev.photo_typee = file_type
+            self.session.commit()
+            return
         item = CoursePreviewImage(
             photo_blob=file_obj,
             photo_type=file_type,

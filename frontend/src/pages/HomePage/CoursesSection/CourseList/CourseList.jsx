@@ -6,30 +6,23 @@ import api from "../../../../api/api";
 
 export default function CourseList() {
 const [courses, setCoursesList] = useState([])
-const [coursesPhoto, setCoursesPhoto] = useState('')
+
 
   useEffect(()=> {
     api.getCoursesList().then((res) => {
-        setCoursesList([...res]);
+        setCoursesList(res);
       });
-      api.getLessonPhoto().then((res) => {
-        setCoursesPhoto(res);
-      });
-
-  }, [courses])
+  }, [])
 
   return (
     <section>
       CourseList
       <h1 className={cls.section_header}>Наши курсы</h1>
       <div className={cls.container}>
-        {courses.map((item) => (
+        {courses.map((course_item) => (
           <CourseItem
-            key={item.id}
-            course_title={item.title}
-            is_free={item.is_free}
-            teacher_name={item.teachers[0].user_data.username}
-            photo_data={coursesPhoto}
+            key={course_item.id}
+            course_item={course_item}
           />
         ))}
       </div>
