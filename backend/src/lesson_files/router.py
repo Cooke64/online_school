@@ -18,9 +18,10 @@ VIDEO_TYPES = ('video/mp4', 'video/quicktime')
 PHOTO_TYPES = ('image/png', 'image/jpeg', 'image/jpg')
 
 
-@router.get('/{lesson_id}/', response_model=LessonContentList)
+@router.get('/{course_id}/{lesson_id}/', response_model=LessonContentList)
 def get_lesson_content(
         lesson_id: int,
+        course_id: int,
         media_crud: MediaCrud = Depends(),
 ):
     return media_crud.get_lesson_content(lesson_id)

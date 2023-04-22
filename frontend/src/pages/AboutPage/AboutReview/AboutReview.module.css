@@ -1,0 +1,36 @@
+.box_container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+    justify-content: center;
+}
+.box{
+    border-radius: .5rem;
+    padding: 2rem;
+    background-color: #fff;
+}
+
+.box p{
+    line-height: 2;
+    font-size: 1.7rem;
+    color: var(--light_dark);
+}
+
+.user_review{
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+.user_review img{
+    height: 5rem;
+    width: 5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.user_review h3{
+    font-size: 2rem;
+    color: var(--black);
+}

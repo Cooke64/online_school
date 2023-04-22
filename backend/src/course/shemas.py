@@ -60,6 +60,7 @@ class CourseListShow(OrmBaseModel):
 
 
 class CourseInDetail(CourseBase):
+    id: int
     teachers: list[ShowTeacherInCourseList] | None
     lessons: list[LessonBase] | None
 
@@ -67,3 +68,4 @@ class CourseInDetail(CourseBase):
 class CourseDetail(BaseModel):
     course: CourseInDetail
     rating: int
+    count_lessons: int

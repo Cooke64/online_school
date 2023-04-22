@@ -100,9 +100,10 @@ class CourseCrud(BaseCrud):
             joinedload(Course.teachers).options(
                 joinedload(Teacher.user))
         ).filter(Course.id == course_id).first()
+        count_lessons = self.session.query(Lesson).filter(Lesson.course_id == course_id).count()
         if result:
             rating_to_show = self._get_course_rating(result.id)
-            return {'course': result, 'rating': rating_to_show}
+            return {'course': result, 'rating': rating_to_show, 'count_lessons': count_lessons}
         raise ex.NotFoundCourse
 
     def _create_passed_lesson(self, student_id, lesson_id, pass_=False):

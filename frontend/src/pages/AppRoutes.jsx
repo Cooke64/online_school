@@ -6,6 +6,8 @@ import Layout from './Layout';
 import HomePage from './HomePage/HomePage';
 import AboutPage from './AboutPage/AboutPage';
 import CourseDetail from './CourseDetail/CourseDetail';
+import LessonDetail from './LessonDetail/LessonDetail';
+import LessonInCourse from './CourseDetail/LessonInCourse/LessonInCourse';
 
 export default function AppRoutes() {
     return (
@@ -14,6 +16,7 @@ export default function AppRoutes() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/course/:id" element={<CourseDetail />} />
+            <Route path="/course/:course_id/lesson/:lesson_id" element={<LessonDetail />} />
           </Route>
           <Route path="*" element={<ErrorPapge />} />
         </Routes>

@@ -2,6 +2,7 @@ from src.utils.base_schemas import OrmBaseModel
 
 
 class LessonBase(OrmBaseModel):
+    id: int | None
     title: str
     content: str
     is_trial: bool = False

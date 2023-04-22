@@ -29,7 +29,7 @@ export default function CourseItem({ course_item }) {
       )}
       <h3 className={cls.course_title}>{course_item.title}</h3>
       <Link to={`/course/${course_item.id}`}>
-        <ButtonAsLink href="index.html" button_type="inline" btn_action="click">
+        <ButtonAsLink button_type="inline" btn_action="click">
           Узнать подробнее
         </ButtonAsLink>
       </Link>
