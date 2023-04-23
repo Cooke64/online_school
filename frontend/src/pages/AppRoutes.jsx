@@ -7,7 +7,7 @@ import HomePage from './HomePage/HomePage';
 import AboutPage from './AboutPage/AboutPage';
 import CourseDetail from './CourseDetail/CourseDetail';
 import LessonDetail from './LessonDetail/LessonDetail';
-import LessonInCourse from './CourseDetail/LessonInCourse/LessonInCourse';
+
 
 export default function AppRoutes() {
     return (

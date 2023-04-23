@@ -1,7 +1,3 @@
-import {
-  getFormGroupUtilityClass
-} from "@mui/material"
-
 class Api {
   constructor(headers) {
     this.headers = headers
@@ -17,7 +13,6 @@ class Api {
     })
   }
 
-  // post CRUD
 
   getCoursesList() {
     return fetch(
@@ -38,7 +33,7 @@ class Api {
   }
   getLessonDetail(course_id, lesson_id) {
     return fetch(
-        `http://127.0.0.1:8000/lesson/content/${course_id}/${lesson_id}`,
+        `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`,
          {
           method: 'GET',
         }

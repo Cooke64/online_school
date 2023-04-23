@@ -36,16 +36,19 @@ class LessonCrud(BaseCrud):
             return query
         raise NotFound
 
-    def get_lesson_from_course(self, course_id, lessons_id, user_email):
-        lesson: Lesson = self.session.query(Lesson).join(Course).filter(and_(
-            Course.id == course_id, Lesson.id == lessons_id
+    def get_lesson_from_course(self, course_id: int, lessons_id: int,
+                               permission: UserPermission) -> Lesson:
+        lesson = self.session.query(Lesson).options(
+            joinedload(Lesson.photos)).options(
+            joinedload(Lesson.videos)).filter(and_(
+                Lesson.course_id == course_id, Lesson.id == lessons_id
         )).first()
-        user = self.get_user_by_email(User, user_email)
-        if not user or not lesson:
+        if lesson and lesson.is_trial:
+            return lesson
+        user = self.get_user_by_email(User, permission.user_email)
+        if not user:
             raise NotFound
         user_course = self._get_user_course(course_id, user.student.id)
-        if lesson.is_trial:
-            return lesson
         if user_course and user_course.has_paid:
             return lesson
         raise PermissionDenied
@@ -57,8 +60,6 @@ class LessonCrud(BaseCrud):
             permission: UserPermission
 
     ) -> None:
-        if not permission.has_perm:
-            raise PermissionDenied
         user: User = self.get_user_by_email(User, permission.user_email)
         course: Course = self.get_current_item(course_id, Course).first()
         if not user or not course:
@@ -75,7 +76,8 @@ class LessonCrud(BaseCrud):
             permission: UserPermission
     ) -> StudentPassedLesson | None:
         user: User = self.get_user_by_email(User, permission.user_email)
-        passed_lesson: StudentPassedLesson = self.session.query(StudentPassedLesson).filter(
+        passed_lesson: StudentPassedLesson = self.session.query(
+            StudentPassedLesson).filter(
             student_id=user.student.id,
             lesson_id=lessons_id,
         ).first()

@@ -2,11 +2,10 @@ import base64
 
 from fastapi import APIRouter, UploadFile, File, Depends, Path
 from starlette.background import BackgroundTasks
-from starlette.responses import FileResponse, StreamingResponse
+from starlette.responses import StreamingResponse
 
 from src.exceptions import DetailedHTTPException
 from src.lesson_files.crud import MediaCrud
-from src.lesson_files.schemas import LessonContentList
 from src.lesson_files.utils.create_file import (
     upload_file_and_push_to_db,
     read_and_show_file,
@@ -16,15 +15,6 @@ from src.lesson_files.utils.create_file import (
 router = APIRouter(prefix='/lesson/content', tags=['Страница видео урок'])
 VIDEO_TYPES = ('video/mp4', 'video/quicktime')
 PHOTO_TYPES = ('image/png', 'image/jpeg', 'image/jpg')
-
-
-@router.get('/{course_id}/{lesson_id}/', response_model=LessonContentList)
-def get_lesson_content(
-        lesson_id: int,
-        course_id: int,
-        media_crud: MediaCrud = Depends(),
-):
-    return media_crud.get_lesson_content(lesson_id)
 
 
 @router.post(

@@ -9,14 +9,6 @@ from src.lesson_files.models import LessonPhoto, LessonVideo
 
 class MediaCrud(BaseCrud):
 
-    def get_lesson_content(self, lesson_id):
-        result: Lesson = self.session.query(Lesson).options(
-            joinedload(Lesson.photos)).options(
-            joinedload(Lesson.videos)).filter(
-            Lesson.id == lesson_id
-        ).first()
-        return result
-
     def upload_content(
             self,
             blob: bytes,

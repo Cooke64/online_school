@@ -1,0 +1,25 @@
+.box {
+  position: relative;
+  border-radius: 0.7rem;
+  padding: 2rem;
+  background-color: #fff;
+}
+.box img {
+  height: 20rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  transition: all .4s;
+}
+.box h3 {
+  font-size: 2rem;
+  color: var(--black);
+  margin-top: 1.1rem;
+}
+
+.box img:hover{
+    transform: scale(1.1)
+}
+.box:hover{
+    color: var(--main_color);
+}

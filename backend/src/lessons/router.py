@@ -20,7 +20,7 @@ def get_all_lessons_current_course(
     return lesson_crud.get_all_course_lessons(course_id)
 
 
-@router.get('/{course_id}/{lessons_id}', dependencies=[Depends(JWTBearer())],)
+@router.get('/{course_id}/{lessons_id}')
 def get_lesson_from_current_course(
         course_id: int,
         lessons_id: int,
@@ -31,10 +31,12 @@ def get_lesson_from_current_course(
     Возвращает урок по его id из курса. Если урок платный, или пользователь не получил доступ
     к курсу, то возвращает ответ 403.
     """
-    return lesson_crud.get_lesson_from_course(course_id, lessons_id, permission.user_email)
+    return lesson_crud.get_lesson_from_course(
+        course_id, lessons_id, permission)
 
 
-@router.post('/{course_id}', status_code=201, dependencies=[Depends(JWTBearer())],)
+@router.post('/{course_id}', status_code=201,
+             dependencies=[Depends(JWTBearer())], )
 def add_lessons_to_course(
         course_id: int,
         lesson_data: LessonBase,
@@ -47,7 +49,7 @@ def add_lessons_to_course(
     return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
 
 
-@router.post('/pass/{lessons_id}', dependencies=[Depends(JWTBearer())],)
+@router.post('/pass/{lessons_id}', dependencies=[Depends(JWTBearer())], )
 def pass_lesson(
         lessons_id: int,
         lesson_crud: LessonCrud = Depends(),
@@ -57,4 +59,5 @@ def pass_lesson(
     Делает пометку в бд, что студент прошел данный урок и текущего курса.
     Обновляет время прохождения урока.
     """
-    return lesson_crud.get_lesson_from_course(lessons_id, permission.user_email)
+    return lesson_crud.get_lesson_from_course(lessons_id,
+                                              permission.user_email)

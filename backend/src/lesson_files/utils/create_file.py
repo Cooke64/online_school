@@ -15,8 +15,7 @@ def create_blob_obj(file_obj):
     with open(f'{BASE_DIRECTORY}/{file_obj.filename}', 'wb') as buffer:
         shutil.copyfileobj(file_obj.file, buffer)
     with open(f'{BASE_DIRECTORY}/{file_obj.filename}', 'rb') as file:
-        data_to_save = file.read()
-        return data_to_save
+        return base64.b64encode(file.read())
 
 
 def upload_file_and_push_to_db(
@@ -43,6 +42,7 @@ def create_preview_to_course(file_obj: UploadFile, course_id: int, course_crud: 
     course_crud.add_preview(
         course_id, base64image, file_obj.content_type
     )
+    os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
 
 
 def get_type_content(file_type: str):

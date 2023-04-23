@@ -25,21 +25,19 @@ def decode_jwt(token: str) -> dict:
 
 
 class JWTBearer(HTTPBearer):
-    def __init__(self, auto_error: bool = True):
+    def __init__(self, auto_error: bool = False):
         super(JWTBearer, self).__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
         credentials: HTTPAuthorizationCredentials = await super(
             JWTBearer, self).__call__(request)
-
         if credentials:
             if not credentials.scheme == "Bearer":
-                raise NotAuthenticated
+                return None
             if not self.verify_jwt(credentials.credentials):
-                raise NotAuthenticated
+                return None
             return credentials.credentials
-        else:
-            raise NotAuthenticated
+        return None
 
     def verify_jwt(self, jwtoken: str) -> bool:
         try:
@@ -52,12 +50,13 @@ class JWTBearer(HTTPBearer):
 
 
 async def get_current_user(token: str = Depends(JWTBearer())) -> dict:
-    payload = jwt.decode(
-        token=token,
-        key=settings.SECRET_KEY,
-        algorithms=settings.ALGORITHM
-    )
-    return payload.get("sub")
+    if token:
+        payload = jwt.decode(
+            token=token,
+            key=settings.SECRET_KEY,
+            algorithms=settings.ALGORITHM
+        )
+        return payload.get("sub")
 
 
 class UserPermission(typing.NamedTuple):
@@ -68,13 +67,13 @@ class UserPermission(typing.NamedTuple):
 async def get_permission(
         email: str = Depends(get_current_user),
         user_crud: UserCrud = Depends()
-) -> UserPermission:
+) -> UserPermission | None:
     user = user_crud.get_user(email)
-    if not user:
-        raise NotFound
-    if not user.is_active:
-        raise NotAuthenticated
-    return UserPermission(user.role, email)
+    if user and not user.is_active:
+        raise user_crud.get_json_reposnse('Не авторизован', 403)
+    if user:
+        return UserPermission(user.role, email)
+    return None
 
 
 async def get_student_email(
