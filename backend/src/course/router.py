@@ -68,7 +68,7 @@ def add_rating_to_course(
     Доступно для зарегестрированного пользователя. Можно поставить только одну оценку.
     """
     _check_params(course_id, permission, course_crud)
-    course_crud.add_rating_to_course(permission.user_email, course_id, rating)
+    course_crud.add_rating_to_course(permission, course_id, rating)
     return {'done': 'done'}
 
 
@@ -85,7 +85,7 @@ def update_rating_to_course(
     Доступно для зарегестрированного пользователя.
     """
     _check_params(course_id, permission, course_crud)
-    course_crud.update_rating(permission.user_email, course_id, new_rating)
+    course_crud.update_rating(permission, course_id, new_rating)
     return course_crud.get_json_reposnse('Рейтинг для курса изменен', 201)
 
 
@@ -103,12 +103,11 @@ def add_course_in_users_list(
     Добавляет пользователю выбранный курс. Доступно для зарегестрированного пользователя.
     """
     _check_params(course_id, permission, course_crud)
-    course_crud.add_course_by_user(course_id, permission.user_email)
+    course_crud.add_course_by_user(course_id, permission)
     return {'course': 'added'}
 
 
 @router.post('/add/{course_id}/pay',
-             dependencies=[Depends(JWTBearer())],
              status_code=status.HTTP_201_CREATED,
              summary='Оплата курса курса, который добавлен пользователем'
              )
@@ -124,7 +123,7 @@ def pay_for_course_in_user_list(
     StudentCourse.has_payd на True default = False
     """
     _check_params(course_id, permission, course_crud)
-    return course_crud.pay_for_course(course_id, permission.user_email)
+    return course_crud.pay_for_course(course_id, permission)
 
 
 @router.delete(
@@ -146,7 +145,7 @@ def remove_course_from_users_list(
     if not permission.role == RolesType.student.value:
         raise PermissionDenied
     course_crud.remove_course_from_list(
-        course_id, permission.user_email
+        course_id, permission
     )
 
 
@@ -154,9 +153,9 @@ def remove_course_from_users_list(
 def create_course(
         course_data: CreateCourse,
         course_crud: CourseCrud = Depends(),
-        email: UserPermission = Depends(get_teacher_permission),
+        permission: UserPermission = Depends(get_teacher_permission),
 ):
-    return course_crud.create_new_course(course_data, email)
+    return course_crud.create_new_course(course_data, permission)
 
 
 @router.put('/{course_id}',
@@ -197,7 +196,7 @@ def add_review_to_course_by_student(
         course_crud: CourseCrud = Depends(),
         permission: UserPermission = Depends(get_permission),
 ):
-    course_crud.add_review_to_course(course_id, permission.user_email, review_data)
+    course_crud.add_review_to_course(course_id, permission, review_data)
 
 
 @router.delete(
@@ -212,7 +211,7 @@ def add_review_to_course_by_student(
         course_crud: CourseCrud = Depends(),
         permission: UserPermission = Depends(get_permission),
 ):
-    course_crud.delete_review(permission.user_email, review_id, course_id)
+    course_crud.delete_review(permission, review_id, course_id)
 
 
 @router.post(

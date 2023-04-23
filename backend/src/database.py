@@ -51,7 +51,7 @@ class BaseCrud:
         :param Model: класс модели базы данных
         :type Model: Any
         :rtype: Query
-        :return: ORM-level SQL construction object.
+        :return: ORM-level SQL construction object. | raise NotFound
         """
         query = self.session.query(Model).filter(Model.id == id_item)
         if not query.first():
