@@ -47,7 +47,7 @@ class LessonCrud(BaseCrud):
             return lesson
         user = self.get_user_by_email(User, permission.user_email)
         if not user:
-            raise NotFound
+            raise PermissionDenied
         user_course = self._get_user_course(course_id, user.student.id)
         if user_course and user_course.has_paid:
             return lesson

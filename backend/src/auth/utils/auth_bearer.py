@@ -73,7 +73,7 @@ async def get_permission(
         raise user_crud.get_json_reposnse('Не авторизован', 403)
     if user:
         return UserPermission(user.role, email)
-    return None
+    return UserPermission('fake_role', 'fake@email.ru')
 
 
 async def get_student_email(

@@ -1,0 +1,22 @@
+.img_photo{
+    width: 100%;
+    border-radius: .7rem;
+    margin-bottom: 2.5rem;
+}
+.lesson_detail{
+    background-color: #fff;
+    padding: 2rem;
+}
+.description_lesson{
+    font-size: 2rem;
+    color: var(--black);
+    padding: 1.2rem 0;
+}
+.info{
+    display: flex;
+    gap: 2rem;
+}
+
+.info p{
+    font-size: 2rem;
+}

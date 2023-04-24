@@ -15,6 +15,7 @@ export default function CourseDetail() {
   React.useEffect(() => {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
+      console.log(res)
       setLessonInCourse(res.course.lessons);
     });
   }, [id]);
@@ -52,10 +53,8 @@ export default function CourseDetail() {
               </div>
             </div>
             <div className={cls.details}>
-              <h3>Course Title</h3>
-              <p>
-                Course description short Lorem ipsum dolor sit amet consectetur,
-                adipisicing elit. Maxime, porro?
+              <h3>123</h3>
+              <p>123
               </p>
               <div className={cls.date}>
                 <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />

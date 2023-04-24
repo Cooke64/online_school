@@ -3,16 +3,11 @@ import cls from "./CourseItem.module.css";
 import ProfileLogo from "../../../../img/profile.jpg";
 import CourseBase from "../../../../img/course_base.png";
 import ButtonAsLink from "../../../../components/UI/ButtonAsLink/ButtonAsLink";
-import {Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import Image64 from "../../../../components/Image64";
+
 
 export default function CourseItem({ course_item }) {
-  const Image = ({ data, image_type }) => (
-    <img
-      src={`data:image/png;base64,${data}`}
-      alt="image_course"
-      className={cls.course_img}
-    />
-  );
   const teacher_name = course_item.teachers[0].user.username;
 
   return (
@@ -23,7 +18,7 @@ export default function CourseItem({ course_item }) {
         <span>{course_item.is_free ? "Бесплатно" : "Платно"}</span>
       </div>
       {course_item.course_preview ? (
-        <Image data={course_item.course_preview.photo_blob} />
+        <Image64 data={course_item.course_preview.photo_blob} className={cls.course_img}/>
       ) : (
         <img src={CourseBase} alt="about_pic" className={cls.course_img} />
       )}
