@@ -58,3 +58,8 @@ class Student(BaseModel):
         'CourseReview',
         back_populates='student'
     )
+
+    lesson_comment = relationship(
+        'LessonComment',
+        back_populates='student'
+    )

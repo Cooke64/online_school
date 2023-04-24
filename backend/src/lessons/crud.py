@@ -5,8 +5,9 @@ from src.auth.utils.auth_bearer import UserPermission
 from src.course.models import Course, Lesson
 from src.database import BaseCrud
 from src.exceptions import NotFound, PermissionDenied
-from src.lessons.shemas import LessonBase
-from src.students.models import StudentCourse, StudentPassedLesson
+from src.lessons.models import LessonComment
+from src.lessons.shemas import LessonBase, CommentBase
+from src.students.models import StudentCourse, StudentPassedLesson, Student
 from src.users.models import User
 
 
@@ -87,3 +88,21 @@ class LessonCrud(BaseCrud):
         passed_lesson.has_pass = True
         self.session.commit()
         return passed_lesson
+
+    def add_comment_to_course(
+            self,
+            lesson_id: int,
+            permission: UserPermission,
+            text: CommentBase
+    ):
+        """Добавить отзыв на курс."""
+        course = self.get_current_item(lesson_id, Lesson).first()
+        student = self.session.query(
+            Student).join(User).filter(
+            User.email == permission.user_email
+        ).first()
+        new_comment = LessonComment(
+            student_id=student.id,
+            course_id=course.id,
+            text=text.text)
+        self.create_item(new_comment)

@@ -15,3 +15,7 @@ class LessonBase(OrmBaseModel):
                 'is_trial': False
             }
         }
+
+
+class CommentBase(OrmBaseModel):
+    text: str

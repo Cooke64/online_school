@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
+from starlette import status
 
 from src.auth.utils.auth_bearer import (
     UserPermission,
@@ -6,7 +7,7 @@ from src.auth.utils.auth_bearer import (
     JWTBearer
 )
 from src.lessons.crud import LessonCrud
-from src.lessons.shemas import LessonBase
+from src.lessons.shemas import LessonBase, CommentBase
 
 router = APIRouter(prefix='/lesson', tags=['Страница уроков курса'])
 
@@ -35,8 +36,7 @@ def get_lesson_from_current_course(
         course_id, lessons_id, permission)
 
 
-@router.post('/{course_id}', status_code=201,
-             dependencies=[Depends(JWTBearer())], )
+@router.post('/{course_id}', status_code=status.HTTP_201_CREATED)
 def add_lessons_to_course(
         course_id: int,
         lesson_data: LessonBase,
@@ -49,7 +49,7 @@ def add_lessons_to_course(
     return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
 
 
-@router.post('/pass/{lessons_id}', dependencies=[Depends(JWTBearer())], )
+@router.post('/pass/{lessons_id}')
 def pass_lesson(
         lessons_id: int,
         lesson_crud: LessonCrud = Depends(),
@@ -59,5 +59,20 @@ def pass_lesson(
     Делает пометку в бд, что студент прошел данный урок и текущего курса.
     Обновляет время прохождения урока.
     """
-    return lesson_crud.get_lesson_from_course(lessons_id,
-                                              permission.user_email)
+    return lesson_crud.get_lesson_from_course(
+        lessons_id, permission.user_email)
+
+
+@router.post(
+    '/{lesson_id}/add_comment',
+    status_code=status.HTTP_201_CREATED,
+    description='Добавить комментарий уроку по его id.',
+    summary='Добавить комментарий'
+)
+def add_review_to_course_by_student(
+        comment_data: CommentBase,
+        lesson_id: int = Path(..., gt=0),
+        lesson_crud: LessonCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
+):
+    lesson_crud.add_comment_to_course(lesson_id, permission, comment_data)
