@@ -20,3 +20,7 @@
 .info p{
     font-size: 2rem;
 }
+.info .date_icon {
+    margin-right: 1.3rem;
+    color: var(--black);
+}

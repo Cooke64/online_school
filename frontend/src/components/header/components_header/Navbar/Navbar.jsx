@@ -40,11 +40,11 @@ export default function Navbar({ navbarVisibility, changeSideBarVisibility }) {
           <FontAwesomeIcon icon={faQuestion} className={cls.side_icon} />{" "}
           <span>about</span>
         </a>
-        <a href="http://">
+        <a href="/">
           <FontAwesomeIcon icon={faGraduationCap} className={cls.side_icon} />{" "}
           <span>courses</span>
         </a>
-        <a href="http://">
+        <a href="/teachers_list">
           <FontAwesomeIcon icon={faChalkboard} className={cls.side_icon} />{" "}
           <span>teachers</span>
         </a>

@@ -154,3 +154,4 @@ migrations/
 
 # Временные файлы фото и видео
 temp.*
+/node_modules

@@ -1,15 +1,10 @@
 import cls from "./LessonDetail.module.css";
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faGraduationCap,
-  faHeart,
-} from "@fortawesome/free-solid-svg-icons";
 import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
 import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import Image64 from "../../components/Image64";
+import LessonComment from "./LessonComment/LessonComment";
 
 const ImageWithText = ({ photo, text }) => {
   return (
@@ -26,9 +21,29 @@ const ImageWithText = ({ photo, text }) => {
   );
 };
 
+const LessonBlockItem = ({ lessonPhotos }) => {
+  return (
+    <>
+      {lessonPhotos.map((photo) => (
+        <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
+      ))}
+      <div className={cls.flex}>
+        <ButtonAsLink
+          href="index.html"
+          button_type="inline"
+          btn_action="option"
+        >
+          Слудующий урок
+        </ButtonAsLink>
+      </div>
+    </>
+  );
+};
+
 export default function LessonDetail() {
   const { course_id, lesson_id } = useParams();
   const [lessonPhotos, setLessonPhotos] = React.useState([]);
+  const [lessonComments, setLessonComments] = React.useState([]);
   const [canSeeLesson, setCanSeeLesson] = React.useState(true);
 
   React.useEffect(() => {
@@ -36,6 +51,7 @@ export default function LessonDetail() {
       .getLessonDetail(course_id, lesson_id)
       .then(function (res) {
         setLessonPhotos(res.photos);
+        setLessonComments(res.lesson_comment)
       })
       .catch(function () {
         setCanSeeLesson(false);
@@ -43,43 +59,20 @@ export default function LessonDetail() {
   }, [course_id, lesson_id]);
 
   return (
-    <section>
-      <h1 className="section_header">
-        Урок #{lesson_id} курса #{course_id} какой-то
-      </h1>
-      <div className={cls.lesson_detail}>
-        {canSeeLesson ? (
-          <div>Может смотреть</div>
-        ) : (
-          <div>Не может смотреть</div>
-        )}
-        {lessonPhotos.map((photo) => (
-          <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
-        ))}
-        <div className={cls.info}>
-          <p>
-            <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />
-            <span>21.21.21</span>
-          </p>
-          <p>
-            <FontAwesomeIcon icon={faHeart} className={cls.date_icon} />
-            <span>21.21.21</span>
-          </p>
+    <>
+      <section>
+        <h1 className="section_header">
+          Урок #{lesson_id} курса #{course_id} какой-то
+        </h1>
+        <div className={cls.lesson_detail}>
+          {canSeeLesson ? (
+            <LessonBlockItem lessonPhotos={lessonPhotos} />
+          ) : (
+            <div>Не может смотреть</div>
+          )}
         </div>
-        <div className={cls.flex}>
-          <ButtonAsLink
-            href="index.html"
-            button_type="inline"
-            btn_action="option"
-          >
-            Слудующий урок
-          </ButtonAsLink>
-          <button>
-            <FontAwesomeIcon icon={faHeart} className={cls.date_icon} />
-            <span>like</span>
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
+      <LessonComment comments={lessonPhotos}/>
+    </>
   );
 }

@@ -6,17 +6,22 @@ import { faBookBookmark, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 import LessonInCourse from "./LessonInCourse/LessonInCourse";
+import Box from "@mui/material/Box";
+import Rating from "@mui/material/Rating";
+import Typography from "@mui/material/Typography";
 
 export default function CourseDetail() {
   const { id } = useParams();
   const [course, setCourse] = React.useState({});
   const [lessonInCourse, setLessonInCourse] = React.useState([]);
+  const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
-      console.log(res)
+      console.log(res);
       setLessonInCourse(res.course.lessons);
+      setValue(res.rating)
     });
   }, [id]);
 
@@ -53,9 +58,19 @@ export default function CourseDetail() {
               </div>
             </div>
             <div className={cls.details}>
-              <h3>123</h3>
-              <p>123
-              </p>
+              <div className={cls.rating}>
+                <h3>Общая оценка курса {value}</h3>
+                <Rating
+                  name="size-large"
+                  size="large"
+                  defaultValue={5}
+                  value={value}
+                  onChange={(event, newValue) => {
+                    setValue(newValue);
+                  }}
+                />
+              </div>
+              <p>123</p>
               <div className={cls.date}>
                 <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />
                 <span>01.01.01</span>
@@ -68,7 +83,11 @@ export default function CourseDetail() {
         <h1 className="section_header">Список уроков</h1>
         <div className={cls.box_container}>
           {lessonInCourse.map((lesson_item) => (
-            <LessonInCourse key={lesson_item.id} course_id={course.course.id} lessonitem={lesson_item} />
+            <LessonInCourse
+              key={lesson_item.id}
+              course_id={course.course.id}
+              lessonitem={lesson_item}
+            />
           ))}
         </div>
       </section>

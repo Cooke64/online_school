@@ -15,6 +15,7 @@ def get_base_for_alembic():
     from src.users.models import User,  Staff
     from src.auth.models import Verification
     from src.lesson_files.models import LessonPhoto, LessonVideo
+    from src.lessons.models import LessonComment
     from src.database import Base
     return Base
 

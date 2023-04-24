@@ -86,7 +86,7 @@ class Lesson(BaseModel):
     videos = relationship('LessonVideo', back_populates='lesson_content')
     photos = relationship('LessonPhoto', back_populates='lesson_content')
 
-    comment = relationship(
+    lesson_comment = relationship(
         'LessonComment',
         back_populates='lesson'
     )

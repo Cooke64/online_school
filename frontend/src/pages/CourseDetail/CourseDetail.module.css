@@ -75,6 +75,10 @@ align-items: center;
   color: #595959;
   font-size: 2rem;
 }
+.details .rating{
+  padding-top: 1rem;
+  font-size: 2rem;
+}
 .details p {
   padding: 1rem 0;
   line-height: 1.6;
