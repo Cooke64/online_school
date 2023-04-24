@@ -1,0 +1,96 @@
+.add_comment {
+  background-color: #fff;
+  border-radius: 0.7rem;
+  margin-bottom: 1rem;
+  padding: 2rem;
+}
+.add_comment textarea {
+  border-radius: 0.7rem;
+  padding: 1.5rem;
+  width: 100%;
+  height: 20rem;
+  background-color: var(--light_bg);
+  resize: none;
+  font-size: 1.7rem;
+  color: var(--black);
+}
+
+.box{
+    border-bottom: var(--border);
+}
+.show_comments {
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  display: grid;
+  gap: 3rem;
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.user img {
+  height: 5rem;
+  width: 5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.user h3 {
+  font-size: 2rem;
+  color: var(--black);
+  margin-bottom: 0.2rem;
+}
+.user span {
+  color: var(--light_dark);
+  font-size: 1.3rem;
+}
+.coomet_body {
+  border-radius: 0.7rem;
+  background-color: var(--light_bg);
+  padding: 1rem 1.5rem;
+  color: var(--black);
+  margin: 1.5rem 0 1rem 0;
+  position: relative;
+  z-index: 0;
+  white-space: pre-line;
+  font-size: 1.7rem;
+}
+.coomet_body::before{
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+    height: 1.2rem;
+    width: 2rem;
+    background-color: var(--light_bg);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+
+}
+.flex_btn{
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.2rem;
+}
+.button {
+  border-radius: 0.5rem;
+  padding: 1rem 3rem;
+  text-transform: capitalize;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.5rem;
+  background-color: var(--main_color);
+  color: #fff;
+  margin-top: 1rem;
+}
+.button:hover {
+  background-color: var(--black);
+  color: #fff;
+}
+
+@media (max-width: 760px) {
+  .button {
+    display: inline-block;
+  }
+}
