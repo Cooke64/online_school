@@ -1,0 +1,64 @@
+.search_teacher {
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background-color: #fff;
+  border-radius: 0.8rem;
+}
+.search_teacher input {
+  width: 100%;
+  font-size: 1.8rem;
+  color: var(--black);
+  background: none;
+}
+.search_teacher button {
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--black);
+  background: none;
+}
+.search_teacher button:hover {
+  color: var(--main_color);
+}
+
+/* Стили для преподавателей преподавателей */
+.box_container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+  gap: 1.5rem;
+  align-items: flex-start;
+  justify-content: center;
+}
+.box {
+  border-radius: 0.5rem;
+  background-color: #fff;
+  padding: 2rem;
+}
+.box img {
+  height: 5rem;
+  width: 5rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.box h3 {
+  color: var(--black);
+}
+
+.teacher {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.teacher h3 {
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  color: var(--black);
+}
+.teacher span {
+  color: var(--main_color);
+  font-size: 1.5rem;
+}
