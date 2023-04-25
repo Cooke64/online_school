@@ -89,4 +89,7 @@ class BaseCrud:
 
     @staticmethod
     def get_json_reposnse(message, status_code):
-        return JSONResponse(status_code=status_code, content={"message": message})
+        return JSONResponse(
+            status_code=status_code,
+            content={"message": message}
+        )

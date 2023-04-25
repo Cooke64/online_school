@@ -7,6 +7,7 @@ from fastapi import UploadFile, Depends
 
 from src.course.crud import CourseCrud
 from src.lesson_files.crud import MediaCrud
+from src.users.crud import UserCrud
 
 BASE_DIRECTORY = pathlib.Path(__file__).absolute().parent
 
@@ -43,6 +44,10 @@ def create_preview_to_course(file_obj: UploadFile, course_id: int, course_crud: 
         course_id, base64image, file_obj.content_type
     )
     os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
+
+
+def upload_user_pic(file_obj: UploadFile, permission, user_crud: UserCrud = Depends()):
+    pass
 
 
 def get_type_content(file_type: str):

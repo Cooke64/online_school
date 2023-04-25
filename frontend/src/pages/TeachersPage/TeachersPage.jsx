@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
 import CourseBase from "../../img/course_base.png";
+import api from "../../api/api";
 
 const TeacherItem = ({ teacher_data }) => {
   return (
@@ -13,26 +14,31 @@ const TeacherItem = ({ teacher_data }) => {
         <div className={cls.teacher}>
           <img src={CourseBase} alt="about_pic" />
           <div>
-            <h3>Teacher name</h3>
+            <h3>{teacher_data.userdata.username}</h3>
             <span>
+            {teacher_data.teacher_info.description}
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Reprehenderit harum quos nostrum.
             </span>
           </div>
         </div>
-        <p>
-          Course <span>Amount of courses</span>
-        </p>
-        <p>
-          Total comments <span>Amount of comments</span>
-        </p>
-        <p>
-          Total rating courses <span>Total rating</span>
-        </p>
+        <div className={cls.statistic}>
+          <p>
+            Course <span>{teacher_data.count_courses}</span>
+          </p>
+          <p>
+            Total comments <span>{teacher_data.total_reviews}</span>
+          </p>
+          <p>
+            Total rating courses <span>{teacher_data.total_rating}</span>
+          </p>
+        </div>
+
         <ButtonAsLink
           href="/teachers/1/profile"
           button_type="inline"
           btn_action="click"
+          className={cls.button_teacher}
         >
           Перейти на страничку
         </ButtonAsLink>
@@ -42,6 +48,15 @@ const TeacherItem = ({ teacher_data }) => {
 };
 
 export default function TeachersPage() {
+    const [teachersList, setTeachersList] = React.useState([])
+
+
+  React.useEffect(()=> {
+    api.getTeachersList().then((res) => {
+        setTeachersList(res);
+        console.log(res)
+      });
+  }, [])
   return (
     <section>
       <h1 className="section_header">преподаватели</h1>
@@ -69,9 +84,11 @@ export default function TeachersPage() {
             зарегестрироваться
           </ButtonAsLink>
         </div>
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
+        {teachersList.map((teacher) => (
+          <TeacherItem
+            teacher_data={teacher}
+          />
+        ))}
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 from enum import Enum
 
-from fastapi import APIRouter, Body, Depends, Path
+from fastapi import APIRouter, Body, Depends, Path, UploadFile, File
+from starlette.background import BackgroundTasks
 from starlette.responses import RedirectResponse
 
 from .crud import UserCrud
@@ -16,6 +17,7 @@ from ..auth.utils.auth_bearer import get_current_user, \
 from ..auth.utils.create_jwt import create_jwt
 from ..auth.utils.hasher import verify_password
 from ..exceptions import NotFound, BadRequest
+from ..lesson_files.utils.create_file import upload_user_pic
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
@@ -87,3 +89,22 @@ def login_user(
     access_token = create_jwt(data={"sub": user.email})
     headers = {'Authorization': f'Bearer {access_token}'}
     return headers
+
+
+@router.post(
+    '/upload_user_pic',
+    summary='Загрузка аватара для пользователя',
+)
+def create_user_profile_image(
+        task: BackgroundTasks,
+        photo: UploadFile = File(...),
+        permission: UserPermission = Depends(get_permission),
+        user_crud: UserCrud = Depends()
+):
+    task.add_task(
+        upload_user_pic,
+        file_obj=photo,
+        permission=permission,
+        user_crud=user_crud
+    )
+    return user_crud.get_json_reposnse('Успешно загружен', 201)

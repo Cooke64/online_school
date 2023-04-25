@@ -13,3 +13,16 @@ class ShowTeacherInCourseList(OrmBaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class TeacherInfo(OrmBaseModel):
+    id: int
+    description: str | None
+
+
+class ShowTeachersList(OrmBaseModel):
+    userdata: TeacherData
+    teacher_info: TeacherInfo
+    count_courses: int
+    total_reviews: int
+    total_rating: float

@@ -106,3 +106,7 @@ class UserCrud(BaseCrud, SendMail):
             raise NotFound
         user.is_active = True
         self.session.commit()
+
+
+    def create_user_image(self):
+        pass
