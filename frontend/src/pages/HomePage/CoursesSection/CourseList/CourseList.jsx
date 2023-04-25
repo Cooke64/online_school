@@ -16,7 +16,6 @@ const [courses, setCoursesList] = useState([])
 
   return (
     <section>
-      CourseList
       <h1 className={cls.section_header}>Наши курсы</h1>
       <div className={cls.container}>
         {courses.map((course_item) => (

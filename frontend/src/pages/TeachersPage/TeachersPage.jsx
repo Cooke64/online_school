@@ -8,6 +8,7 @@ import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 
 const TeacherItem = ({ teacher_data }) => {
+    let link = `/teachers_list/${teacher_data.teacher_info.id}`
   return (
     <>
       <div className={cls.box}>
@@ -24,18 +25,18 @@ const TeacherItem = ({ teacher_data }) => {
         </div>
         <div className={cls.statistic}>
           <p>
-            Course <span>{teacher_data.count_courses}</span>
+            Всего курсов: <span>{teacher_data.count_courses}</span>
           </p>
           <p>
-            Total comments <span>{teacher_data.total_reviews}</span>
+            Всего комментариев: <span>{teacher_data.total_reviews}</span>
           </p>
           <p>
-            Total rating courses <span>{teacher_data.total_rating}</span>
+            Общий рейтинг: <span>{teacher_data.total_rating}</span>
           </p>
         </div>
 
         <ButtonAsLink
-          href="/teachers/1/profile"
+          href={link}
           button_type="inline"
           btn_action="click"
           className={cls.button_teacher}

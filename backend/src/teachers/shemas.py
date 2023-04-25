@@ -18,11 +18,31 @@ class ShowTeacherInCourseList(OrmBaseModel):
 class TeacherInfo(OrmBaseModel):
     id: int
     description: str | None
+    user: TeacherData
 
 
-class ShowTeachersList(OrmBaseModel):
-    userdata: TeacherData
-    teacher_info: TeacherInfo
+class TeacherStatistics(OrmBaseModel):
     count_courses: int
     total_reviews: int
     total_rating: float
+
+
+class TeacherShow(TeacherStatistics):
+    teacher_info: TeacherInfo
+
+
+class ShowCourse(OrmBaseModel):
+    title: str
+    description: str
+    is_free: bool = False
+
+
+class TeacherInfoDetail(OrmBaseModel):
+    id: int
+    description: str | None
+    user: TeacherData
+    courses: list[ShowCourse]
+
+
+class TeacherShowDetail(TeacherStatistics):
+    teacher_info: TeacherInfoDetail

@@ -32,6 +32,7 @@
   justify-content: center;
 }
 .box {
+  height: 25rem;
   border-radius: 0.5rem;
   background-color: #fff;
   padding: 2rem;

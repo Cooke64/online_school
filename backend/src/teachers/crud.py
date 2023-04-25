@@ -32,20 +32,32 @@ class TeachersCrud(BaseCrud):
                 CourseReview.course_id == course.id).count()
         return res
 
+    def _create_teacher_stats(self, teacher: Teacher) -> dict:
+        teacher_dict = {'teacher_info': teacher}
+        teacher_dict.update(
+            {'count_courses': self._count_courses(teacher.id)})
+        teacher_dict.update(
+            {'total_reviews': self._get_total_reviews(teacher.courses)})
+        teacher_dict.update(
+            {'total_rating': self._get_total_rating(
+                teacher.id, teacher.courses)})
+        return teacher_dict
+
     def get_teachers_data(self) -> list[dict]:
         teachers_list = []
-        teachers: list[Teacher] = self.session.query(Teacher).join(
-            User).options(
+        teachers: list[Teacher] = self.session.query(Teacher).options(
+            joinedload(Teacher.user)).options(
             joinedload(Teacher.courses)).all()
         for teacher in teachers:
-            teacher_dict = {'teacher_info': teacher}
-            teacher_dict.update({'userdata': teacher.user})
-            teacher_dict.update(
-                {'count_courses': self._count_courses(teacher.id)})
-            teacher_dict.update(
-                {'total_reviews': self._get_total_reviews(teacher.courses)})
-            teacher_dict.update(
-                {'total_rating': self._get_total_rating(
-                    teacher.id, teacher.courses)})
+            teacher_dict = self._create_teacher_stats(teacher)
             teachers_list.append(teacher_dict)
         return teachers_list
+
+    def get_teacher_detail(self, teacher_id):
+        teacher: Teacher = self.session.query(Teacher).options(
+            joinedload(Teacher.user)).options(
+            joinedload(Teacher.courses)).filter(
+            Teacher.id == teacher_id).first()
+
+        teacher_statics = self._create_teacher_stats(teacher)
+        return teacher_statics

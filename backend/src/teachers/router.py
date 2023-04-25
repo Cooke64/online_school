@@ -1,24 +1,21 @@
-from enum import Enum
-
-from fastapi import APIRouter, Body, Depends, Path, UploadFile, File
-from starlette.background import BackgroundTasks
-from starlette.responses import RedirectResponse
+from fastapi import APIRouter, Depends, Path
 
 from .crud import TeachersCrud
-from .shemas import ShowTeachersList
-from ..auth.utils.auth_bearer import get_current_user, \
-    get_permission, UserPermission
-from ..auth.utils.create_jwt import create_jwt
-from ..auth.utils.hasher import verify_password
-from ..exceptions import NotFound, BadRequest
-from ..lesson_files.utils.create_file import upload_user_pic
-
+from .shemas import TeacherShow, TeacherShowDetail
 
 router = APIRouter(prefix='/teachers', tags=['Преподаватели'])
 
 
-@router.get('/', response_model=list[ShowTeachersList])
+@router.get('/', response_model=list[TeacherShow])
 def get_teacher_list(
         teachers_crud: TeachersCrud = Depends(),
 ):
     return teachers_crud.get_teachers_data()
+
+
+@router.get('/{teacher_id}', response_model=TeacherShowDetail)
+def get_teacher_list(
+        teacher_id: int = Path(..., gt=0),
+        teachers_crud: TeachersCrud = Depends(),
+):
+    return teachers_crud.get_teacher_detail(teacher_id)
