@@ -63,9 +63,11 @@ class CourseInDetail(CourseBase):
     id: int
     teachers: list[ShowTeacherInCourseList] | None
     lessons: list[LessonBase] | None
+    course_preview: CoursePreview
 
 
 class CourseDetail(BaseModel):
     course: CourseInDetail
     rating: int
     count_lessons: int
+

@@ -9,19 +9,23 @@ import LessonInCourse from "./LessonInCourse/LessonInCourse";
 import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
 import Typography from "@mui/material/Typography";
+import Image64 from "../../components/Image64";
 
 export default function CourseDetail() {
   const { id } = useParams();
   const [course, setCourse] = React.useState({});
   const [lessonInCourse, setLessonInCourse] = React.useState([]);
   const [value, setValue] = React.useState(0);
+  const [link, setLink] = React.useState("");
+  const [blob, setBlob] = React.useState("");
 
   React.useEffect(() => {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
-      console.log(res);
+      setLink(`/teacher/${res.course.teachers[0].id}`);
+      setBlob(res.course.course_preview.photo_blob)
       setLessonInCourse(res.course.lessons);
-      setValue(res.rating)
+      setValue(res.rating);
     });
   }, [id]);
 
@@ -42,16 +46,25 @@ export default function CourseDetail() {
             </form>
             <div className={cls.image_course}>
               <span>{course.count_lessons} уроков</span>
-              <img src={CourseBase} alt="about_pic" />
+              {blob ? (
+                <Image64
+                  data={blob}
+                  className={cls.course_img}
+                />
+              ) : (
+                <img src={CourseBase} alt="about_pic" />
+              )}
             </div>
           </div>
           <div className={cls.column}>
             <div className={cls.teacher_data}>
-              <img
-                src={CourseBase}
-                alt="about_pic"
-                className={cls.image_teacher}
-              />
+              <a href={link} className={cls.box}>
+                <img
+                  src={CourseBase}
+                  alt="about_pic"
+                  className={cls.image_teacher}
+                />
+              </a>
               <div>
                 <h3>Преподаватель имя</h3>
                 <span>Описание препода</span>

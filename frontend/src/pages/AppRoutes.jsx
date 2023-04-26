@@ -22,7 +22,7 @@ export default function AppRoutes() {
             <Route path="/courses" element={<CourseList />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/teachers_list" element={<TeachersPage />} />
-            <Route path="/teachers_list/:id" element={<TeacherDetail />} />
+            <Route path="/teacher/:teacher_id" element={<TeacherDetail />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/course/:course_id/lesson/:lesson_id" element={<LessonDetail />} />
           </Route>

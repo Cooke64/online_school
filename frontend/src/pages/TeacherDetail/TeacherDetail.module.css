@@ -1,0 +1,51 @@
+.details {
+  background-color: #fff;
+  border-radius: 0.7rem;
+  padding: 2rem;
+  text-align: center;
+}
+.teacher_info {
+  margin-bottom: 2rem;
+}
+.teacher_info img {
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: .5rem;
+}
+.teacher_info h3{
+    font-size: 2rem;
+    color: var(--black);
+    margin: .5rem 0;
+}
+.teacher_info span{
+    font-size: 1.5rem;
+    color: var(--light_dark);
+    margin: .5rem 0;
+}
+.flex{
+    margin-top: 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.flex p{
+    flex: 1 1 25rem;
+    border-radius: .3rem;
+    background-color: var(--light_bg);
+    padding: 1rem 1.3rem;
+    font-size: 2rem;
+    color: var(--light_dark);
+}
+.flex span{
+    color: var(--main_color);
+}
+.container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: 1.5rem;
+    align-items: flex-start;
+    justify-content: center;
+}

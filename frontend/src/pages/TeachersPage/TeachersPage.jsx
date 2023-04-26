@@ -15,7 +15,7 @@ const TeacherItem = ({ teacher_data }) => {
         <div className={cls.teacher}>
           <img src={CourseBase} alt="about_pic" />
           <div>
-            <h3>{teacher_data.userdata.username}</h3>
+            <h3>{teacher_data.teacher_info.username}</h3>
             <span>
             {teacher_data.teacher_info.description}
               Lorem ipsum dolor sit amet consectetur adipisicing elit.

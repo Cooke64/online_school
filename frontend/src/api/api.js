@@ -24,8 +24,7 @@ class Api {
   }
   getCourseDetail(id) {
     return fetch(
-        `http://127.0.0.1:8000/course/` + id,
-         {
+        `http://127.0.0.1:8000/course/` + id, {
           method: 'GET',
         }
       )
@@ -33,8 +32,7 @@ class Api {
   }
   getLessonDetail(course_id, lesson_id) {
     return fetch(
-        `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`,
-         {
+        `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`, {
           method: 'GET',
         }
       )
@@ -42,8 +40,16 @@ class Api {
   }
   getTeachersList() {
     return fetch(
-        `http://127.0.0.1:8000/teachers/`,
-         {
+        `http://127.0.0.1:8000/teachers/`, {
+          method: 'GET',
+        }
+      )
+      .then(this.checkResponse)
+  }
+  getTeachersDeatil(teacher_id) {
+    console.log(teacher_id)
+    return fetch(
+        `http://127.0.0.1:8000/teachers/` + teacher_id, {
           method: 'GET',
         }
       )

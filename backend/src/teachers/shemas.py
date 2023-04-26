@@ -8,6 +8,7 @@ class TeacherData(OrmBaseModel):
 
 
 class ShowTeacherInCourseList(OrmBaseModel):
+    id: int
     description: str | None
     user: TeacherData = Field(alias='user_data')
 

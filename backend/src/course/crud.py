@@ -99,6 +99,7 @@ class CourseCrud(BaseCrud):
     def get_course_by_id(self, course_id: int) -> dict:
         """Получить CourseDetail по его id"""
         result = self.session.query(Course).options(
+            joinedload(Course.course_preview)).options(
             joinedload(Course.lessons)).options(
             joinedload(Course.teachers).options(
                 joinedload(Teacher.user))
