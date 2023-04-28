@@ -6,9 +6,7 @@ import { faBookBookmark, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 import LessonInCourse from "./LessonInCourse/LessonInCourse";
-import Box from "@mui/material/Box";
 import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
 import Image64 from "../../components/Image64";
 
 export default function CourseDetail() {

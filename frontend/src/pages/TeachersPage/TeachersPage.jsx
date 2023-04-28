@@ -8,7 +8,7 @@ import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 
 const TeacherItem = ({ teacher_data }) => {
-    let link = `/teachers_list/${teacher_data.teacher_info.id}`
+    let link = `/teacher/${teacher_data.teacher_info.id}`
   return (
     <>
       <div className={cls.box}>

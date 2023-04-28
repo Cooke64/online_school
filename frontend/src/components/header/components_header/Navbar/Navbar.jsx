@@ -48,7 +48,7 @@ export default function Navbar({ navbarVisibility, changeSideBarVisibility }) {
           <FontAwesomeIcon icon={faChalkboard} className={cls.side_icon} />{" "}
           <span>teachers</span>
         </a>
-        <a href="http://">
+        <a href="/contact_us">
           <FontAwesomeIcon icon={faContactCard} className={cls.side_icon} />{" "}
           <span>contact us</span>
         </a>
