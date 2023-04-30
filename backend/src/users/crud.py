@@ -40,8 +40,7 @@ class UserCrud(BaseCrud, SendMail):
         return self.session.query(User).join(Staff).all()
 
     def get_user(self, email: str) -> User:
-        query = self.session.query(User).filter(User.email == email).first()
-        return query
+        return self.session.query(User).filter(User.email == email).first()
 
     def create_student_user(
             self, user_data: UserCreate,
@@ -72,7 +71,7 @@ class UserCrud(BaseCrud, SendMail):
         print(item_in_bd.link)
 
     def create_user(self, user_type, user_data: UserCreate) -> [
-            dict[str]]:
+        dict[str]]:
         user_dict, *_ = self.__update_userdata_and_get_phone(
             user_data
         )
@@ -106,7 +105,6 @@ class UserCrud(BaseCrud, SendMail):
             raise NotFound
         user.is_active = True
         self.session.commit()
-
 
     def create_user_image(self):
         pass

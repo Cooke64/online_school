@@ -37,14 +37,18 @@ class LessonCrud(BaseCrud):
             return query
         raise NotFound
 
-    def get_lesson_from_course(self, course_id: int, lessons_id: int,
-                               permission: UserPermission) -> Lesson:
+    def get_lesson_from_course(
+            self,
+            course_id: int,
+            lessons_id: int,
+            permission: UserPermission) -> Lesson:
         lesson: Lesson = self.session.query(Lesson).options(
             joinedload(Lesson.lesson_comment)).options(
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
                 Lesson.course_id == course_id, Lesson.id == lessons_id
-        )).first()
+            )).first()
+        print(lesson)
         if lesson and lesson.is_trial:
             return lesson
         user = self.get_user_by_email(User, permission.user_email)

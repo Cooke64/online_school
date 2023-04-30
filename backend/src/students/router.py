@@ -7,7 +7,7 @@ from src.students.shemas import ShowUserProfile
 router = APIRouter(prefix='/student', tags=['Данные о студенте'])
 
 
-@router.get('/my_courses', dependencies=[Depends(JWTBearer())])
+@router.get('/my_courses')
 def get_all_users_courses(
         email=Depends(get_current_user),
         user_crud: StudentCrud = Depends()
