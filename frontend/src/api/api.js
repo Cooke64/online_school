@@ -1,6 +1,7 @@
 class Api {
   constructor(headers) {
     this.headers = headers
+    this.baseURL = "http://localhost:8000/api";
   }
 
 
@@ -55,6 +56,21 @@ class Api {
       )
       .then(this.checkResponse)
   }
+  createnewCourse(course) {
+    const token = localStorage.getItem('token')
+    return fetch(
+        `http://127.0.0.1:8000/course/`, {
+          method: 'POST',
+          headers: {
+            ...this.headers,
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(course)
+        }
+      )
+      .then(this.checkResponse)
+  }
+
 }
 
 

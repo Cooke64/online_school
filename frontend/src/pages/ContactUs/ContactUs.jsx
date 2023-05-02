@@ -2,7 +2,7 @@ import React from "react";
 import cls from "./ContactUs.module.css";
 import CourseBase from "../../img/course_base.png";
 import { InputBase } from "@mui/material";
-import Input from "../../components/UI/BaseInput/Input";
+import Input from "../../components/UI/BaseInput/BaseInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookBookmark,

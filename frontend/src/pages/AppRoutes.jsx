@@ -14,6 +14,7 @@ import RegisterPage from './RegisterPage/RegisterPage';
 import ContactUs from './ContactUs/ContactUs';
 import ProfilePage from './ProfilePage/ProfilePage';
 import UpdateProfile from './UpdateProfile/UpdateProfile';
+import CreateCourse from './CreateCourse/CreateCourse';
 
 
 export default function AppRoutes() {
@@ -32,6 +33,8 @@ export default function AppRoutes() {
 
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/update_profile" element={<UpdateProfile />} />
+
+            <Route path="/create_course" element={<CreateCourse />} />
           </Route>
           <Route path="*" element={<ErrorPapge />} />
         </Routes>

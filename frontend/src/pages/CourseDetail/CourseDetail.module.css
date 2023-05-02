@@ -111,3 +111,8 @@ align-items: center;
   align-items: flex-start;
   justify-content: center;
 }
+.deal_course{
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-end;
+}

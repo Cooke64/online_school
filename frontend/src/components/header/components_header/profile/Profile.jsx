@@ -15,7 +15,7 @@ export default function Profile({profileVisibility,short=false}) {
         <ButtonAsLink href='/profile' button_type='btn' btn_action='click'>Профиль</ButtonAsLink>
       <div className="flex_btn">
         <ButtonAsLink href='index.html' button_type='btn' btn_action='option'>Войти</ButtonAsLink>
-        <ButtonAsLink href='index.html' button_type='btn' btn_action='option'>Зарегестрироваться</ButtonAsLink>
+        <ButtonAsLink href='/register' button_type='btn' btn_action='option'>Зарегестрироваться</ButtonAsLink>
       </div>
     </div>
   );

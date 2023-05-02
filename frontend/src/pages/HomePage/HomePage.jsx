@@ -1,8 +1,7 @@
 import React from "react";
 import QuickSection from "./QuickSection/QuickSection";
-import CourseList
+import CourseList from "./CoursesSection/CourseList/CourseList";
 
-from "./CoursesSection/CourseList/CourseList";
 export default function HomePage() {
   return (
     <>

@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import cls from "./CourseList.module.css";
 import CourseItem from "../CourseItem/CourseItem";
-import ButtonAsLink from "../../../../components/UI/ButtonAsLink/ButtonAsLink";
 import api from "../../../../api/api";
+import ButtonAsLink from "../../../../components/UI/ButtonAsLink/ButtonAsLink";
 
 export default function CourseList() {
 const [courses, setCoursesList] = useState([])

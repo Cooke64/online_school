@@ -1,5 +1,5 @@
 import React from "react";
-import Input from "../../components/UI/BaseInput/Input";
+import Input from "../../components/UI/BaseInput/BaseInput";
 import cls from "./TeachersPage.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";

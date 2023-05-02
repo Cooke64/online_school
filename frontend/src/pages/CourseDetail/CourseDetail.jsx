@@ -8,6 +8,8 @@ import api from "../../api/api";
 import LessonInCourse from "./LessonInCourse/LessonInCourse";
 import Rating from "@mui/material/Rating";
 import Image64 from "../../components/Image64";
+import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
+import BaseButton from "../../components/UI/BaseButton/BaseButton";
 
 export default function CourseDetail() {
   const { id } = useParams();
@@ -21,11 +23,15 @@ export default function CourseDetail() {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
       setLink(`/teacher/${res.course.teachers[0].id}`);
-      setBlob(res.course.course_preview.photo_blob)
+      setBlob(res.course.course_preview.photo_blob);
       setLessonInCourse(res.course.lessons);
       setValue(res.rating);
     });
   }, [id]);
+
+  const removeCourse = () => {
+      console.log('deleted')
+  }
 
   return (
     <>
@@ -45,10 +51,7 @@ export default function CourseDetail() {
             <div className={cls.image_course}>
               <span>{course.count_lessons} уроков</span>
               {blob ? (
-                <Image64
-                  data={blob}
-                  className={cls.course_img}
-                />
+                <Image64 data={blob} className={cls.course_img} />
               ) : (
                 <img src={CourseBase} alt="about_pic" />
               )}
@@ -86,6 +89,15 @@ export default function CourseDetail() {
                 <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />
                 <span>01.01.01</span>
               </div>
+              <div className={cls.deal_course}>
+                <ButtonAsLink button_type="btn" btn_action="option">
+                  Редактировать курс
+                </ButtonAsLink>
+                <BaseButton onClick={removeCourse} className={'btn_inline'}>
+                  Удалить курс
+                </BaseButton>
+              </div>
+              <ButtonAsLink href='/register' button_type='btn' btn_action='click'>Приобрести курс</ButtonAsLink>
             </div>
           </div>
         </div>
