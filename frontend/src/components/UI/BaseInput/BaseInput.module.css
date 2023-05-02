@@ -1,0 +1,9 @@
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  font-size: 1.8rem;
+  color: var(--black);
+  padding: 1.4rem;
+  background-color: var(--light_bg);
+}

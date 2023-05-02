@@ -65,6 +65,14 @@ section {
   text-transform: capitalize;
   margin-bottom: 2rem;
 }
+.btn_block{
+  color: var(--main_color);
+}
+.btn_inline{
+  display: inline-block;
+  width: 100%;
+  background-color: #e74c3c;
+}
 
 /* Media queries */
 
@@ -90,4 +98,11 @@ section {
   html {
     font-size: 50%;
   }
+}
+
+
+.hight_liter {
+  background: red;
+  color: white;
+  font-weight: inherit;
 }

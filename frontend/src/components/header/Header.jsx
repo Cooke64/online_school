@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./Header.css";
-import Input from "../UI/BaseInput/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
-  faGear,
+  faRefresh,
   faSearch,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import Profile from "./components_header/profile/Profile";
 import Navbar from "./components_header/Navbar/Navbar";
 
-export default function Header() {
-  const [search_data, setSearchData] = useState("");
-
+export default function Header({ addSearchData }) {
   const [profileVisibility, setProfileVisibility] = useState(false);
   const [seacrhVisibility, setSeacrhVisibility] = useState(false);
   const [navbarVisibility, setNavbarVisibility] = useState(false);
@@ -34,22 +31,21 @@ export default function Header() {
 
   const changeSideBarVisibility = () => {
     setNavbarVisibility(!navbarVisibility);
-    
   };
-
-
 
   useEffect(() => {
     setProfileVisibility();
     setSeacrhVisibility();
   }, []);
 
-
   useEffect(() => {
     navbarVisibility
-    ? document.body.classList.add('active_bar')
-    : document.body.classList.remove('active_bar')
-  },[navbarVisibility])
+      ? document.body.classList.add("active_bar")
+      : document.body.classList.remove("active_bar");
+  }, [navbarVisibility]);
+
+
+
 
   return (
     <>
@@ -58,32 +54,35 @@ export default function Header() {
           <a href="index.html" className="logo">
             Educated
           </a>
-          <form
+          <div
             className={
               seacrhVisibility ? "search_form active_search" : "search_form"
             }
           >
-            <Input
-              onChange={(e) => setSearchData(e.target.value)}
-              value={search_data}
+            <input
+              onChange={(e) => addSearchData(e.target.value)}
+              defaultValue=""
               required
               maxLength="100"
               placeholder="Добавить заголовок"
               className="search_body"
             />
-            <FontAwesomeIcon icon={faSearch} />
-          </form>
+            <FontAwesomeIcon icon={faSearch}/>
+          </div>
 
           <div className="icons_menu">
-            <FontAwesomeIcon icon={faBars} className="icon" onClick={changeSideBarVisibility}/>
-            <FontAwesomeIcon icon={faGear} className="icon" />
+            <FontAwesomeIcon
+              icon={faBars}
+              className="icon"
+              onClick={changeSideBarVisibility}
+            />
             <FontAwesomeIcon
               icon={faUser}
               className="icon"
               onClick={changeProfileVisibility}
             />
             <FontAwesomeIcon
-              icon={faSearch}
+              icon={faRefresh}
               className="icon"
               onClick={changeSeacrhVisibility}
             />
@@ -93,7 +92,10 @@ export default function Header() {
       </header>
       <div>
         <Profile />
-        <Navbar navbarVisibility={navbarVisibility} changeSideBarVisibility={changeSideBarVisibility}/>
+        <Navbar
+          navbarVisibility={navbarVisibility}
+          changeSideBarVisibility={changeSideBarVisibility}
+        />
       </div>
     </>
   );
