@@ -36,7 +36,7 @@ const TeacherItem = ({ teacher_data }) => {
         </div>
 
         <ButtonAsLink
-          href={link}
+          to={link}
           button_type="inline"
           btn_action="click"
           className={cls.button_teacher}

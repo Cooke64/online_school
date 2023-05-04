@@ -33,6 +33,7 @@ class TeacherShow(TeacherStatistics):
 
 
 class ShowCourse(OrmBaseModel):
+    id: int
     title: str
     description: str
     is_free: bool = False
