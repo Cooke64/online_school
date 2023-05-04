@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 15rem);
+  }
+  .container form {
+    background-color: #fff;
+    border: 0.5rem;
+    padding: 2rem;
+    text-align: center;
+    width: 50rem;
+  }
+  
+  form p {
+      padding-top: 1rem;
+      font-size: 1.7rem;
+      color: var(--light_dark);
+  }
+  .box{
+      width: 100%;
+      border-radius: .5rem;
+      margin: 1rem 0;
+      font-size: 1.8rem;
+      color: var(--black);
+      padding: 1.4rem;
+      background-color: var(--light_bg);
+  }

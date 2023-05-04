@@ -11,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ButtonAsLink from "../../../UI/ButtonAsLink/ButtonAsLink";
 import ProfileLogo from "../../../../img/profile.jpg";
+import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar({ navbarVisibility, changeSideBarVisibility }) {
   const styleName = navbarVisibility
@@ -32,26 +33,26 @@ export default function Navbar({ navbarVisibility, changeSideBarVisibility }) {
       </div>
 
       <div className={cls.side_bar}>
-        <a href="/">
+        <NavLink to="/">
           <FontAwesomeIcon icon={faHome} className={cls.side_icon} />{" "}
           <span>home</span>
-        </a>
-        <a href="/about">
+        </NavLink>
+        <NavLink to="/about">
           <FontAwesomeIcon icon={faQuestion} className={cls.side_icon} />{" "}
           <span>about</span>
-        </a>
-        <a href="/courses">
+        </NavLink>
+        <NavLink to="/courses">
           <FontAwesomeIcon icon={faGraduationCap} className={cls.side_icon} />{" "}
           <span>courses</span>
-        </a>
-        <a href="/teachers_list">
+        </NavLink>
+        <NavLink to="/teachers_list">
           <FontAwesomeIcon icon={faChalkboard} className={cls.side_icon} />{" "}
           <span>teachers</span>
-        </a>
-        <a href="/contact_us">
+        </NavLink>
+        <NavLink to="/contact_us">
           <FontAwesomeIcon icon={faContactCard} className={cls.side_icon} />{" "}
           <span>contact us</span>
-        </a>
+        </NavLink>
       </div>
     </div>
   );

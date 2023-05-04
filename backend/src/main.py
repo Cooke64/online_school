@@ -32,12 +32,14 @@ def get_application() -> FastAPI:
             version='1.2'
         )
 
+        origins = ["*"]
+
         application.add_middleware(
             CORSMiddleware,
-            allow_origins=settings.allowed_cors,
+            allow_origins=origins,
             allow_credentials=True,
-            allow_methods=settings.allowed_methods,
-            allow_headers=['*']
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
         create_router(application)
 

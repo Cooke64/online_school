@@ -1,5 +1,6 @@
 import React from "react";
 import "./ButtonAsLink.css";
+import { Link } from "react-router-dom";
 
 export default function ButtonAsLink({ children, ...props }) {
   // Выбор кнопки действия, которое может совершить пользователь и стиля отображения
@@ -22,9 +23,9 @@ export default function ButtonAsLink({ children, ...props }) {
     style += ' block_style'
   }
   return (
-      <a {...props} className={style}>
+      <Link {...props} className={style} activeClassName=''>
         {children}
-      </a>
+      </Link>
   );
 }
 

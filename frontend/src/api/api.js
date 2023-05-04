@@ -1,7 +1,7 @@
+/* eslint-disable import/no-anonymous-default-export */
 class Api {
   constructor(headers) {
     this.headers = headers
-    this.baseURL = "http://localhost:8000/api";
   }
 
 
@@ -69,6 +69,29 @@ class Api {
         }
       )
       .then(this.checkResponse)
+
+  
+  }
+  loginUser ({email, password}) {
+    const body =JSON.stringify({email, password})
+    return fetch(
+      `http://127.0.0.1:8000/user/login`,
+      {
+        method: 'post',
+        headers: this.headers,
+        body: body
+      }
+    ).then(this.checkResponse)
+  }
+
+  getMe () {
+    return fetch(
+      `http://127.0.0.1:8000/user/me`,
+      {
+        method: 'get',
+        headers: this.headers,
+      }
+    ).then(this.checkResponse)
   }
 
 }
@@ -76,6 +99,7 @@ class Api {
 
 export default new Api({
   'content-type': 'application/json',
-  'accept': 'application/json'
+  'accept': 'application/json',
+  "Access-Control-Allow-Origin": "*"
 
 })

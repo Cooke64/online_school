@@ -1,0 +1,10 @@
+.loader_div{
+    display: flex;
+    justify-content: center;
+    margin-top: 15rem;
+}
+.loader {
+    height: 50rem;
+    width: 25rem;
+    color: var(--main_color);
+}

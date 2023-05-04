@@ -16,6 +16,7 @@ class UserCreate(OrmBaseModel):
     username: constr(regex="^[A-Za-z0-9-_]+$", to_lower=True, strip_whitespace=True)
     first_name: str = Field(min_length=1, max_length=128)
     last_name: str = Field(min_length=1, max_length=128)
+    email: str
     password: str
     phone: str | None
 
@@ -59,3 +60,6 @@ class UserShowProfile(OrmBaseModel):
     username: str
     first_name: str
     last_name: str
+    role: str
+    is_active: bool
+    email: str

@@ -59,8 +59,11 @@ class UserType(str, Enum):
     teacher = "teacher"
 
 
-@router.post('/sign_up/{user_type}', response_model=UserCreateShowResult,
-             summary='Регистрация')
+@router.post(
+    '/sign_up/{user_type}',
+    response_model=UserCreateShowResult,
+    summary='Регистрация'
+)
 def sign_up_user(user: UserCreate = Body(
     ..., description="Данные пользователя при регистрации."),
         *,

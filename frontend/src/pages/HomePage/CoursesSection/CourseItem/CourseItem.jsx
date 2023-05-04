@@ -2,14 +2,10 @@ import React from "react";
 import cls from "./CourseItem.module.css";
 import ProfileLogo from "../../../../img/profile.jpg";
 import CourseBase from "../../../../img/course_base.png";
-import { Link } from "react-router-dom";
 import Image64 from "../../../../components/Image64";
-import BaseButton from "../../../../components/UI/BaseButton/BaseButton";
 import ButtonAsLink from "../../../../components/UI/ButtonAsLink/ButtonAsLink";
 
 export default function CourseItem({ course_item, query }) {
-  console.log(course_item)
-  
   function Hightlighter({ query, str }) {
     const parts = str.split(new RegExp(`(${query})`, "gi"));
     return (

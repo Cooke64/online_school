@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Profile from "./components_header/profile/Profile";
 import Navbar from "./components_header/Navbar/Navbar";
+import { Link } from "react-router-dom";
 
 export default function Header({ addSearchData }) {
   const [profileVisibility, setProfileVisibility] = useState(false);
@@ -17,26 +18,16 @@ export default function Header({ addSearchData }) {
 
   const changeProfileVisibility = () => {
     setProfileVisibility(!profileVisibility);
-    if (seacrhVisibility) {
-      setSeacrhVisibility(false);
-    }
   };
 
   const changeSeacrhVisibility = () => {
     setSeacrhVisibility(!seacrhVisibility);
-    if (profileVisibility) {
-      setProfileVisibility(false);
-    }
   };
 
   const changeSideBarVisibility = () => {
     setNavbarVisibility(!navbarVisibility);
   };
 
-  useEffect(() => {
-    setProfileVisibility();
-    setSeacrhVisibility();
-  }, []);
 
   useEffect(() => {
     navbarVisibility
@@ -49,11 +40,11 @@ export default function Header({ addSearchData }) {
 
   return (
     <>
-      <header className="header">
+      <header className="header" >
         <section className="flex_header">
-          <a href="index.html" className="logo">
+          <Link to="/" className="logo">
             Educated
-          </a>
+          </Link>
           <div
             className={
               seacrhVisibility ? "search_form active_search" : "search_form"
@@ -91,7 +82,7 @@ export default function Header({ addSearchData }) {
         </section>
       </header>
       <div>
-        <Profile />
+        <Profile onClick={(e) => e.stopPropagation()}/>
         <Navbar
           navbarVisibility={navbarVisibility}
           changeSideBarVisibility={changeSideBarVisibility}
