@@ -4,8 +4,12 @@ import CourseBase from "../../../img/course_base.png";
 import useAuth from "../../../hooks/useAuth";
 import api from "../../../api/api";
 import { useParams } from "react-router-dom";
+import BaseButton from "../../../components/UI/BaseButton/BaseButton";
+import { dataOptions } from "../../../services/Constants";
 
-const СommentItem = ({item} ) => {
+const СommentItem = ({ item }) => {
+
+  const date = new Date(item.created_at);
   return (
     <>
       <div className={cls.box}>
@@ -13,35 +17,28 @@ const СommentItem = ({item} ) => {
           <img src={CourseBase} alt="about_pic" className={cls.image_teacher} />
           <div>
             <h3>User Name</h3>
-            <span>{item.created_at}</span>
+            <span>{date.toLocaleString("ru", dataOptions)}</span>
           </div>
         </div>
 
-        <p className={cls.coomet_body}>
-          {item.text}
-        </p>
+        <p className={cls.coomet_body}>{item.text}</p>
         <div className={cls.flex_btn}>
-          <button className={cls.button}>редактировать</button>
-          <button className={cls.button}>удалить</button>
+          <BaseButton className={cls.button}>редактировать</BaseButton>
+          <BaseButton className={cls.button}>удалить</BaseButton>
         </div>
       </div>
     </>
   );
 };
 
-const AddComment = () => {
+const AddComment = ({ createComment }) => {
   const { course_id, lesson_id } = useParams();
   const [text, setText] = React.useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api
-      .addComment(course_id, lesson_id, text)
-      .then((result) => {
-      })
-      .catch((errors) => {
-        console.log(errors);
-      });
+    createComment(text);
+    // api.addComment(course_id, lesson_id, text)
   };
   return (
     <>
@@ -68,14 +65,14 @@ const AddComment = () => {
   );
 };
 
-export default function LessonComment({ comments }) {
+export default function LessonComment({ comments, createComment }) {
   const { isAuth } = useAuth();
   return (
     <section>
       {isAuth.userData.role === "Student" && (
         <>
           <h1 className="section_header">Добавить комментарий</h1>
-          <AddComment />
+          <AddComment createComment={createComment} />
         </>
       )}
 

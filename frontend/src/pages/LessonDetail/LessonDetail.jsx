@@ -28,11 +28,7 @@ const LessonBlockItem = ({ lessonPhotos }) => {
         <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
       ))}
       <div className={cls.flex}>
-        <ButtonAsLink
-          to="index.html"
-          button_type="inline"
-          btn_action="option"
-        >
+        <ButtonAsLink to="index.html" button_type="inline" btn_action="option">
           Слудующий урок
         </ButtonAsLink>
       </div>
@@ -43,7 +39,7 @@ const LessonBlockItem = ({ lessonPhotos }) => {
 export default function LessonDetail() {
   const { course_id, lesson_id } = useParams();
   const [canSeeLesson, setCanSeeLesson] = React.useState(true);
-  const [comments, setComments]= React.useState([true]);
+  const [comments, setComments] = React.useState([]);
   const [lesson, setLesson] = React.useState({
     content: "",
     title: "",
@@ -52,21 +48,28 @@ export default function LessonDetail() {
   });
 
   React.useEffect(() => {
-    api.getLessonDetail(course_id, lesson_id)
+    api
+      .getLessonDetail(course_id, lesson_id)
       .then(function (res) {
         setLesson({
           title: res.title,
           content: res.content,
           photos: res.photos,
-          lesson_comment: res.lesson_comment,
         });
+        setComments(res.lesson_comment);
       })
-      
+
       .catch(function () {
         setCanSeeLesson(false);
       });
   }, []);
-  
+
+
+  function createComment(newComment) {
+    const comment = {text: newComment, created_at: new Date()}
+    setComments([...comments, comment])
+  }
+
   return (
     <>
       <section>
@@ -75,7 +78,7 @@ export default function LessonDetail() {
           {canSeeLesson && <LessonBlockItem lessonPhotos={lesson.photos} />}
         </div>
       </section>
-      <LessonComment comments={lesson.lesson_comment} />
+      <LessonComment comments={comments} createComment={createComment} />
     </>
   );
 }
