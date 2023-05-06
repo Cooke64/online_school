@@ -9,9 +9,6 @@ from src.database import BaseModel
 
 class LessonComment(BaseModel):
     __tablename__ = 'lesson_comments'
-    __table_args__ = (
-        UniqueConstraint('student_id', 'lesson_id'),
-    )
     student_id = sa.Column(sa.Integer, sa.ForeignKey('students.id'))
     lesson_id = sa.Column(sa.Integer, sa.ForeignKey('lessons.id'))
     lesson = relationship('Lesson', back_populates='lesson_comment')

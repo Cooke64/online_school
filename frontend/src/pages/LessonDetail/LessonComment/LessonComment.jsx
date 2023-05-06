@@ -1,7 +1,11 @@
 import React from "react";
 import cls from "./LessonComment.module.css";
 import CourseBase from "../../../img/course_base.png";
-const СommentItem = ({ item }) => {
+import useAuth from "../../../hooks/useAuth";
+import api from "../../../api/api";
+import { useParams } from "react-router-dom";
+
+const СommentItem = ({item} ) => {
   return (
     <>
       <div className={cls.box}>
@@ -9,21 +13,16 @@ const СommentItem = ({ item }) => {
           <img src={CourseBase} alt="about_pic" className={cls.image_teacher} />
           <div>
             <h3>User Name</h3>
-            <span>Date comment</span>
+            <span>{item.created_at}</span>
           </div>
         </div>
 
         <p className={cls.coomet_body}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque
-          assumenda, explicabo voluptatibus vero est deserunt!
+          {item.text}
         </p>
         <div className={cls.flex_btn}>
-          <button className={cls.button}>
-            редактировать
-          </button>
-          <button className={cls.button}>
-            удалить
-          </button>
+          <button className={cls.button}>редактировать</button>
+          <button className={cls.button}>удалить</button>
         </div>
       </div>
     </>
@@ -31,16 +30,35 @@ const СommentItem = ({ item }) => {
 };
 
 const AddComment = () => {
+  const { course_id, lesson_id } = useParams();
+  const [text, setText] = React.useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    api
+      .addComment(course_id, lesson_id, text)
+      .then((result) => {
+      })
+      .catch((errors) => {
+        console.log(errors);
+      });
+  };
   return (
     <>
-      <form action="" method="post" className={cls.add_comment}>
+      <form
+        action=""
+        method="post"
+        className={cls.add_comment}
+        onSubmit={handleSubmit}
+      >
         <textarea
           required
           placeholder="Добавить комментарий"
           name="comment_box"
-          id=""
           cols="30"
           rows="10"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
         ></textarea>
         <button variant="outlined" className={cls.button}>
           добавить
@@ -51,20 +69,20 @@ const AddComment = () => {
 };
 
 export default function LessonComment({ comments }) {
+  const { isAuth } = useAuth();
   return (
     <section>
-      <h1 className="section_header">Добавить комментарий</h1>
-      <AddComment />
+      {isAuth.userData.role === "Student" && (
+        <>
+          <h1 className="section_header">Добавить комментарий</h1>
+          <AddComment />
+        </>
+      )}
+
       <h3 className="section_header">{comments.length} комментариев</h3>
       <div className={cls.show_comments}>
         {comments.map((item) => (
-          <СommentItem key={item.id} comment={item} />
-        ))}
-        {comments.map((item) => (
-          <СommentItem key={item.id} comment={item} />
-        ))}
-        {comments.map((item) => (
-          <СommentItem key={item.id} comment={item} />
+          <СommentItem key={item.id} item={item} />
         ))}
       </div>
     </section>

@@ -4,17 +4,14 @@ import BaseInput from "../../components/UI/BaseInput/BaseInput";
 import cls from "./LoginPage.module.css";
 import api from "../../api/api";
 import useAuth from "../../hooks/useAuth";
+import { Navigate, redirect } from "react-router-dom";
 
 export default function LoginPage() {
-  const { isAuth, setisAuth } = useAuth();
+  const { isAuth } = useAuth();
   const [state, setState] = React.useState({
     email: "",
     password: "",
   });
-
-  const updateIsAuth = () => {
-
-  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,16 +20,19 @@ export default function LoginPage() {
     api
       .loginUser({ email, password })
       .then((result) => {
-        console.log(result.Authorization);
-        setisAuth({ isUser: true });
+        localStorage.setItem("token", result.Authorization);
+        redirect("/profile")
       })
       .catch((errors) => {
         console.log(errors);
       });
   };
 
+  
+
   return (
     <section className={cls.container}>
+      {isAuth.isUser && <Navigate  to="/profile" replace/>}
       <form action="" method="post" onSubmit={handleSubmit}>
         <h1 className="section_header">Страничка регистрации</h1>
         <p>Мыло</p>

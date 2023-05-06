@@ -3,8 +3,7 @@ from starlette import status
 
 from src.auth.utils.auth_bearer import (
     UserPermission,
-    get_permission,
-    JWTBearer
+    get_permission
 )
 from src.lessons.crud import LessonCrud
 from src.lessons.shemas import LessonBase, CommentBase
@@ -64,15 +63,18 @@ def pass_lesson(
 
 
 @router.post(
-    '/{lesson_id}/add_comment',
+    '/{course_id}/{lesson_id}/add_comment',
     status_code=status.HTTP_201_CREATED,
     description='Добавить комментарий уроку по его id.',
     summary='Добавить комментарий'
 )
-def add_review_to_course_by_student(
+def add_comment(
         comment_data: CommentBase,
         lesson_id: int = Path(..., gt=0),
+        course_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
         permission: UserPermission = Depends(get_permission),
+
 ):
-    lesson_crud.add_comment_to_course(lesson_id, permission, comment_data)
+    lesson_crud.add_comment_to_lesson(
+        comment_data, lesson_id, course_id, permission)

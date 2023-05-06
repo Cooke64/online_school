@@ -200,8 +200,8 @@ class CourseCrud(BaseCrud):
         """Добавить отзыв на курс."""
         course = self.get_current_item(course_id, Course).first()
         student = self.get_student_by_email(permission.user_email)
-        new_review = CourseReview(student_id=student.id, course_id=course.id,
-                                  text=text.text)
+        new_review = CourseReview(
+            student_id=student.id, course_id=course.id, text=text.text)
         self.create_item(new_review)
 
     def delete_review(

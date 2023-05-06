@@ -2,7 +2,6 @@ import React from "react";
 import cls from "./ProfilePage.module.css";
 import CourseBase from "../../img/course_base.png";
 import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookReader,
@@ -19,12 +18,7 @@ export default function ProfilePage() {
           <img src={CourseBase} alt="about_pic" />
           <h3>Username</h3>
           <p>Status</p>
-
-          <Link to={`/update_profile`}>
-            <ButtonAsLink button_type="inline" btn_action="click">
-              Редактировать
-            </ButtonAsLink>
-          </Link>
+          <ButtonAsLink to={`/update_profile`}>Редактировать</ButtonAsLink>
         </div>
 
         <div className={cls.container}>

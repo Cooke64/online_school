@@ -29,7 +29,7 @@ const LessonBlockItem = ({ lessonPhotos }) => {
       ))}
       <div className={cls.flex}>
         <ButtonAsLink
-          href="index.html"
+          to="index.html"
           button_type="inline"
           btn_action="option"
         >
@@ -42,37 +42,40 @@ const LessonBlockItem = ({ lessonPhotos }) => {
 
 export default function LessonDetail() {
   const { course_id, lesson_id } = useParams();
-  const [lessonPhotos, setLessonPhotos] = React.useState([]);
-  const [lessonComments, setLessonComments] = React.useState([]);
   const [canSeeLesson, setCanSeeLesson] = React.useState(true);
+  const [comments, setComments]= React.useState([true]);
+  const [lesson, setLesson] = React.useState({
+    content: "",
+    title: "",
+    lesson_comment: [],
+    photos: [],
+  });
 
   React.useEffect(() => {
-    api
-      .getLessonDetail(course_id, lesson_id)
+    api.getLessonDetail(course_id, lesson_id)
       .then(function (res) {
-        setLessonPhotos(res.photos);
-        setLessonComments(res.lesson_comment)
+        setLesson({
+          title: res.title,
+          content: res.content,
+          photos: res.photos,
+          lesson_comment: res.lesson_comment,
+        });
       })
+      
       .catch(function () {
         setCanSeeLesson(false);
       });
-  }, [course_id, lesson_id]);
-
+  }, []);
+  
   return (
     <>
       <section>
-        <h1 className="section_header">
-          Урок #{lesson_id} курса #{course_id} какой-то
-        </h1>
+        <h1 className="section_header">{lesson.title}</h1>
         <div className={cls.lesson_detail}>
-          {canSeeLesson ? (
-            <LessonBlockItem lessonPhotos={lessonPhotos} />
-          ) : (
-            <div>Не может смотреть</div>
-          )}
+          {canSeeLesson && <LessonBlockItem lessonPhotos={lesson.photos} />}
         </div>
       </section>
-      <LessonComment comments={lessonPhotos}/>
+      <LessonComment comments={lesson.lesson_comment} />
     </>
   );
 }

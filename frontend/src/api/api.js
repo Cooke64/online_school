@@ -70,13 +70,19 @@ class Api {
       )
       .then(this.checkResponse)
 
-  
+
+
   }
-  loginUser ({email, password}) {
-    const body =JSON.stringify({email, password})
+  loginUser({
+    email,
+    password
+  }) {
+    const body = JSON.stringify({
+      email,
+      password
+    })
     return fetch(
-      `http://127.0.0.1:8000/user/login`,
-      {
+      `http://127.0.0.1:8000/user/login`, {
         method: 'post',
         headers: this.headers,
         body: body
@@ -84,12 +90,33 @@ class Api {
     ).then(this.checkResponse)
   }
 
-  getMe () {
+  getMe() {
+    const token = localStorage.getItem('token')
     return fetch(
-      `http://127.0.0.1:8000/user/me`,
-      {
+      `http://127.0.0.1:8000/user/me`, {
         method: 'get',
-        headers: this.headers,
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
+      }
+    ).then(this.checkResponse)
+  }
+  addComment(
+    course_id,
+    lesson_id,
+    text
+  ) {
+    const token = localStorage.getItem('token')
+    const body = JSON.stringify({text})
+    return fetch(
+      `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}/add_comment`, {
+        method: 'post',
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
+        body: body
       }
     ).then(this.checkResponse)
   }

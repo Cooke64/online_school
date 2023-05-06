@@ -23,7 +23,7 @@ export default function ButtonAsLink({ children, ...props }) {
     style += ' block_style'
   }
   return (
-      <Link {...props} className={style} activeClassName=''>
+      <Link {...props} className={style}>
         {children}
       </Link>
   );

@@ -94,20 +94,25 @@ class LessonCrud(BaseCrud):
         self.session.commit()
         return passed_lesson
 
-    def add_comment_to_course(
+    def add_comment_to_lesson(
             self,
+            text: CommentBase,
             lesson_id: int,
+            course_id: int,
             permission: UserPermission,
-            text: CommentBase
+
     ):
-        """Добавить отзыв на курс."""
-        course = self.get_current_item(lesson_id, Lesson).first()
+        """Добавить отзыв на урок."""
+        lesson = self.session.query(Lesson).filter(
+            Lesson.id == lesson_id, Lesson.course_id == course_id
+        ).first()
         student = self.session.query(
             Student).join(User).filter(
             User.email == permission.user_email
         ).first()
         new_comment = LessonComment(
             student_id=student.id,
-            course_id=course.id,
-            text=text.text)
+            lesson_id=lesson.id,
+            text=text.text
+        )
         self.create_item(new_comment)

@@ -62,7 +62,6 @@ section {
   border-bottom: var(--border);
   font-size: 2.5rem;
   color: var(--black);
-  text-transform: capitalize;
   margin-bottom: 2rem;
 }
 .btn_block {

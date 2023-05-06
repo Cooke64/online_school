@@ -11,8 +11,10 @@ import Image64 from "../../components/Image64";
 import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
 import Modal from "../../components/UI/Modal/Modal";
+import useAuth from "../../hooks/useAuth";
 
 export default function CourseDetail() {
+  const { isAuth, setisAuth } = useAuth();
   const { id } = useParams();
   const [course, setCourse] = React.useState({});
   const [visible, setVisible] = React.useState(false);
@@ -40,6 +42,7 @@ export default function CourseDetail() {
     });
   }, [id, course]);
 
+  console.log(item.username, isAuth.userData.username)
   const removeCourse = () => {
     console.log("deleted");
   };
@@ -91,21 +94,23 @@ export default function CourseDetail() {
                 <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />
                 <span>01.01.01</span>
               </div>
-              <div className={cls.deal_course}>
-                <ButtonAsLink
-                  button_type="btn"
-                  btn_action="option"
-                  to="/update"
-                >
-                  Редактировать курс
-                </ButtonAsLink>
-                <BaseButton
-                  onClick={() => setVisible(true)}
-                  className={"btn_inline"}
-                >
-                  Удалить курс
-                </BaseButton>
-              </div>
+              {isAuth.userData.username === item.username && (
+                <div className={cls.deal_course}>
+                  <ButtonAsLink
+                    button_type="btn"
+                    btn_action="option"
+                    to="/update"
+                  >
+                    Редактировать курс
+                  </ButtonAsLink>
+                  <BaseButton
+                    onClick={() => setVisible(true)}
+                    className={"btn_inline"}
+                  >
+                    Удалить курс
+                  </BaseButton>
+                </div>
+              )}
 
               <ButtonAsLink button_type="btn" btn_action="click" to="/register">
                 Приобрести курс
