@@ -108,7 +108,9 @@ class Api {
     text
   ) {
     const token = localStorage.getItem('token')
-    const body = JSON.stringify({text})
+    const body = JSON.stringify({
+      text
+    })
     return fetch(
       `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}/add_comment`, {
         method: 'post',
@@ -117,6 +119,21 @@ class Api {
           'Authorization': token
         },
         body: body
+      }
+    ).then(this.checkResponse)
+  }
+  removeComment(
+    lesson_id,
+    comment_id,
+  ) {
+    const token = localStorage.getItem('token')
+    return fetch(
+      `http://127.0.0.1:8000/lesson/${lesson_id}/remove_comment/${comment_id}`, {
+        method: 'delete',
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
       }
     ).then(this.checkResponse)
   }

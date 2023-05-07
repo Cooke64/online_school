@@ -61,9 +61,16 @@ class StudentCrud(BaseCrud):
         passsed_today, last_month = self._get_lessons_passed_today(
             user.student.id)
         progress = self.get_course_progress(user.student.id)
+        left_comments = 123
+        evalueted_courses = 123
         return {
             'purchased_courses': purchased_courses,
             'pass_lessons_today': passsed_today,
             'pass_lessons_last_month': last_month,
-            'progres': progress
+            'progres': progress,
+            'left_comments': left_comments,
+            'evalueted_courses': evalueted_courses
         }
+
+    def get_student_statistics(self):
+        pass

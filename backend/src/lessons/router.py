@@ -6,7 +6,7 @@ from src.auth.utils.auth_bearer import (
     get_permission
 )
 from src.lessons.crud import LessonCrud
-from src.lessons.shemas import LessonBase, CommentBase
+from src.lessons.shemas import LessonBase, CommentBase, LessonDetail
 
 router = APIRouter(prefix='/lesson', tags=['Страница уроков курса'])
 
@@ -20,7 +20,7 @@ def get_all_lessons_current_course(
     return lesson_crud.get_all_course_lessons(course_id)
 
 
-@router.get('/{course_id}/{lessons_id}')
+@router.get('/{course_id}/{lessons_id}', response_model=LessonDetail)
 def get_lesson_from_current_course(
         course_id: int,
         lessons_id: int,
@@ -78,3 +78,18 @@ def add_comment(
 ):
     lesson_crud.add_comment_to_lesson(
         comment_data, lesson_id, course_id, permission)
+
+
+@router.delete(
+    '/{lesson_id}/remove_comment/{comment_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Добавить комментарий уроку по его id.',
+    summary='Добавить комментарий'
+)
+def remove_comment(
+        comment_id: int = Path(..., gt=0),
+        lesson_id: int = Path(..., gt=0),
+        lesson_crud: LessonCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
+):
+    lesson_crud.remove_comment_from_lesson(comment_id, lesson_id, permission)

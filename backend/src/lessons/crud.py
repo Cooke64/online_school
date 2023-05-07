@@ -43,12 +43,13 @@ class LessonCrud(BaseCrud):
             lessons_id: int,
             permission: UserPermission) -> Lesson:
         lesson: Lesson = self.session.query(Lesson).options(
-            joinedload(Lesson.lesson_comment)).options(
+            joinedload(Lesson.lesson_comment).options(joinedload(
+                LessonComment.student
+            ).options(joinedload(Student.user)))).options(
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
                 Lesson.course_id == course_id, Lesson.id == lessons_id
             )).first()
-        print(lesson)
         if lesson and lesson.is_trial:
             return lesson
         user = self.get_user_by_email(User, permission.user_email)
@@ -104,7 +105,7 @@ class LessonCrud(BaseCrud):
     ):
         """Добавить отзыв на урок."""
         lesson = self.session.query(Lesson).filter(
-            Lesson.id == lesson_id, Lesson.course_id == course_id
+            and_(Lesson.id == lesson_id, Lesson.course_id == course_id)
         ).first()
         student = self.session.query(
             Student).join(User).filter(
@@ -116,3 +117,22 @@ class LessonCrud(BaseCrud):
             text=text.text
         )
         self.create_item(new_comment)
+
+    def remove_comment_from_lesson(
+            self, comment_id: int, lesson_id: int,
+            permission: UserPermission):
+        student = self.session.query(
+            Student).join(User).filter(
+            User.email == permission.user_email
+        ).first()
+        comment = self.session.query(LessonComment).filter(
+            and_(
+                LessonComment.student_id == student.id,
+                LessonComment.lesson_id == lesson_id,
+                LessonComment.id == comment_id
+
+            )
+        ).first()
+        if not comment:
+            raise NotFound
+        self.remove_item(comment.id, LessonComment)

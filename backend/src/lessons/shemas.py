@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from src.users.shemas import UserShowProfile
 from src.utils.base_schemas import OrmBaseModel
 
 
@@ -19,3 +22,26 @@ class LessonBase(OrmBaseModel):
 
 class CommentBase(OrmBaseModel):
     text: str
+
+
+class UserComment(OrmBaseModel):
+    id: int
+    username: str
+
+
+class StudentInComment(OrmBaseModel):
+    user: UserComment
+
+
+class CommentInLesson(CommentBase):
+    id: int
+    lesson_id: int
+    student_id: int
+    student: StudentInComment
+    created_at: datetime
+
+
+class LessonDetail(LessonBase):
+    photos: list
+    videos: list
+    lesson_comment: list[CommentInLesson]

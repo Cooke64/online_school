@@ -22,14 +22,21 @@ const ImageWithText = ({ photo, text }) => {
 };
 
 const LessonBlockItem = ({ lessonPhotos }) => {
+  const { course_id, lesson_id } = useParams();
+  const lessonInCourse = lesson_id
+  const nextLink = `/course/${course_id}/lesson/${2}`
+  const prevLink = `/course/${course_id}/lesson/${2}`
   return (
     <>
       {lessonPhotos.map((photo) => (
         <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
       ))}
       <div className={cls.flex}>
-        <ButtonAsLink to="index.html" button_type="inline" btn_action="option">
+        <ButtonAsLink to={nextLink} button_type="inline" btn_action="option">
           Слудующий урок
+        </ButtonAsLink>
+        <ButtonAsLink to={prevLink} button_type="inline" btn_action="option">
+          Предыдущий урок
         </ButtonAsLink>
       </div>
     </>
@@ -64,12 +71,13 @@ export default function LessonDetail() {
       });
   }, []);
 
-
   function createComment(newComment) {
-    const comment = {text: newComment, created_at: new Date()}
-    setComments([...comments, comment])
+    const comment = { text: newComment, created_at: new Date() };
+    setComments([...comments, comment]);
   }
-
+  function removeComment(comment_id) {
+    setComments(comments.filter((p) => p.id !== comment_id));
+  }
   return (
     <>
       <section>
@@ -78,7 +86,11 @@ export default function LessonDetail() {
           {canSeeLesson && <LessonBlockItem lessonPhotos={lesson.photos} />}
         </div>
       </section>
-      <LessonComment comments={comments} createComment={createComment} />
+      <LessonComment
+        comments={comments}
+        createComment={createComment}
+        removeComment={removeComment}
+      />
     </>
   );
 }

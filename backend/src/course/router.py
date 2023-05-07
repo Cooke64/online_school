@@ -41,7 +41,7 @@ def get_all_courses(course_crud: CourseCrud = Depends()):
 
 @router.get(
     '/{course_id}',
-    response_model=CourseDetail,
+    # response_model=CourseDetail,
     responses={404: {"model": ErrorMessage}},
     summary='Получить курс по его id'
 )

@@ -7,8 +7,14 @@ import { useParams } from "react-router-dom";
 import BaseButton from "../../../components/UI/BaseButton/BaseButton";
 import { dataOptions } from "../../../services/Constants";
 
-const СommentItem = ({ item }) => {
-
+const СommentItem = ({ item, removeComment }) => {
+  const { isAuth } = useAuth();
+  const { lesson_id } = useParams();
+  const handlerClick = (e) => {
+    e.preventDefault();
+    api.removeComment(lesson_id, item.id);
+    removeComment(item.id);
+  };
   const date = new Date(item.created_at);
   return (
     <>
@@ -16,16 +22,20 @@ const СommentItem = ({ item }) => {
         <div className={cls.user}>
           <img src={CourseBase} alt="about_pic" className={cls.image_teacher} />
           <div>
-            <h3>User Name</h3>
+            <h3>{item.student.user.username}</h3>
             <span>{date.toLocaleString("ru", dataOptions)}</span>
           </div>
         </div>
 
         <p className={cls.coomet_body}>{item.text}</p>
-        <div className={cls.flex_btn}>
-          <BaseButton className={cls.button}>редактировать</BaseButton>
-          <BaseButton className={cls.button}>удалить</BaseButton>
-        </div>
+        {isAuth.userData.username === item.student.user.username && (
+          <div className={cls.flex_btn}>
+            <BaseButton className={cls.button}>редактировать</BaseButton>
+            <BaseButton className={cls.button} onClick={handlerClick}>
+              удалить
+            </BaseButton>
+          </div>
+        )}
       </div>
     </>
   );
@@ -38,7 +48,7 @@ const AddComment = ({ createComment }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     createComment(text);
-    // api.addComment(course_id, lesson_id, text)
+    api.addComment(course_id, lesson_id, text);
   };
   return (
     <>
@@ -65,7 +75,11 @@ const AddComment = ({ createComment }) => {
   );
 };
 
-export default function LessonComment({ comments, createComment }) {
+export default function LessonComment({
+  comments,
+  createComment,
+  removeComment,
+}) {
   const { isAuth } = useAuth();
   return (
     <section>
@@ -79,7 +93,11 @@ export default function LessonComment({ comments, createComment }) {
       <h3 className="section_header">{comments.length} комментариев</h3>
       <div className={cls.show_comments}>
         {comments.map((item) => (
-          <СommentItem key={item.id} item={item} />
+          <СommentItem
+            key={item.id}
+            item={item}
+            removeComment={removeComment}
+          />
         ))}
       </div>
     </section>

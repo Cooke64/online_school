@@ -12,4 +12,4 @@ class ChoiceType(types.TypeDecorator):
         return [k for k, v in self.choices.items() if v == value][0]
 
     def process_result_value(self, value, dialect):
-        return self.choices[value]
+        return self.choices.get(value)

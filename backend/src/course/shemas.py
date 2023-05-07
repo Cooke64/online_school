@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 from src.lessons.shemas import LessonBase
@@ -61,6 +63,7 @@ class CourseListShow(OrmBaseModel):
 
 class CourseInDetail(CourseBase):
     id: int
+    created_at: datetime
     teachers: list[ShowTeacherInCourseList] | None
     lessons: list[LessonBase] | None
     course_preview: CoursePreview

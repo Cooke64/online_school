@@ -60,6 +60,32 @@ export default function ProfilePage() {
               Смотреть комментарии
             </ButtonAsLink>
           </div>
+          
+          <div className={cls.box}>
+            <div className={cls.flex}>
+              <FontAwesomeIcon icon={faComment} className={cls.save_icon} />
+              <div>
+                <h3>44</h3>
+                <span>комментариев</span>
+              </div>
+            </div>
+            <ButtonAsLink button_type="inline" btn_action="click">
+              Смотреть комментарии
+            </ButtonAsLink>
+          </div>
+
+          <div className={cls.box}>
+            <div className={cls.flex}>
+              <FontAwesomeIcon icon={faComment} className={cls.save_icon} />
+              <div>
+                <h3>44</h3>
+                <span>комментариев</span>
+              </div>
+            </div>
+            <ButtonAsLink button_type="inline" btn_action="click">
+              Смотреть комментарии
+            </ButtonAsLink>
+          </div>
         </div>
       </div>
     </section>

@@ -1,8 +1,6 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import cls from "./CourseDetail.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 import LessonInCourse from "./LessonInCourse/LessonInCourse";
@@ -40,17 +38,16 @@ export default function CourseDetail() {
         lessons: res.course.lessons,
       });
     });
-  }, [id, course]);
+  }, []);
 
-  console.log(item.username, isAuth.userData.username)
   const removeCourse = () => {
     console.log("deleted");
   };
-
+  
   return (
     <>
       <section>
-        <h1 className="section_header">Курс какой-то</h1>
+        <h1 className="section_header">{course.course.title}</h1>
         <div className={cls.row}>
           <div className={cls.column}>
             <div className={cls.image_course}>
@@ -64,13 +61,13 @@ export default function CourseDetail() {
           </div>
           <div className={cls.column}>
             <div className={cls.teacher_data}>
-              <a href={item.link} className={cls.box}>
+              <Link to={item.link} className={cls.box}>
                 <img
                   src={CourseBase}
                   alt="about_pic"
                   className={cls.image_teacher}
                 />
-              </a>
+              </Link>
               <div>
                 <h3>{item.username}</h3>
                 <span>{item.teacherDescr}</span>
@@ -83,17 +80,13 @@ export default function CourseDetail() {
                   name="size-large"
                   size="large"
                   defaultValue={5}
-                  value={item.rating}
+                  value={Number(item.rating)}
                   onChange={(event, newValue) => {
                     setItem({ ...item, rating: newValue });
                   }}
                 />
               </div>
               <p>{item.course.description}</p>
-              <div className={cls.date}>
-                <FontAwesomeIcon icon={faCalendar} className={cls.date_icon} />
-                <span>01.01.01</span>
-              </div>
               {isAuth.userData.username === item.username && (
                 <div className={cls.deal_course}>
                   <ButtonAsLink
