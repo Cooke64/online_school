@@ -64,13 +64,7 @@ export default function TeacherDetail() {
       <section>
         <h1 className="section_header">Курсы преподавателя</h1>
         <div className={cls.container}>
-          {searchedCourses.map((course_item) => (
-          <CourseItem
-            key={course_item.id}
-            course_item={course_item}
-            query={searchQuery}
-          />
-        ))}
+          
         </div>
       </section>
     </>

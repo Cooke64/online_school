@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from src.users.shemas import UserShowProfile
 from src.utils.base_schemas import OrmBaseModel
 
 
@@ -45,3 +44,8 @@ class LessonDetail(LessonBase):
     photos: list
     videos: list
     lesson_comment: list[CommentInLesson]
+
+
+class ShowLessonDetail(OrmBaseModel):
+    count_lessons: int
+    lesson: LessonDetail

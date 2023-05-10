@@ -17,7 +17,8 @@ import UpdateProfile from "./UpdateProfile/UpdateProfile";
 import CreateCourse from "./CreateCourse/CreateCourse";
 import LoginPage from "./LoginPage/LoginPage";
 import RequiredAuth from "./RequiredAuth";
-
+import PassToday from "./ProfilePage/PassToday/PassToday";
+import PassLastMonth from "./ProfilePage/PassLastMonth/PassLastMonth";
 export default function AppRoutes() {
   return (
     <Routes>
@@ -40,6 +41,8 @@ export default function AppRoutes() {
 
         <Route element={<RequiredAuth />}>
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/passed_today" element={<PassToday />} />
+          <Route path="/profile/passed_last_month" element={<PassLastMonth />} />
           <Route path="/update_profile" element={<UpdateProfile />} />
         <Route path="/create_course" element={<CreateCourse />} />
         </Route>

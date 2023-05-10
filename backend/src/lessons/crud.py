@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
@@ -41,7 +43,7 @@ class LessonCrud(BaseCrud):
             self,
             course_id: int,
             lessons_id: int,
-            permission: UserPermission) -> Lesson:
+            permission: UserPermission) -> dict:
         lesson: Lesson = self.session.query(Lesson).options(
             joinedload(Lesson.lesson_comment).options(joinedload(
                 LessonComment.student
@@ -50,14 +52,15 @@ class LessonCrud(BaseCrud):
             joinedload(Lesson.videos)).filter(and_(
                 Lesson.course_id == course_id, Lesson.id == lessons_id
             )).first()
+        count_lessons = self.session.query(Lesson).filter(Lesson.course_id == course_id).count()
         if lesson and lesson.is_trial:
-            return lesson
+            return {'lesson': lesson, 'count_lessons': count_lessons}
         user = self.get_user_by_email(User, permission.user_email)
         if not user:
             raise PermissionDenied
         user_course = self._get_user_course(course_id, user.student.id)
         if user_course and user_course.has_paid:
-            return lesson
+            return {'lesson': lesson, 'count_lessons': count_lessons}
         raise PermissionDenied
 
     def add_lesson_to_course(

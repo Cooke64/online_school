@@ -137,7 +137,33 @@ class Api {
       }
     ).then(this.checkResponse)
   }
-
+  getStudentProfile() {
+    const token = localStorage.getItem('token')
+    return fetch(
+      `http://127.0.0.1:8000/student/my_courses`, {
+        method: 'get',
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
+      }
+    ).then(this.checkResponse)
+    
+  }
+  getPassedLessons() {
+    const token = localStorage.getItem('token')
+    return fetch(
+      `http://127.0.0.1:8000/student/passed_lessons`, {
+        method: 'get',
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
+      }
+    ).then(this.checkResponse)
+    
+  }
+  
 }
 
 

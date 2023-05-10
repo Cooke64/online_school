@@ -7,7 +7,7 @@ import useAuth from "../../hooks/useAuth";
 import { Navigate, redirect } from "react-router-dom";
 
 export default function LoginPage() {
-  const { isAuth } = useAuth();
+  const { isAuth, setisAuth } = useAuth();
   const [state, setState] = React.useState({
     email: "",
     password: "",
@@ -17,23 +17,34 @@ export default function LoginPage() {
     e.preventDefault();
     const email = state.email;
     const password = state.password;
+
     api
       .loginUser({ email, password })
       .then((result) => {
         localStorage.setItem("token", result.Authorization);
-        redirect("/profile")
+        api
+          .getMe()
+          .then((res) => {
+            setisAuth({ isUser: true, userData: res });
+          })
+          .catch((err) => {
+            const errors = Object.values(err);
+            if (errors) {
+              alert(errors.join(", "));
+            }
+          });
       })
       .catch((errors) => {
         console.log(errors);
       });
-  };
 
-  
+    redirect("/profile");
+  };
 
   return (
     <section className={cls.container}>
-      {isAuth.isUser && <Navigate  to="/profile" replace/>}
-      <form action="" method="post" onSubmit={handleSubmit}>
+      {isAuth.isUser && <Navigate to="/profile" replace />}
+      <form action="" method="post">
         <h1 className="section_header">Страничка регистрации</h1>
         <p>Мыло</p>
         <BaseInput
@@ -51,7 +62,7 @@ export default function LoginPage() {
           onChange={(e) => setState({ ...state, password: e.target.value })}
           className={cls.box}
         />
-        <BaseButton>Войти</BaseButton>
+        <BaseButton onClick={handleSubmit}>Войти</BaseButton>
       </form>
     </section>
   );

@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import Image64 from "../../components/Image64";
 import LessonComment from "./LessonComment/LessonComment";
+import { useNavigate } from "react-router-dom";
+import BaseButton from "../../components/UI/BaseButton/BaseButton";
 
 const ImageWithText = ({ photo, text }) => {
   return (
@@ -21,31 +23,50 @@ const ImageWithText = ({ photo, text }) => {
   );
 };
 
-const LessonBlockItem = ({ lessonPhotos }) => {
+const NextprevButton = ({ count }) => {
   const { course_id, lesson_id } = useParams();
-  const lessonInCourse = lesson_id
-  const nextLink = `/course/${course_id}/lesson/${2}`
-  const prevLink = `/course/${course_id}/lesson/${2}`
+  const lessonId = Number(lesson_id);
+  return (
+    <>
+      {lessonId - 1 > 0 && (
+        <ButtonAsLink
+          to={`/course/${course_id}/lesson/${lessonId - 1}`}
+          button_type="inline"
+          btn_action="option"
+        >
+          Предыдущий урок
+        </ButtonAsLink>
+      )}
+      {lessonId + 1 <= count && (
+        <ButtonAsLink
+          to={`/course/${course_id}/lesson/${lessonId + 1}`}
+          button_type="inline"
+          btn_action="option"
+        >
+          Слудующий урок
+        </ButtonAsLink>
+      )}
+    </>
+  );
+};
+
+const LessonBlockItem = ({ lessonPhotos, count }) => {
   return (
     <>
       {lessonPhotos.map((photo) => (
         <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
       ))}
-      <div className={cls.flex}>
-        <ButtonAsLink to={nextLink} button_type="inline" btn_action="option">
-          Слудующий урок
-        </ButtonAsLink>
-        <ButtonAsLink to={prevLink} button_type="inline" btn_action="option">
-          Предыдущий урок
-        </ButtonAsLink>
-      </div>
+      <div className={cls.flex}></div>
+      <NextprevButton count={count} />
     </>
   );
 };
 
 export default function LessonDetail() {
   const { course_id, lesson_id } = useParams();
+  const lessonId = Number(lesson_id);
   const [canSeeLesson, setCanSeeLesson] = React.useState(true);
+  const [amountLessons, setAmountLessons] = React.useState(0);
   const [comments, setComments] = React.useState([]);
   const [lesson, setLesson] = React.useState({
     content: "",
@@ -58,18 +79,20 @@ export default function LessonDetail() {
     api
       .getLessonDetail(course_id, lesson_id)
       .then(function (res) {
+        const lesson = res.lesson;
         setLesson({
-          title: res.title,
-          content: res.content,
-          photos: res.photos,
+          title: lesson.title,
+          content: lesson.content,
+          photos: lesson.photos,
         });
-        setComments(res.lesson_comment);
+        setComments(lesson.lesson_comment);
+        setAmountLessons(res.count_lessons);
       })
 
       .catch(function () {
         setCanSeeLesson(false);
       });
-  }, []);
+  }, [lesson_id, course_id]);
 
   function createComment(newComment) {
     const comment = { text: newComment, created_at: new Date() };
@@ -80,17 +103,38 @@ export default function LessonDetail() {
   }
   return (
     <>
-      <section>
-        <h1 className="section_header">{lesson.title}</h1>
-        <div className={cls.lesson_detail}>
-          {canSeeLesson && <LessonBlockItem lessonPhotos={lesson.photos} />}
-        </div>
-      </section>
-      <LessonComment
-        comments={comments}
-        createComment={createComment}
-        removeComment={removeComment}
-      />
+      {canSeeLesson ? (
+        <>
+          <section>
+            <h1 className="section_header">{lesson.title}</h1>
+            <div className={cls.lesson_detail}>
+              <LessonBlockItem
+                lessonPhotos={lesson.photos}
+                count={amountLessons}
+              />
+            </div>
+          </section>
+          <LessonComment
+            comments={comments}
+            createComment={createComment}
+            removeComment={removeComment}
+          />
+        </>
+      ) : (
+        <section>
+          <h1 className="section_header" style={{ color: "red" }}>
+            Пройдите предыдущие уроки
+          </h1>
+          <ButtonAsLink
+            to={`/course/${course_id}/lesson/${lessonId - 1}`}
+            button_type="inline"
+            btn_action="option"
+            onClick={() => setCanSeeLesson(true)}
+          >
+            Назад
+          </ButtonAsLink>
+        </section>
+      )}
     </>
   );
 }

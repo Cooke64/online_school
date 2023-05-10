@@ -33,7 +33,7 @@ export default function CourseDetail() {
         rating: res.rating,
         blob: res.course.course_preview.photo_blob,
         link: `/teacher/${res.course.teachers[0].id}`,
-        username: res.course.teachers[0].user_data.username,
+        username: res.course.teachers[0].user.username,
         teacherDescr: res.course.teachers[0].description,
         lessons: res.course.lessons,
       });
@@ -47,7 +47,7 @@ export default function CourseDetail() {
   return (
     <>
       <section>
-        <h1 className="section_header">{course.course.title}</h1>
+        <h1 className="section_header">{item.course.title}</h1>
         <div className={cls.row}>
           <div className={cls.column}>
             <div className={cls.image_course}>

@@ -6,7 +6,7 @@ from src.auth.utils.auth_bearer import (
     get_permission
 )
 from src.lessons.crud import LessonCrud
-from src.lessons.shemas import LessonBase, CommentBase, LessonDetail
+from src.lessons.shemas import LessonBase, CommentBase, ShowLessonDetail
 
 router = APIRouter(prefix='/lesson', tags=['Страница уроков курса'])
 
@@ -20,7 +20,7 @@ def get_all_lessons_current_course(
     return lesson_crud.get_all_course_lessons(course_id)
 
 
-@router.get('/{course_id}/{lessons_id}', response_model=LessonDetail)
+@router.get('/{course_id}/{lessons_id}', response_model=ShowLessonDetail)
 def get_lesson_from_current_course(
         course_id: int,
         lessons_id: int,
@@ -31,8 +31,8 @@ def get_lesson_from_current_course(
     Возвращает урок по его id из курса. Если урок платный, или пользователь не получил доступ
     к курсу, то возвращает ответ 403.
     """
-    return lesson_crud.get_lesson_from_course(
-        course_id, lessons_id, permission)
+    return lesson_crud.get_lesson_from_course(course_id, lessons_id,
+                                              permission)
 
 
 @router.post('/{course_id}', status_code=status.HTTP_201_CREATED)
@@ -58,8 +58,7 @@ def pass_lesson(
     Делает пометку в бд, что студент прошел данный урок и текущего курса.
     Обновляет время прохождения урока.
     """
-    return lesson_crud.get_lesson_from_course(
-        lessons_id, permission.user_email)
+    return lesson_crud.make_lessone_done(lessons_id, permission)
 
 
 @router.post(

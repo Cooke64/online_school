@@ -7,9 +7,9 @@ function App() {
   const [isAuth, setisAuth] = React.useState({
     isUser: false,
     userData: {
-      emai: "",
-       first_name: '',
-       last_name: '',
+      emai: " ",
+       first_name: ' ',
+       last_name: ' ',
         is_active: true,
          role: 'Student',
           username: ''
@@ -18,14 +18,12 @@ function App() {
 
   React.useEffect(() => {
     if (localStorage.getItem('token')){
-      updateIsAuth()
-  }}, [])
+      api.getMe().then((res) => {
+        setisAuth({ isUser: true, userData: res });
+      })
+      .catch(err => console.log(err));
+  }}, [isAuth.isUser])
 
-  const updateIsAuth = () => {
-    api.getMe().then((res) => {
-      setisAuth({ isUser: true, userData: res });
-    });
-  };
 
   return (
     <AuthContext.Provider value={{isAuth, setisAuth}}>

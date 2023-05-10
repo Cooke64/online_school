@@ -36,7 +36,7 @@ export default function Profile({ profileVisibility, short = false }) {
             Профиль
           </ButtonAsLink>
           <BaseButton onClick={logOut} className="btn_inline">
-            выйти
+            Выйти
           </BaseButton>
         </>
       ) : (
