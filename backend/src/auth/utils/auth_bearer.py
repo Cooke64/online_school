@@ -85,7 +85,7 @@ async def get_student_email(
 
 async def get_teacher_permission(
         permission: UserPermission = Depends(get_permission)
-) -> str | None:
+) -> UserPermission:
     if permission.role == RolesType.teacher.value:
-        return permission.user_email
+        return permission
     raise PermissionDenied

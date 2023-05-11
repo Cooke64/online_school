@@ -149,11 +149,11 @@ def remove_course_from_users_list(
     )
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED,)
+@router.post('/', status_code=status.HTTP_201_CREATED)
 def create_course(
         course_data: CreateCourse,
         course_crud: CourseCrud = Depends(),
-        permission: UserPermission = Depends(get_teacher_permission),
+        permission: UserPermission = Depends(get_permission),
 ):
     return course_crud.create_new_course(course_data, permission)
 

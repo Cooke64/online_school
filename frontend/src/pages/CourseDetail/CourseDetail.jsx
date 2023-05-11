@@ -10,17 +10,44 @@ import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
 import Modal from "../../components/UI/Modal/Modal";
 import useAuth from "../../hooks/useAuth";
+import { Navigate } from "react-router-dom";
+
+const DeleteCourse = ({ setVisible, course_id }) => {
+  const [deleted, setDeleted] = React.useState(false);
+
+  const deleteHandler = (e) => {
+    e.preventDefault();
+    api.removeCourse(course_id);
+    setVisible(false);
+    setDeleted(true);
+  };
+  return (
+    <div className={cls.deleted_box}>
+      <h1 className="section_header">Действительно хотите удалить курса</h1>
+      <div className={cls.deal_course}>
+        {deleted && <Navigate to="/courses" replace />}
+
+        <BaseButton onClick={deleteHandler} className={"btn_inline"}>
+          Да, удалить.
+        </BaseButton>
+        <BaseButton onClick={() => setVisible(false)} className={"btn_inline"}>
+          Не удалять.
+        </BaseButton>
+      </div>
+    </div>
+  );
+};
 
 export default function CourseDetail() {
-  const { isAuth, setisAuth } = useAuth();
+  const { isAuth } = useAuth();
   const { id } = useParams();
   const [course, setCourse] = React.useState({});
   const [visible, setVisible] = React.useState(false);
   const [item, setItem] = React.useState({
     course: {},
-    rating: "",
-    blob: "",
-    link: "",
+    rating: " ",
+    blob: " ",
+    link: " ",
     teacher: {},
     lessons: [],
   });
@@ -31,7 +58,7 @@ export default function CourseDetail() {
       setItem({
         course: res.course,
         rating: res.rating,
-        blob: res.course.course_preview.photo_blob,
+        blob: res.course.course_preview?.photo_blob,
         link: `/teacher/${res.course.teachers[0].id}`,
         username: res.course.teachers[0].user.username,
         teacherDescr: res.course.teachers[0].description,
@@ -40,10 +67,8 @@ export default function CourseDetail() {
     });
   }, []);
 
-  const removeCourse = () => {
-    console.log("deleted");
-  };
-  
+
+
   return (
     <>
       <section>
@@ -87,27 +112,40 @@ export default function CourseDetail() {
                 />
               </div>
               <p>{item.course.description}</p>
-              {isAuth.userData.username === item.username && (
-                <div className={cls.deal_course}>
+              {isAuth.userData.username === item.username ? (
+                <>
+                  <div className={cls.deal_course}>
+                    <ButtonAsLink
+                      button_type="btn"
+                      btn_action="option"
+                      to="/update"
+                    >
+                      Редактировать курс
+                    </ButtonAsLink>
+                    <BaseButton
+                      onClick={() => setVisible(true)}
+                      className={"btn_inline"}
+                    >
+                      Удалить курс
+                    </BaseButton>
+                  </div>
                   <ButtonAsLink
                     button_type="btn"
-                    btn_action="option"
-                    to="/update"
+                    btn_action="click"
+                    to={`/course/add_lesson/${item.course.id}`}
                   >
-                    Редактировать курс
+                    Добавить урок к курсу
                   </ButtonAsLink>
-                  <BaseButton
-                    onClick={() => setVisible(true)}
-                    className={"btn_inline"}
-                  >
-                    Удалить курс
-                  </BaseButton>
-                </div>
+                </>
+              ) : (
+                <ButtonAsLink
+                  button_type="btn"
+                  btn_action="click"
+                  to="/register"
+                >
+                  Приобрести курс
+                </ButtonAsLink>
               )}
-
-              <ButtonAsLink button_type="btn" btn_action="click" to="/register">
-                Приобрести курс
-              </ButtonAsLink>
             </div>
           </div>
         </div>
@@ -123,7 +161,9 @@ export default function CourseDetail() {
             />
           ))}
         </div>
-        <Modal visible={visible} setVisible={setVisible}></Modal>
+        <Modal visible={visible} setVisible={setVisible}>
+          <DeleteCourse setVisible={setVisible} course_id={id}/>
+        </Modal>
       </section>
     </>
   );

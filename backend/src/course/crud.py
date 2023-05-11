@@ -82,10 +82,12 @@ class CourseCrud(BaseCrud):
             - Добавляет автора по его емейлу
             - Возвращает объект модели Course
         """
+        print(course_data, 1)
         teacher = self.get_teacher_by_email(permission.user_email)
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
+
 
     def get_all_items(self) -> list[Course]:
         """Получить список всех курсов."""

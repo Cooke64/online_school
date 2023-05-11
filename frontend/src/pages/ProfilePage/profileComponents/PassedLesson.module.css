@@ -1,0 +1,47 @@
+.box {
+    border-radius: 0.5rem;
+    background-color: #fff;
+    padding: 2rem;
+  }
+  .course_link {
+  }
+  .teacher_data {
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  .teacher_data img {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .course_img {
+    width: 100%;
+    border-radius: 0.5rem;
+    height: 20rem;
+    object-fit: cover;
+  }
+  .teacher_data h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 0.2rem;
+  }
+  .teacher_data span {
+    font-size: 1.6rem;
+    color: var(--light_dark);
+  }
+  .course_title {
+    font-size: 2rem;
+    color: var(--light_dark);
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  
+  .hightliter {
+    font-size: 2.5rem;
+    color: #000;
+    font-weight: 800;
+  }
+  

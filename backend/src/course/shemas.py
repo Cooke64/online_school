@@ -13,7 +13,7 @@ class CourseBase(OrmBaseModel):
     is_free: bool = False
 
 
-class CreateCourse(OrmBaseModel):
+class CreateCourse(CourseBase):
     class Config:
         schema_extra = {
             'example': {

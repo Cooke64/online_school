@@ -14,6 +14,7 @@ class Api {
     })
   }
 
+  // Course crud
 
   getCoursesList() {
     return fetch(
@@ -31,6 +32,39 @@ class Api {
       )
       .then(this.checkResponse)
   }
+
+  createNewCourse(course) {
+    const token = localStorage.getItem('token')
+    return fetch(
+        `http://127.0.0.1:8000/course/`, {
+          method: 'POST',
+          headers: {
+            ...this.headers,
+            'Authorization': token
+          },
+          body: JSON.stringify(course)
+        }
+      )
+      .then(this.checkResponse)
+  }
+
+  removeCourse(
+    course_id
+  ) {
+    const token = localStorage.getItem('token')
+    return fetch(
+      `http://127.0.0.1:8000/course/${course_id}`, {
+        method: 'delete',
+        headers: {
+          ...this.headers,
+          'Authorization': token
+        },
+      }
+    ).then(this.checkResponse)
+  }
+
+  // Lesson crud
+
   getLessonDetail(course_id, lesson_id) {
     return fetch(
         `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`, {
@@ -39,6 +73,9 @@ class Api {
       )
       .then(this.checkResponse)
   }
+
+  // Teacher crud
+
   getTeachersList() {
     return fetch(
         `http://127.0.0.1:8000/teachers/`, {
@@ -56,23 +93,7 @@ class Api {
       )
       .then(this.checkResponse)
   }
-  createnewCourse(course) {
-    const token = localStorage.getItem('token')
-    return fetch(
-        `http://127.0.0.1:8000/course/`, {
-          method: 'POST',
-          headers: {
-            ...this.headers,
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(course)
-        }
-      )
-      .then(this.checkResponse)
 
-
-
-  }
   loginUser({
     email,
     password
@@ -148,7 +169,7 @@ class Api {
         },
       }
     ).then(this.checkResponse)
-    
+
   }
   getPassedLessons() {
     const token = localStorage.getItem('token')
@@ -161,9 +182,9 @@ class Api {
         },
       }
     ).then(this.checkResponse)
-    
+
   }
-  
+
 }
 
 
