@@ -83,7 +83,7 @@ export default function LessonComment({
   const { isAuth } = useAuth();
   return (
     <section>
-      {isAuth.userData.role === "Student" && (
+      {(isAuth.isUser && isAuth.userData.role === "Student") && (
         <>
           <h1 className="section_header">Добавить комментарий</h1>
           <AddComment createComment={createComment} />

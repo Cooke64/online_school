@@ -26,11 +26,16 @@ const Profile = () => {
           <ButtonAsLink to="/profile" button_type="btn" btn_action="click">
             Перейти в профиль
           </ButtonAsLink>
+          {isAuth.userData.role === "Teacher" && (
+            <ButtonAsLink to="/create_course" button_type="btn" btn_action="click">
+              Добавить новый курс
+            </ButtonAsLink>
+          )}
         </>
       ) : (
         <>
           <h3>Войдите или авторизуйтесь</h3>
-          <ButtonAsLink href="/register" button_type="btn" btn_action="click">
+          <ButtonAsLink href="/login" button_type="btn" btn_action="click">
             Войти
           </ButtonAsLink>
         </>

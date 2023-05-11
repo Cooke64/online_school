@@ -7,7 +7,7 @@ import CoursesListMain from "./CourseListMain";
 
 
 export default function CourseList() {
-  const [searchQuery, setSearchData] = useOutletContext();
+  const [searchQuery] = useOutletContext();
   const [isLoading, setIsLoading] = React.useState(true);
 
   const [courses, setCoursesList] = useState([]);

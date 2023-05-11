@@ -10,6 +10,7 @@ export default function Layout() {
   
   const addSearchData = (data) => {
     setSearchData(data)
+    console.log(searchData)
   }
   return (
     <>

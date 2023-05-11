@@ -116,3 +116,7 @@ align-items: center;
   gap: 1.5rem;
   align-items: flex-end;
 }
+.deleted_box{
+  margin: 0 auto;
+  padding: 10rem;
+}

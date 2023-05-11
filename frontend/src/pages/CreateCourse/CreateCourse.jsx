@@ -16,6 +16,8 @@ export default function CreateCourse() {
   const addNewCourse = (e) => {
     e.preventDefault();
     setCourse({ title: "", description: "", isFree: true });
+    e.preventDefault();
+    api.createNewCourse(course);
     setCreated(true);
   };
 

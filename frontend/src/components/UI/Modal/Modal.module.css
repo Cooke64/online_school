@@ -12,8 +12,8 @@
   padding: 2rem;
   background: #fff;
   border-radius: 0.5rem;
-  min-width: 70rem;
-  min-height: 40rem;
+  min-width: 60rem;
+  min-height: 35rem;
 }
 
 .modal.active {

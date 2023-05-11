@@ -5,7 +5,8 @@ import CourseBase from "../../../../img/course_base.png";
 import Image64 from "../../../../components/Image64";
 import ButtonAsLink from "../../../../components/UI/ButtonAsLink/ButtonAsLink";
 
-export default function CourseItem({ course_item, query }) {
+export default function CourseItem({ course_item, query}) {
+  
   function Hightlighter({ query, str }) {
     const parts = str.split(new RegExp(`(${query})`, "gi"));
     return (
