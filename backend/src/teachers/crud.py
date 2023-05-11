@@ -1,8 +1,11 @@
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload
 
-from src.course.models import Course, CourseRating, CourseReview
+from src.auth.utils.auth_bearer import UserPermission
+from src.course.models import Course, CourseRating, CourseReview, Lesson
 from src.database import BaseCrud
+from src.lessons.models import LessonComment
+from src.students.models import StudentCourse
 from src.teachers.models import Teacher, TeacherCourse
 from src.users.models import User
 
@@ -61,3 +64,37 @@ class TeachersCrud(BaseCrud):
 
         teacher_statics = self._create_teacher_stats(teacher)
         return teacher_statics
+
+
+class TeacherProfileCrud(TeachersCrud):
+    def _get_teacher_courses(self, user: User) -> list[Course]:
+        return self.session.query(Teacher).options(
+            joinedload(Teacher.courses)).filter(
+            Teacher.user == user).all()
+
+    def _count_comments(self, courses: list[Course]) -> int:
+        res = 0
+        for course in courses:
+            res += self.session.query(LessonComment).join(Lesson).filter(
+                Lesson.course_id == course.id).count()
+        return res
+
+    def _count_pucrchased_courses(self, teacher: Teacher) -> int:
+        return self.session.query(StudentCourse).join(Course).filter(and_(
+            StudentCourse.has_paid == True,
+            Course.teachers.contains(teacher)
+        )).count()
+
+    def get_teacher_profile(self, permission: UserPermission):
+        user = self.get_user_by_email(User, permission.user_email)
+        teacher: Teacher = self.session.query(Teacher).options(
+            joinedload(Teacher.courses)).filter(
+            Teacher.user == user).first()
+        courses = self._get_teacher_courses(teacher)
+        result = {
+            'courses': courses,
+            'count_comments': self._count_comments(courses),
+            'avg_rating': self._get_total_rating(teacher.id, courses),
+            'purchased_courses': self._count_pucrchased_courses(teacher)
+        }
+        return result
