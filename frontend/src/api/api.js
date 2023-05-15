@@ -66,14 +66,44 @@ class Api {
   // Lesson crud
 
   getLessonDetail(course_id, lesson_id) {
+    const token = localStorage.getItem('token')
     return fetch(
         `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`, {
           method: 'GET',
+          headers: {
+            ...this.headers,
+            'Authorization': token
+          },
         }
       )
       .then(this.checkResponse)
   }
 
+  addLessonToCourse(course_id, lessonData) {
+    const token = localStorage.getItem('token')
+    return fetch(
+        `http://127.0.0.1:8000/lesson/${course_id}`, {
+          method: 'POST',
+          headers: {
+            ...this.headers,
+            'Authorization': token
+          },
+          body: JSON.stringify(lessonData)
+        }
+      )
+      .then(this.checkResponse)
+  }
+  addPhotoToLesson(lessonId, selectedImage) {
+    const formData = new FormData();
+    formData.append("photo", selectedImage, selectedImage.name);
+    return fetch(
+        `http://127.0.0.1:8000/lesson/content/${lessonId}/upload_photo`, {
+          method: 'POST',
+          body:formData
+        }
+      )
+      .then(this.checkResponse)
+  }
   // Teacher crud
 
   getTeachersList() {
