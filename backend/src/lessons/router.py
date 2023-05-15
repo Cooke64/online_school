@@ -45,6 +45,7 @@ def add_lessons_to_course(
     """
     Добавить курсу по его id новый урок.
     """
+    print(lesson_crud.add_lesson_to_course(course_id, lesson_data, permission))
     return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
 
 

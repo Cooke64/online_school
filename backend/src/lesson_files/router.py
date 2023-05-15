@@ -58,7 +58,7 @@ async def upload_video_to_lesson(
 async def upload_photo_to_lesson(
         lesson_id: int,
         task: BackgroundTasks,
-        photos_list: list[UploadFile] = File(...),
+        photo: UploadFile = File(...),
         media_crud: MediaCrud = Depends(),
 ):
     """
@@ -68,18 +68,17 @@ async def upload_photo_to_lesson(
         Допускается загружать только установленные форматы фото, указанных в кортеже PHOTO_TYPES.
         Допускается загрузить неограниченное количество фотографий
     """
-    for file in photos_list:
-        if file.content_type in PHOTO_TYPES:
-            task.add_task(
-                upload_file_and_push_to_db,
-                file_obj=file,
-                media_crud=media_crud,
-                lesson_id=lesson_id
-            )
-            return media_crud.get_json_reposnse('Успешно загружен', 201)
-        else:
-            return media_crud.get_json_reposnse(
-                'Неправильный формат файла', 418)
+    if photo.content_type in PHOTO_TYPES:
+        task.add_task(
+            upload_file_and_push_to_db,
+            file_obj=photo,
+            media_crud=media_crud,
+            lesson_id=lesson_id
+        )
+        return media_crud.get_json_reposnse('Успешно загружен', 201)
+    else:
+        return media_crud.get_json_reposnse('Неправильный формат файла',
+                                            418)
 
 
 @router.get('/{lesson_id}/photo/{photo_id}')

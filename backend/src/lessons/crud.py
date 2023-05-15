@@ -53,7 +53,7 @@ class LessonCrud(BaseCrud):
                 Lesson.course_id == course_id, Lesson.id == lessons_id
             )).first()
         count_lessons = self.session.query(Lesson).filter(Lesson.course_id == course_id).count()
-        if lesson and lesson.is_trial:
+        if lesson and lesson.is_trial or permission.role == 'Teacher':
             return {'lesson': lesson, 'count_lessons': count_lessons}
         user = self.get_user_by_email(User, permission.user_email)
         if not user:
@@ -77,8 +77,11 @@ class LessonCrud(BaseCrud):
         if user.teacher not in course.teachers:
             raise PermissionDenied
         if self.check_item_exists(course_id, Course):
-            lesson = self._create_lesson_instanse(course.id, lesson_data)
-            return lesson
+            # self._create_lesson_instanse(course.id, lesson_data)
+            descending = self.session.query(Lesson).filter(
+                Lesson.course_id == course_id
+            ).order_by(Lesson.id.desc())
+            return descending.first().id
 
     def make_lessone_done(
             self,
