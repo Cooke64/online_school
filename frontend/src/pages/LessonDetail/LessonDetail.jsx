@@ -7,6 +7,8 @@ import Image64 from "../../components/Image64";
 import LessonComment from "./LessonComment/LessonComment";
 import { useNavigate } from "react-router-dom";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
+import RemoveLesson from "./RemoveLesson";
+import useAuth from "../../hooks/useAuth";
 
 const ImageWithText = ({ photo, text }) => {
   return (
@@ -64,6 +66,7 @@ const LessonBlockItem = ({ lessonPhotos, count }) => {
 
 export default function LessonDetail() {
   const { course_id, lesson_id } = useParams();
+  const { isAuth } = useAuth();
   const lessonId = Number(lesson_id);
   const [canSeeLesson, setCanSeeLesson] = React.useState(true);
   const [amountLessons, setAmountLessons] = React.useState(0);
@@ -73,6 +76,7 @@ export default function LessonDetail() {
     title: "",
     lesson_comment: [],
     photos: [],
+    lesson_teachers: []
   });
 
   React.useEffect(() => {
@@ -84,6 +88,7 @@ export default function LessonDetail() {
           title: lesson.title,
           content: lesson.content,
           photos: lesson.photos,
+          lesson_teachers: res.lesson_teachers
         });
         setComments(lesson.lesson_comment);
         setAmountLessons(res.count_lessons);
@@ -116,6 +121,9 @@ export default function LessonDetail() {
                 count={amountLessons}
               />
             </div>
+            {
+              lesson.lesson_teachers.includes(isAuth.userData.username) && <RemoveLesson />
+            }
           </section>
           <LessonComment
             comments={comments}

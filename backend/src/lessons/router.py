@@ -45,7 +45,6 @@ def add_lessons_to_course(
     """
     Добавить курсу по его id новый урок.
     """
-    print(lesson_crud.add_lesson_to_course(course_id, lesson_data, permission))
     return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
 
 
@@ -83,8 +82,8 @@ def add_comment(
 @router.delete(
     '/{lesson_id}/remove_comment/{comment_id}',
     status_code=status.HTTP_204_NO_CONTENT,
-    description='Добавить комментарий уроку по его id.',
-    summary='Добавить комментарий'
+    description='Удалить комментарий уроку по его id.',
+    summary='Удалить комментарий'
 )
 def remove_comment(
         comment_id: int = Path(..., gt=0),
@@ -93,3 +92,18 @@ def remove_comment(
         permission: UserPermission = Depends(get_permission),
 ):
     lesson_crud.remove_comment_from_lesson(comment_id, lesson_id, permission)
+
+
+@router.delete(
+    '/{course_id}/{lesson_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Удалить урок по его id.',
+    summary='Удалить урок'
+)
+def remove_comment(
+        course_id: int = Path(..., gt=0),
+        lesson_id: int = Path(..., gt=0),
+        lesson_crud: LessonCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
+):
+    lesson_crud.remove_lesson(course_id, lesson_id, permission)

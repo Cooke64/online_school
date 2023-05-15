@@ -88,7 +88,6 @@ class CourseCrud(BaseCrud):
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
 
-
     def get_all_items(self) -> list[Course]:
         """Получить список всех курсов."""
         query: list[Course] = self.session.query(Course).options(
@@ -114,7 +113,8 @@ class CourseCrud(BaseCrud):
                     'count_lessons': count_lessons}
         raise ex.NotFoundCourse
 
-    def _create_passed_lesson(self, student_id: int, lesson_id: int, pass_=False):
+    def _create_passed_lesson(self, student_id: int, lesson_id: int,
+                              pass_=False):
         """Создает запись в бд, что студент прошел курс."""
         open_lesson = StudentPassedLesson(
             student_id=student_id,
@@ -184,7 +184,8 @@ class CourseCrud(BaseCrud):
             raise ex.HasNotPermission
         self.remove_item(course_id, Course)
 
-    def remove_course_from_list(self, course_id: int, permission: UserPermission):
+    def remove_course_from_list(self, course_id: int,
+                                permission: UserPermission):
         """Удаление пользователем курса из добавленных в список для прохождения."""
         course = self.get_current_item(course_id, Course).first()
         student = self.get_student_by_email(permission.user_email)

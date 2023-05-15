@@ -19,7 +19,6 @@ export default function AddLesson() {
 
   React.useEffect(() => {}, [lessonAdded]);
   const addHandler = (e) => {
-    e.preventDefault();
     setLessonAdded(true);
     api.addLessonToCourse(id, lesson).then((res) => {
       setLessonId(res)

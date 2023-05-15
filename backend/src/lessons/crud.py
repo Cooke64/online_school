@@ -1,5 +1,3 @@
-from typing import Dict, Any
-
 from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
@@ -10,6 +8,7 @@ from src.exceptions import NotFound, PermissionDenied
 from src.lessons.models import LessonComment
 from src.lessons.shemas import LessonBase, CommentBase
 from src.students.models import StudentCourse, StudentPassedLesson, Student
+from src.teachers.models import Teacher
 from src.users.models import User
 
 
@@ -28,8 +27,7 @@ class LessonCrud(BaseCrud):
             course_id=course_id,
             **lesson.dict()
         )
-        result = self.create_item(new_lesson)
-        return result
+        return self.create_item(new_lesson)
 
     def get_all_course_lessons(self, course_id):
         query: Course = self.session.query(Course).options(
@@ -44,23 +42,38 @@ class LessonCrud(BaseCrud):
             course_id: int,
             lessons_id: int,
             permission: UserPermission) -> dict:
-        lesson: Lesson = self.session.query(Lesson).options(
+        lesson: Lesson = self.session.query(Lesson).join(Course).options(
             joinedload(Lesson.lesson_comment).options(joinedload(
                 LessonComment.student
             ).options(joinedload(Student.user)))).options(
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
-                Lesson.course_id == course_id, Lesson.id == lessons_id
-            )).first()
-        count_lessons = self.session.query(Lesson).filter(Lesson.course_id == course_id).count()
-        if lesson and lesson.is_trial or permission.role == 'Teacher':
-            return {'lesson': lesson, 'count_lessons': count_lessons}
+            Lesson.course_id == course_id, Lesson.id == lessons_id
+        )).first()
+        if not lesson:
+            raise NotFound
+        count_lessons = self.session.query(Lesson).filter(
+            Lesson.course_id == course_id).count()
+        lesson_teachers: Course = self.session.query(Course).options(
+            joinedload(Course.teachers).options(
+                joinedload(Teacher.user))).filter(
+            and_(
+                Course.id == course_id,
+                Course.lessons.contains(lesson)
+            )
+        ).first()
+        result_dict = {'lesson': lesson, 'count_lessons': count_lessons,
+                       'lesson_teachers':
+                           [item.user.username for item in
+                            lesson_teachers.teachers]}
+        if (lesson and lesson.is_trial) or permission.role == 'Teacher':
+            return result_dict
         user = self.get_user_by_email(User, permission.user_email)
         if not user:
             raise PermissionDenied
         user_course = self._get_user_course(course_id, user.student.id)
         if user_course and user_course.has_paid:
-            return {'lesson': lesson, 'count_lessons': count_lessons}
+            return result_dict
         raise PermissionDenied
 
     def add_lesson_to_course(
@@ -77,11 +90,7 @@ class LessonCrud(BaseCrud):
         if user.teacher not in course.teachers:
             raise PermissionDenied
         if self.check_item_exists(course_id, Course):
-            # self._create_lesson_instanse(course.id, lesson_data)
-            descending = self.session.query(Lesson).filter(
-                Lesson.course_id == course_id
-            ).order_by(Lesson.id.desc())
-            return descending.first().id
+            return self._create_lesson_instanse(course.id, lesson_data).id
 
     def make_lessone_done(
             self,
@@ -142,3 +151,14 @@ class LessonCrud(BaseCrud):
         if not comment:
             raise NotFound
         self.remove_item(comment.id, LessonComment)
+
+    def remove_lesson(self, course_id, lesson_id, permission: UserPermission):
+        lesson = self.session.query(Lesson).filter(
+            and_(Lesson.id == lesson_id, Lesson.course_id == course_id)
+        ).first()
+        course: Course = self.get_current_item(course_id, Course).first()
+        user: User = self.get_user_by_email(User, permission.user_email)
+        print(user, course, lesson)
+        if user.teacher not in course.teachers:
+            raise PermissionDenied
+        self.remove_item(lesson.id, Lesson)

@@ -68,6 +68,7 @@ class Api {
   }
 
   addLessonToCourse(course_id, lessonData) {
+    
     return fetch(
         `http://127.0.0.1:8000/lesson/${course_id}`, {
           method: 'POST',
@@ -87,6 +88,18 @@ class Api {
         }
       )
       .then(this.checkResponse)
+  }
+
+  removeLesson(
+    courseId,
+    lessonId,
+  ) {
+    return fetch(
+      `http://127.0.0.1:8000/lesson/${courseId}/${lessonId}`, {
+        method: 'delete',
+        headers: this.headers
+      }
+    ).then(this.checkResponse)
   }
   // Teacher crud
 

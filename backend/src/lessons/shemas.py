@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from src.teachers.shemas import ShowTeacherInCourseList
 from src.utils.base_schemas import OrmBaseModel
 
 
@@ -49,3 +50,4 @@ class LessonDetail(LessonBase):
 class ShowLessonDetail(OrmBaseModel):
     count_lessons: int
     lesson: LessonDetail
+    lesson_teachers: list[str]

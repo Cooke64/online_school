@@ -1,5 +1,4 @@
 from sqlalchemy import and_
-from sqlalchemy.orm import joinedload
 
 from src.course.models import Lesson
 from src.database import BaseCrud
