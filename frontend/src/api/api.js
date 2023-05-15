@@ -34,14 +34,10 @@ class Api {
   }
 
   createNewCourse(course) {
-    const token = localStorage.getItem('token')
     return fetch(
         `http://127.0.0.1:8000/course/`, {
           method: 'POST',
-          headers: {
-            ...this.headers,
-            'Authorization': token
-          },
+          headers: this.headers,
           body: JSON.stringify(course)
         }
       )
@@ -51,14 +47,10 @@ class Api {
   removeCourse(
     course_id
   ) {
-    const token = localStorage.getItem('token')
     return fetch(
       `http://127.0.0.1:8000/course/${course_id}`, {
         method: 'delete',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers
       }
     ).then(this.checkResponse)
   }
@@ -66,28 +58,20 @@ class Api {
   // Lesson crud
 
   getLessonDetail(course_id, lesson_id) {
-    const token = localStorage.getItem('token')
     return fetch(
         `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}`, {
           method: 'GET',
-          headers: {
-            ...this.headers,
-            'Authorization': token
-          },
+          headers: this.headers
         }
       )
       .then(this.checkResponse)
   }
 
   addLessonToCourse(course_id, lessonData) {
-    const token = localStorage.getItem('token')
     return fetch(
         `http://127.0.0.1:8000/lesson/${course_id}`, {
           method: 'POST',
-          headers: {
-            ...this.headers,
-            'Authorization': token
-          },
+          headers: this.headers,
           body: JSON.stringify(lessonData)
         }
       )
@@ -114,8 +98,8 @@ class Api {
       )
       .then(this.checkResponse)
   }
+
   getTeachersDeatil(teacher_id) {
-    console.log(teacher_id)
     return fetch(
         `http://127.0.0.1:8000/teachers/` + teacher_id, {
           method: 'GET',
@@ -142,14 +126,10 @@ class Api {
   }
 
   getMe() {
-    const token = localStorage.getItem('token')
     return fetch(
       `http://127.0.0.1:8000/user/me`, {
         method: 'get',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers
       }
     ).then(this.checkResponse)
   }
@@ -158,17 +138,13 @@ class Api {
     lesson_id,
     text
   ) {
-    const token = localStorage.getItem('token')
     const body = JSON.stringify({
       text
     })
     return fetch(
       `http://127.0.0.1:8000/lesson/${course_id}/${lesson_id}/add_comment`, {
         method: 'post',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers,
         body: body
       }
     ).then(this.checkResponse)
@@ -177,39 +153,28 @@ class Api {
     lesson_id,
     comment_id,
   ) {
-    const token = localStorage.getItem('token')
     return fetch(
       `http://127.0.0.1:8000/lesson/${lesson_id}/remove_comment/${comment_id}`, {
         method: 'delete',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers
       }
     ).then(this.checkResponse)
   }
   getStudentProfile() {
-    const token = localStorage.getItem('token')
     return fetch(
       `http://127.0.0.1:8000/student/my_courses`, {
         method: 'get',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers
       }
     ).then(this.checkResponse)
 
   }
   getPassedLessons() {
-    const token = localStorage.getItem('token')
+    
     return fetch(
       `http://127.0.0.1:8000/student/passed_lessons`, {
         method: 'get',
-        headers: {
-          ...this.headers,
-          'Authorization': token
-        },
+        headers: this.headers
       }
     ).then(this.checkResponse)
 
@@ -217,10 +182,10 @@ class Api {
 
 }
 
-
+const token = localStorage.getItem('token')
 export default new Api({
   'content-type': 'application/json',
   'accept': 'application/json',
-  "Access-Control-Allow-Origin": "*"
-
+  "Access-Control-Allow-Origin": "*",
+  'Authorization': token
 })
