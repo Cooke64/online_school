@@ -1,9 +1,11 @@
 import base64
 
 from fastapi import APIRouter, UploadFile, File, Depends, Path
+from starlette import status
 from starlette.background import BackgroundTasks
 from starlette.responses import StreamingResponse
 
+from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.exceptions import DetailedHTTPException
 from src.lesson_files.crud import MediaCrud
 from src.lesson_files.utils.create_file import (
@@ -92,6 +94,21 @@ def get_photo_from_lesson(
     with open(file_path, 'rb') as f:
         base64image = base64.b64encode(f.read())
     return base64image
+
+
+@router.delete(
+    '/{lesson_id}/photo/{photo_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Удалить фото в  уроке по его id.',
+    summary='Удалить фото'
+)
+def remove_comment(
+        lesson_id: int = Path(..., gt=0),
+        photo_id: int = Path(..., gt=0),
+        media_crud: MediaCrud = Depends(),
+        permission: UserPermission = Depends(get_permission),
+):
+    media_crud.remove_photo(lesson_id, photo_id, permission)
 
 
 @router.get('/{lesson_id}/video/{video_id}')

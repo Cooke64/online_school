@@ -5,19 +5,26 @@ import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import Image64 from "../../components/Image64";
 import LessonComment from "./LessonComment/LessonComment";
-import { useNavigate } from "react-router-dom";
-import BaseButton from "../../components/UI/BaseButton/BaseButton";
+
 import RemoveLesson from "./RemoveLesson";
 import useAuth from "../../hooks/useAuth";
+import RemovePhoto from "./RemovePhoto";
 
-const ImageWithText = ({ photo, text }) => {
+const ImageWithText = ({ photo, text, teacherList }) => {
+  const { course_id, lesson_id } = useParams();
+  const { isAuth } = useAuth();
   return (
     <>
-      <Image64
-        key={photo.id}
-        data={photo.photo_blob}
-        className={cls.img_photo}
-      />
+      <div className={cls.container}>
+        {teacherList.includes(isAuth.userData.username) && (
+          <RemovePhoto photoId={photo.id} lessonId={lesson_id}/>
+        )}
+        <Image64
+          key={photo.id}
+          data={photo.photo_blob}
+          className={cls.img_photo}
+        />
+      </div>
       <div className={cls.description_lesson}>
         <p>{text}</p>
       </div>
@@ -52,11 +59,16 @@ const NextprevButton = ({ count }) => {
   );
 };
 
-const LessonBlockItem = ({ lessonPhotos, count }) => {
+const LessonBlockItem = ({ lessonPhotos, count, teacherList }) => {
   return (
     <>
       {lessonPhotos.map((photo) => (
-        <ImageWithText key={photo.id} photo={photo} text={photo.photo_type} />
+        <ImageWithText
+          key={photo.id}
+          photo={photo}
+          text={photo.photo_type}
+          teacherList={teacherList}
+        />
       ))}
       <div className={cls.flex}></div>
       <NextprevButton count={count} />
@@ -76,7 +88,7 @@ export default function LessonDetail() {
     title: "",
     lesson_comment: [],
     photos: [],
-    lesson_teachers: []
+    lesson_teachers: [],
   });
 
   React.useEffect(() => {
@@ -88,7 +100,7 @@ export default function LessonDetail() {
           title: lesson.title,
           content: lesson.content,
           photos: lesson.photos,
-          lesson_teachers: res.lesson_teachers
+          lesson_teachers: res.lesson_teachers,
         });
         setComments(lesson.lesson_comment);
         setAmountLessons(res.count_lessons);
@@ -96,8 +108,8 @@ export default function LessonDetail() {
 
       .catch(function () {
         setCanSeeLesson(false);
-        if (1) {
-          setCanSeeLesson(true)
+        if (isAuth.userData.role === "Teacher") {
+          setCanSeeLesson(true);
         }
       });
   }, [lesson_id, course_id]);
@@ -119,11 +131,12 @@ export default function LessonDetail() {
               <LessonBlockItem
                 lessonPhotos={lesson.photos}
                 count={amountLessons}
+                teacherList={lesson.lesson_teachers}
               />
             </div>
-            {
-              lesson.lesson_teachers.includes(isAuth.userData.username) && <RemoveLesson />
-            }
+            {lesson.lesson_teachers.includes(isAuth.userData.username) && (
+              <RemoveLesson />
+            )}
           </section>
           <LessonComment
             comments={comments}

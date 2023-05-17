@@ -158,7 +158,6 @@ class LessonCrud(BaseCrud):
         ).first()
         course: Course = self.get_current_item(course_id, Course).first()
         user: User = self.get_user_by_email(User, permission.user_email)
-        print(user, course, lesson)
         if user.teacher not in course.teachers:
             raise PermissionDenied
         self.remove_item(lesson.id, Lesson)
