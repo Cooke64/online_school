@@ -38,10 +38,11 @@ class CourseCrud(BaseCrud):
 
     def _get_course_rating(self, course_id: int) -> float | int:
         rating = self.session.query(func.avg(
-            CourseRating.rating).label('average')).join(Course).filter(
+            CourseRating.rating)).filter(
             CourseRating.course_id == course_id).first()
         commas_after_ratig = 2
         if rating[0]:
+            print(self.session.query(CourseRating).filter(CourseRating.course_id == course_id).all())
             return round(rating[0], commas_after_ratig)
         return 0
 
@@ -56,15 +57,16 @@ class CourseCrud(BaseCrud):
                 CourseRating.course_id == course_id,
                 CourseRating.student_id == student)
         )).scalar():
-            raise ex.AddExisted
+            self.__update_rating(permission, course_id, rating)
+            return
         if not course:
             raise ex.NotFoundCourse
         course_rating = CourseRating(
             student_id=student, course_id=course.id, rating=rating.value)
         self.create_item(course_rating)
 
-    def update_rating(self, permission: UserPermission, course_id: int,
-                      new_rating: Rating) -> None:
+    def __update_rating(self, permission: UserPermission, course_id: int,
+                        new_rating: Rating) -> None:
         student = self.get_student_by_email(permission.user_email).id
         self.session.query(CourseRating).filter(and_(
             CourseRating.course_id == course_id,
@@ -82,7 +84,6 @@ class CourseCrud(BaseCrud):
             - Добавляет автора по его емейлу
             - Возвращает объект модели Course
         """
-        print(course_data, 1)
         teacher = self.get_teacher_by_email(permission.user_email)
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)

@@ -73,3 +73,7 @@ class CourseDetail(BaseModel):
     course: CourseInDetail
     rating: int
     count_lessons: int
+
+
+class Rating(BaseModel):
+    rating: int

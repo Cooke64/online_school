@@ -62,31 +62,15 @@ def add_rating_to_course(
         course_crud: CourseCrud = Depends(),
         permission: UserPermission = Depends(get_permission),
         *,
-        rating: Rating
+        rating: Rating # Enum class Rating
 ):
     """
     Доступно для зарегестрированного пользователя. Можно поставить только одну оценку.
+    При простановке второй раз отметки, в бд изменяется оценка.
     """
     _check_params(course_id, permission, course_crud)
     course_crud.add_rating_to_course(permission, course_id, rating)
     return {'done': 'done'}
-
-
-@router.put('/{course_id}/update_rating', status_code=status.HTTP_201_CREATED,
-            summary='Изменить рейтинг курса')
-def update_rating_to_course(
-        course_id: int = Path(..., description='The id of current post'),
-        course_crud: CourseCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
-        *,
-        new_rating: Rating
-):
-    """
-    Доступно для зарегестрированного пользователя.
-    """
-    _check_params(course_id, permission, course_crud)
-    course_crud.update_rating(permission, course_id, new_rating)
-    return course_crud.get_json_reposnse('Рейтинг для курса изменен', 201)
 
 
 @router.post('/add/{course_id}',

@@ -55,6 +55,16 @@ class Api {
     ).then(this.checkResponse)
   }
 
+  addRatingCourse(courseId,rating) {
+    return fetch(
+        `http://127.0.0.1:8000/course/${courseId}/add_rating?rating=${rating}`, {
+          method: 'POST',
+          headers: this.headers,
+        }
+      )
+      .then(this.checkResponse)
+  }
+
   // Lesson crud
 
   getLessonDetail(course_id, lesson_id) {
@@ -96,6 +106,18 @@ class Api {
   ) {
     return fetch(
       `http://127.0.0.1:8000/lesson/${courseId}/${lessonId}`, {
+        method: 'delete',
+        headers: this.headers
+      }
+    ).then(this.checkResponse)
+  }
+
+  removePhoto(
+    photoId,
+    lessonId,
+  ) {
+    return fetch(
+      `http://127.0.0.1:8000/lesson/content/${lessonId}/photo/${photoId}`, {
         method: 'delete',
         headers: this.headers
       }

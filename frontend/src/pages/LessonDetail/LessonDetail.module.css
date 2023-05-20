@@ -1,26 +1,53 @@
-.img_photo{
-    width: 100%;
-    border-radius: .7rem;
-    margin-bottom: 2.5rem;
+.img_photo {
+  width: 100%;
+  border-radius: 0.7rem;
+  margin-bottom: 2.5rem;
 }
-.lesson_detail{
-    background-color: #fff;
-    padding: 2rem;
+.lesson_detail {
+  background-color: #fff;
+  padding: 2rem;
 }
-.description_lesson{
-    font-size: 2rem;
-    color: var(--black);
-    padding: 1.2rem 0;
+.description_lesson {
+  font-size: 2rem;
+  color: var(--black);
+  padding: 1.2rem 0;
 }
-.info{
-    display: flex;
-    gap: 2rem;
+.info {
+  display: flex;
+  gap: 2rem;
 }
 
-.info p{
-    font-size: 2rem;
+.info p {
+  font-size: 2rem;
 }
 .info .date_icon {
-    margin-right: 1.3rem;
-    color: var(--black);
+  margin-right: 1.3rem;
+  color: var(--black);
+}
+
+.container {
+  position: relative;
+}
+
+.side_icon {
+  right: 0;
+  top: 0;
+  position: absolute;
+  height: 4.5rem;
+  width: 4.5rem;
+  cursor: pointer;
+  color: var(--orange);
+  display: none;
+}
+
+.container:hover .side_icon {
+  display: block;
+  color: var(--orange);
+  transform: scale(1.1);
+}
+
+.container:hover .side_icon:hover {
+  display: block;
+  color: var(--main_color);
+  transform: scale(1.1);
 }

@@ -75,6 +75,7 @@ def sign_up_user(user: UserCreate = Body(
     first_name, last_name, username необязательные поля
     пользователь должен указать номер телефона. Номер телефона должен быть уникальным
     """
+    print(user)
     if user_crud.get_user_by_email(User, user.email):
         raise BadRequest
     user = user_crud.create_user(user_type, user)
