@@ -4,13 +4,13 @@ import cls from "./CourseDetail.module.css";
 import CourseBase from "../../img/course_base.png";
 import api from "../../api/api";
 import LessonInCourse from "./LessonInCourse/LessonInCourse";
-import Rating from "@mui/material/Rating";
 import Image64 from "../../components/Image64";
 import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
 import Modal from "../../components/UI/Modal/Modal";
 import useAuth from "../../hooks/useAuth";
 import { Navigate } from "react-router-dom";
+import RatingItem from "./RatingItem";
 
 const DeleteCourse = ({ setVisible, course_id }) => {
   const [deleted, setDeleted] = React.useState(false);
@@ -55,6 +55,7 @@ export default function CourseDetail() {
   React.useEffect(() => {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
+      console.log(res)
       setItem({
         course: res.course,
         rating: res.rating,
@@ -65,7 +66,7 @@ export default function CourseDetail() {
         lessons: res.course.lessons,
       });
     });
-  }, []);
+  }, [item.rating]);
 
 
 
@@ -99,18 +100,7 @@ export default function CourseDetail() {
               </div>
             </div>
             <div className={cls.details}>
-              <div className={cls.rating}>
-                <h3>Общая оценка курса {item.rating}</h3>
-                <Rating
-                  name="size-large"
-                  size="large"
-                  defaultValue={5}
-                  value={Number(item.rating)}
-                  onChange={(event, newValue) => {
-                    setItem({ ...item, rating: newValue });
-                  }}
-                />
-              </div>
+              <RatingItem setItem={setItem} item={item} />
               <p>{item.course.description}</p>
               {isAuth.userData.username === item.username ? (
                 <>

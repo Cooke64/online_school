@@ -35,7 +35,7 @@ const Profile = () => {
       ) : (
         <>
           <h3>Войдите или авторизуйтесь</h3>
-          <ButtonAsLink href="/login" button_type="btn" btn_action="click">
+          <ButtonAsLink to="/login" button_type="btn" btn_action="click">
             Войти
           </ButtonAsLink>
         </>
