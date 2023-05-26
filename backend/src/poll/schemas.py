@@ -1,6 +1,8 @@
-def main():
-    pass
+from pydantic import BaseModel, EmailStr, Field, constr, validator
+
+from src.utils.base_schemas import OrmBaseModel
 
 
-if __name__ == '__main__':
-    main()
+class PollBase(BaseModel):
+    title: str
+

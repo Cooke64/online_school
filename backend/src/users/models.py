@@ -27,8 +27,7 @@ class User(BaseModel):
     role = sa.Column(ChoiceType(roles_as_dict), nullable=False,
                      default=RolesType.student.value)
     verify_code = relationship('Verification', back_populates='user_to_verify')
-    user_image = relationship(
-        'UserProfileImage', back_populates='user', uselist=False)
+    user_image = relationship('UserProfileImage', back_populates='user', uselist=False)
 
     __table_args__ = (
         sa.PrimaryKeyConstraint('id', name='user_pk'),

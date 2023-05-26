@@ -70,8 +70,7 @@ class UserCrud(BaseCrud, SendMail):
         )
         print(item_in_bd.link)
 
-    def create_user(self, user_type, user_data: UserCreate) -> [
-        dict[str]]:
+    def create_user(self, user_type, user_data: UserCreate) -> [dict[str]]:
         user_dict, *_ = self.__update_userdata_and_get_phone(
             user_data
         )
@@ -107,4 +106,5 @@ class UserCrud(BaseCrud, SendMail):
         self.session.commit()
 
     def create_user_image(self):
-        pass
+        """Need to be done"""
+        raise NotImplementedError

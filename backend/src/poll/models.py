@@ -6,13 +6,13 @@ from src.database import BaseModel
 
 class Poll(BaseModel):
     """Модель, представляющая опрос к уроку.
-    Связана с уроком, с таблицей Questions, где находятся ответы.
+    Связана с уроком one to one, с таблицей Questions, где находятся ответы.
     """
     __tablename__ = 'polls'
     title = sa.Column(sa.String(199), nullable=False)
-    # lesson_id = sa.Column(sa.Integer, sa.ForeignKey('lessons.id'))
-    # lesson = relationship('Lesson', back_populates='polls')
-    question_list = relationship('LessonPhoto', back_populates='lesson_content')
+    lesson_id = sa.Column(sa.Integer, sa.ForeignKey('lessons.id'))
+    lesson = relationship('Lesson', back_populates='lesson_poll')
+    question_list = relationship('Question', back_populates='poll')
 
 
 class Question(BaseModel):

@@ -42,7 +42,6 @@ class CourseCrud(BaseCrud):
             CourseRating.course_id == course_id).first()
         commas_after_ratig = 2
         if rating[0]:
-            print(self.session.query(CourseRating).filter(CourseRating.course_id == course_id).all())
             return round(rating[0], commas_after_ratig)
         return 0
 

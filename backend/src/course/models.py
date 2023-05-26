@@ -90,3 +90,4 @@ class Lesson(BaseModel):
         'LessonComment',
         back_populates='lesson'
     )
+    lesson_poll = relationship('Poll', back_populates='lesson', uselist=False)
