@@ -5,6 +5,7 @@ from src.users.router import router as user_router
 from src.lesson_files.router import router as video_router
 from src.main_page.router import router as main_router
 from src.teachers.router import router as teacher_router
+from src.poll.router import router as poll_router
 
 
 def create_router(my_app):
@@ -15,3 +16,4 @@ def create_router(my_app):
     my_app.include_router(video_router)
     my_app.include_router(main_router)
     my_app.include_router(teacher_router)
+    my_app.include_router(poll_router)
