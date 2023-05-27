@@ -17,7 +17,7 @@ function App() {
   })
 
   React.useEffect(() => {
-    if (localStorage.getItem('token')){
+    if (isAuth.isUser && localStorage.getItem('token')){
       api.getMe().then((res) => {
         setisAuth({ isUser: true, userData: res });
       })
