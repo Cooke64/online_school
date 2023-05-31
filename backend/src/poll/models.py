@@ -19,5 +19,13 @@ class Question(BaseModel):
     __tablename__ = 'questions'
     poll_id = sa.Column(sa.Integer, sa.ForeignKey('polls.id'))
     poll = relationship('Poll', back_populates='question_list')
-    text = sa.Column(sa.Text, nullable=False)
+    question_text = sa.Column(sa.Text, nullable=False)
+    answers_list = relationship('Answer', back_populates='question')
+
+
+class Answer(BaseModel):
+    __tablename__ = 'answers'
+    question_id = sa.Column(sa.Integer, sa.ForeignKey('questions.id'))
+    question = relationship('Question', back_populates='answers_list')
+    answer_text = sa.Column(sa.Text, nullable=False)
     is_correct = sa.Column(sa.Boolean, nullable=False, default=False)
