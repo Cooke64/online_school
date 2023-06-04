@@ -1,8 +1,8 @@
 from sqlalchemy.orm import joinedload, Query
 
 from src.database import BaseCrud
-from .models import Poll, Question
-from .schemas import PollBase, QuestionBase
+from .models import Poll, Question, Answer
+from .schemas import PollBase, QuestionBase, AnswerBase
 from ..auth.utils.auth_bearer import UserPermission
 from ..course.models import Course, Lesson
 from ..exceptions import PermissionDenied, NotFound, BadRequest
@@ -62,7 +62,8 @@ class PollCrud(BaseCrud):
             poll_data: PollBase,
             permission: UserPermission
     ) -> Poll:
-        self._check_lesson_teacher(course_id=course_id, lesson_id=lesson_id, permission=permission)
+        self._check_lesson_teacher(course_id=course_id, lesson_id=lesson_id,
+                                   permission=permission)
         return self._create_poll(poll_data, lesson_id)
 
     def remove_poll(self, lesson_id: int, permission: UserPermission):
@@ -83,9 +84,32 @@ class PollCrud(BaseCrud):
         new_question = self._create_question(poll_id, question)
         poll.question_list.append(new_question)
 
-    def remove_question(self, poll_id, question_id, permission):
+    def remove_question(self, poll_id, question_id,
+                        permission: UserPermission):
         poll: Poll = self._get_current_poll(poll_id).first()
         self._check_lesson_teacher(lesson_id=poll.lesson_id,
                                    permission=permission)
         self.remove_item(question_id, Question)
         return self.get_json_reposnse('Удален', 204)
+
+    def _create_answer_instanse(self, question_id: int,
+                                answer_data: AnswerBase) -> Answer:
+        """Создает новый объект в модели Answer"""
+        new_answer = Answer(question_id=question_id, **answer_data.dict())
+        return self.create_item(new_answer)
+
+    def add_answers_list(self, poll_id: int, question_id: int,
+                         answeers_list: list[AnswerBase],
+                         permission: UserPermission):
+        """Получает список всех ответов к вопросу, при иттерации создается
+        новая сущность модели ANswer, добавляется в
+        answers_list - список ответовов к вопросу """
+        poll: Poll = self._get_current_poll(poll_id).first()
+        self._check_lesson_teacher(lesson_id=poll.lesson_id,
+                                   permission=permission)
+        question = self.get_current_item(question_id, Question)
+        if question:
+            for answer in answeers_list:
+                new_answer = self._create_answer_instanse(question_id, answer)
+                question.answers_list.append(new_answer)
+            return self.get_json_reposnse('Добавлено', 201)

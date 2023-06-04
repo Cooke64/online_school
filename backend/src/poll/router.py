@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 
 from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.poll.crud import PollCrud
-from src.poll.schemas import PollBase, QuestionBase
+from src.poll.schemas import PollBase, QuestionBase, AddAnswers
 
 router = APIRouter(prefix='/poll', tags=['Опрос'])
 
@@ -24,7 +24,8 @@ def create_poll(
         poll_data: PollBase,
         permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_poll_to_lesson(course_id, lesson_id, poll_data, permission)
+    return poll_crud.add_poll_to_lesson(course_id, lesson_id, poll_data,
+                                        permission)
 
 
 @router.delete('/remove_poll/{course_id}/{lesson_id}',
@@ -44,3 +45,15 @@ def add_question_to_poll(
         permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
     return poll_crud.add_question(poll_id, question, permission)
+
+
+@router.post('/add_answers/{poll_id}/{question_id}',
+             summary='Добавить ответы к вопросу в опросе')
+def add_question_to_poll(
+        poll_id: int,
+        question_id: int,
+        answers_list: AddAnswers,
+        permission: UserPermission = Depends(get_permission),
+        poll_crud: PollCrud = Depends()):
+    return poll_crud.add_answers_list(poll_id, question_id, answers_list,
+                                      permission)
