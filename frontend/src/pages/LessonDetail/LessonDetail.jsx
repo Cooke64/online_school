@@ -17,7 +17,7 @@ const ImageWithText = ({ photo, text, teacherList }) => {
     <>
       <div className={cls.container}>
         {teacherList.includes(isAuth.userData.username) && (
-          <RemovePhoto photoId={photo.id} lessonId={lesson_id}/>
+          <RemovePhoto photoId={photo.id} lessonId={lesson_id} />
         )}
         <Image64
           key={photo.id}
@@ -60,6 +60,8 @@ const NextprevButton = ({ count }) => {
 };
 
 const LessonBlockItem = ({ lessonPhotos, count, teacherList }) => {
+  const { course_id, lesson_id } = useParams();
+  const { isAuth } = useAuth();
   return (
     <>
       {lessonPhotos.map((photo) => (
@@ -72,6 +74,14 @@ const LessonBlockItem = ({ lessonPhotos, count, teacherList }) => {
       ))}
       <div className={cls.flex}></div>
       <NextprevButton count={count} />
+      {isAuth.isUser && (
+        <ButtonAsLink
+          to={`/poll/${course_id}/${lesson_id}`}
+          button_type="inline"
+        >
+          Пройти тестирование
+        </ButtonAsLink>
+      )}
     </>
   );
 };

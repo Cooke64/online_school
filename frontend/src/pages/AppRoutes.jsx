@@ -21,6 +21,7 @@ import PassToday from "./ProfilePage/PassToday/PassToday";
 import PassLastMonth from "./ProfilePage/PassLastMonth/PassLastMonth";
 import TeacherOnly from "./TeacherOnly";
 import AddLesson from "./AddLesson/AddLesson";
+import PollPage from "./PollPage/PollPage";
 
 export default function AppRoutes() {
   return (
@@ -38,6 +39,10 @@ export default function AppRoutes() {
         <Route
           path="/course/:course_id/lesson/:lesson_id"
           element={<LessonDetail />}
+        />
+        <Route
+          path="/poll/:course_id/:lesson_id"
+          element={<PollPage />}
         />
 
         <Route element={<RequiredAuth />}>
