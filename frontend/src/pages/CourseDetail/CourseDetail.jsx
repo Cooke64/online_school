@@ -55,7 +55,6 @@ export default function CourseDetail() {
   React.useEffect(() => {
     api.getCourseDetail(id).then((res) => {
       setCourse(res);
-      console.log(res)
       setItem({
         course: res.course,
         rating: res.rating,

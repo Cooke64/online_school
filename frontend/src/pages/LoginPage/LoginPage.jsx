@@ -17,7 +17,6 @@ export default function LoginPage() {
     e.preventDefault();
     const email = state.email;
     const password = state.password;
-
     api
       .loginUser({ email, password })
       .then((result) => {
@@ -44,7 +43,7 @@ export default function LoginPage() {
   return (
     <section className={cls.container}>
       {isAuth.isUser && <Navigate to="/profile" replace />}
-      <form action="" method="post">
+      <form action="">
         <h1 className="section_header">Страничка регистрации</h1>
         <p>Мыло</p>
         <BaseInput

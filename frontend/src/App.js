@@ -7,17 +7,17 @@ function App() {
   const [isAuth, setisAuth] = React.useState({
     isUser: false,
     userData: {
-      emai: " ",
-       first_name: ' ',
-       last_name: ' ',
-        is_active: true,
-         role: 'Student',
-          username: ''
+      emai: "",
+      first_name: '',
+      last_name: '',
+      is_active: true,
+      role: '',
+      username: ''
     }
   })
 
   React.useEffect(() => {
-    if (isAuth.isUser && localStorage.getItem('token')){
+    if (localStorage.getItem('token')){
       api.getMe().then((res) => {
         setisAuth({ isUser: true, userData: res });
       })

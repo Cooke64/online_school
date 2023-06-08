@@ -100,6 +100,15 @@ class Api {
       .then(this.checkResponse)
   }
 
+  makeLessonPass(lessonId) {
+    return fetch(
+        `http://127.0.0.1:8000/lesson/pass/${lessonId}`, {
+          method: 'POST',
+        }
+      )
+      .then(this.checkResponse)
+  }
+
   removeLesson(
     courseId,
     lessonId,
@@ -215,6 +224,17 @@ class Api {
 
   }
 
+  // PollCrud
+
+  getLessonPoll(lessonId) {
+    
+    return fetch(
+      `http://127.0.0.1:8000/poll/lesson_poll/${lessonId}`, {
+        method: 'get',
+        headers: this.headers
+      }
+    ).then(this.checkResponse)
+  }
 }
 
 const token = localStorage.getItem('token')
