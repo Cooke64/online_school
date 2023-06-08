@@ -2,68 +2,38 @@ import React from "react";
 import PollItem from "./PollItem";
 import cls from "./Poll.module.css";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
+import ButtonAsLink from "../../components/UI/ButtonAsLink/ButtonAsLink";
+import api from "../../api/api";
+import { useParams } from "react-router-dom";
+import Loader from "../../components/UI/Loader/Loader";
+
 export default function PollPage() {
-  const questions = [
-    {
-      id: 1,
-      question_text: "what is that?",
-      answers_list: [
-        {
-          id: 1,
-          answer_text: "str",
-          is_correct: true,
-        },
-        {
-          id: 2,
-          answer_text: "tuple",
-          is_correct: false,
-        },
-        {
-          id: 3,
-          answer_text: "bool",
-          is_correct: false,
-        },
-        {
-          id: 4,
-          answer_text: "int",
-          is_correct: true,
-        },
-      ],
-    },
-    {
-      id: 2,
-      question_text: "where is mistake?",
-      answers_list: [
-        {
-          id: 1,
-          answer_text: "str",
-          is_correct: true,
-        },
-        {
-          id: 2,
-          answer_text: "tuple",
-          is_correct: false,
-        },
-        {
-          id: 3,
-          answer_text: "bool",
-          is_correct: false,
-        },
-        {
-          id: 4,
-          answer_text: "int",
-          is_correct: true,
-        },
-      ],
-    },
-  ];
+  const { course_id, lesson_id } = useParams();
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [questions, setQuestions] = React.useState([]);
   const [currentQuestion, setCurrentQuestion] = React.useState(0);
   const [counterCorrectAnswer, setCounterCorrectAnswer] = React.useState(0);
   const [hasfinished, setHasFinished] = React.useState(false);
-  React.useEffect(() => {}, [currentQuestion]);
+  const [needPassPoll, setNeedPassPoll] = React.useState(2);
+
+  React.useEffect(() => {
+    console.log("res");
+    api.getLessonPoll(lesson_id).then((res) => {
+      setQuestions(res.question_list);
+      setIsLoading(false);
+    });
+  }, [lesson_id]);
+
+  React.useEffect(() => {
+    if (needPassPoll === counterCorrectAnswer) {
+      console.log("123");
+      // api.makeLessonPass()
+    }
+  }, [currentQuestion, counterCorrectAnswer, needPassPoll]);
+
   const handlerAnswer = (answer) => {
     if (answer.is_correct) {
-        setCounterCorrectAnswer(counterCorrectAnswer + 1)
+      setCounterCorrectAnswer(counterCorrectAnswer + 1);
     }
     const newQuestion = currentQuestion + 1;
     if (newQuestion < questions.length) {
@@ -75,30 +45,46 @@ export default function PollPage() {
   const startAgainHandker = () => {
     setHasFinished(false);
     setCurrentQuestion(0);
-    setCounterCorrectAnswer(0)
-  }
+    setCounterCorrectAnswer(0);
+  };
   return (
     <section>
       <h1 className="section_header">
         {hasfinished ? "Прошли тестирование" : "Тестирование пройденного урока"}
       </h1>
-
       {hasfinished ? (
         <div className={cls.box}>
-          <h3>Ваш результат: {counterCorrectAnswer} из {questions.length}</h3>
+          <h3>
+            Ваш результат: {counterCorrectAnswer} из {questions.length}
+          </h3>
           <BaseButton className={"btn_inline"} onClick={startAgainHandker}>
             Начать заново?
           </BaseButton>
+          {needPassPoll === counterCorrectAnswer && (
+            <ButtonAsLink
+              to="/courses"
+              button_type="inline"
+              btn_action="option"
+            >
+              К следующему уроку
+            </ButtonAsLink>
+          )}
         </div>
       ) : (
         <>
           <h3>
             Вопрос {currentQuestion + 1} из {questions.length}
           </h3>
-          <PollItem
-            question={questions[currentQuestion]}
-            handlerAnswer={handlerAnswer}
-          />
+          {isLoading ? (
+            <div>
+              <Loader />
+            </div>
+          ) : (
+            <PollItem
+              question={questions[currentQuestion]}
+              handlerAnswer={handlerAnswer}
+            />
+          )}
         </>
       )}
     </section>

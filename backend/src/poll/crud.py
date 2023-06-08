@@ -2,7 +2,7 @@ from sqlalchemy.orm import joinedload, Query
 
 from src.database import BaseCrud
 from .models import Poll, Question, Answer
-from .schemas import PollBase, QuestionBase, AnswerBase
+from .schemas import PollBase, QuestionBase, AnswerBase, AddAnswers
 from ..auth.utils.auth_bearer import UserPermission
 from ..course.models import Course, Lesson
 from ..exceptions import PermissionDenied, NotFound, BadRequest
@@ -99,7 +99,7 @@ class PollCrud(BaseCrud):
         return self.create_item(new_answer)
 
     def add_answers_list(self, poll_id: int, question_id: int,
-                         answeers_list: list[AnswerBase],
+                         answeers_list: AddAnswers,
                          permission: UserPermission):
         """Получает список всех ответов к вопросу, при иттерации создается
         новая сущность модели ANswer, добавляется в
@@ -107,9 +107,19 @@ class PollCrud(BaseCrud):
         poll: Poll = self._get_current_poll(poll_id).first()
         self._check_lesson_teacher(lesson_id=poll.lesson_id,
                                    permission=permission)
-        question = self.get_current_item(question_id, Question)
+        question = self.get_current_item(question_id, Question).first()
         if question:
-            for answer in answeers_list:
+            for answer in answeers_list.answers_list:
+                print(answer)
                 new_answer = self._create_answer_instanse(question_id, answer)
                 question.answers_list.append(new_answer)
             return self.get_json_reposnse('Добавлено', 201)
+
+    def get_lesson_poll(self, lesson_id):
+        query: Poll = self.session.query(Poll).options(
+            joinedload(Poll.question_list).options(
+                joinedload(Question.answers_list))).filter(
+            Poll.lesson_id == lesson_id
+        ).first()
+        if query:
+            return query

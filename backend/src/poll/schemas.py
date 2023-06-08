@@ -16,5 +16,20 @@ class AnswerBase(OrmBaseModel):
     is_correct: bool
 
 
+class ShowAnser(AnswerBase):
+    id: int
+
+
 class AddAnswers(OrmBaseModel):
     answers_list: list[AnswerBase]
+
+
+class ShowQuestion(OrmBaseModel):
+    id: int
+    question_text: str
+    answers_list: list[ShowAnser]
+
+
+class ShowLessonPoll(OrmBaseModel):
+    id: int
+    question_list: list[ShowQuestion]

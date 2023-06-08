@@ -2,7 +2,6 @@ import React from "react";
 import BaseButton from "../../components/UI/BaseButton/BaseButton";
 import cls from "./Poll.module.css";
 export default function PollItem({ question, handlerAnswer }) {
-    console.log(question.answers_list)
   return (
     <div className={cls.box}>
       <div className={cls.teacher}>

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 
 from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.poll.crud import PollCrud
-from src.poll.schemas import PollBase, QuestionBase, AddAnswers
+from src.poll.schemas import PollBase, QuestionBase, AddAnswers, ShowLessonPoll
 
 router = APIRouter(prefix='/poll', tags=['Опрос'])
 
@@ -55,5 +55,17 @@ def add_question_to_poll(
         answers_list: AddAnswers,
         permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_answers_list(poll_id, question_id, answers_list,
-                                      permission)
+    """Позволяет добавить неограниченный список ответов к вопросу
+    Ответ содержит в себе тело ответа и булевую переменную, обозначающую истинность овтета.
+    """
+    return poll_crud.add_answers_list(
+        poll_id, question_id, answers_list, permission)
+
+
+@router.get('/lesson_poll/{lesson_id}',
+            summary='Получить опрос к уроку курса',
+            response_model=ShowLessonPoll)
+def get_poll_from_lessons(
+        lesson_id: int,
+        poll_crud: PollCrud = Depends()):
+    return poll_crud.get_lesson_poll(lesson_id)
