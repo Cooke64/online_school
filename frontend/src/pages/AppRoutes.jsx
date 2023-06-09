@@ -22,6 +22,7 @@ import PassLastMonth from "./ProfilePage/PassLastMonth/PassLastMonth";
 import TeacherOnly from "./TeacherOnly";
 import AddLesson from "./AddLesson/AddLesson";
 import PollPage from "./PollPage/PollPage";
+import CreatePollPage from "./CreatePollPage/CreatePollPage";
 
 export default function AppRoutes() {
   return (
@@ -57,6 +58,7 @@ export default function AppRoutes() {
         <Route element={<TeacherOnly />}>
           <Route path="/create_course" element={<CreateCourse />} />
           <Route path="/course/add_lesson/:id/" element={<AddLesson />} />
+          <Route path="/create_poll/:lesson_id/" element={<CreatePollPage />} />
         </Route>
         <Route path="*" element={<ErrorPapge />} />
       </Route>

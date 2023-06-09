@@ -145,7 +145,15 @@ export default function LessonDetail() {
               />
             </div>
             {lesson.lesson_teachers.includes(isAuth.userData.username) && (
-              <RemoveLesson />
+              <>
+                <RemoveLesson />
+                <ButtonAsLink
+                  to={`/create_poll/${lesson_id}`}
+                  btn_action="option"
+                >
+                  Добавить опрос
+                </ButtonAsLink>
+              </>
             )}
           </section>
           <LessonComment

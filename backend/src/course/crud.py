@@ -40,10 +40,20 @@ class CourseCrud(BaseCrud):
         rating = self.session.query(func.avg(
             CourseRating.rating)).filter(
             CourseRating.course_id == course_id).first()
+        # количество запятых для округления значения рейтинга
         commas_after_ratig = 2
         if rating[0]:
             return round(rating[0], commas_after_ratig)
         return 0
+
+    def __update_rating(self, permission: UserPermission, course_id: int,
+                        new_rating: Rating) -> None:
+        student = self.get_student_by_email(permission.user_email).id
+        self.session.query(CourseRating).filter(and_(
+            CourseRating.course_id == course_id,
+            CourseRating.student_id == student)
+        ).update({'rating': new_rating.value}, synchronize_session='fetch')
+        self.session.commit()
 
     def add_rating_to_course(self, permission: UserPermission, course_id: int,
                              rating: Rating) -> None:
@@ -63,15 +73,6 @@ class CourseCrud(BaseCrud):
         course_rating = CourseRating(
             student_id=student, course_id=course.id, rating=rating.value)
         self.create_item(course_rating)
-
-    def __update_rating(self, permission: UserPermission, course_id: int,
-                        new_rating: Rating) -> None:
-        student = self.get_student_by_email(permission.user_email).id
-        self.session.query(CourseRating).filter(and_(
-            CourseRating.course_id == course_id,
-            CourseRating.student_id == student)
-        ).update({'rating': new_rating.value}, synchronize_session='fetch')
-        self.session.commit()
 
     def create_new_course(
             self,
@@ -137,7 +138,6 @@ class CourseCrud(BaseCrud):
     def add_course_by_user(self, course_id: int, permission: UserPermission):
         """
         Добавляет курс в список курсов студента.
-        - передается емейл авторизованного пользователя, полученный по его токену.
         """
         student = self.get_student_by_email(permission.user_email)
         course = self.get_current_item(course_id, Course).first()
@@ -173,9 +173,7 @@ class CourseCrud(BaseCrud):
         teacher = self.get_teacher_by_email(permission.user_email)
         if teacher not in course.teachers:
             raise ex.HasNotPermission
-        query = self.update_item(course_id, Course, data_to_update)
-        if query:
-            return query
+        return self.update_item(course_id, Course, data_to_update)
 
     def delete_course(self, course_id: int, permission: UserPermission):
         course = self.get_current_item(course_id, Course).first()

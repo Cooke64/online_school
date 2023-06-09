@@ -22,7 +22,7 @@ class LessonCrud(BaseCrud):
         ).first()
         return user_course
 
-    def _create_lesson_instanse(self, course_id, lesson: LessonBase):
+    def _create_lesson_instanse(self, course_id, lesson: LessonBase) -> Lesson:
         new_lesson = Lesson(
             course_id=course_id,
             **lesson.dict()
@@ -48,7 +48,7 @@ class LessonCrud(BaseCrud):
             ).options(joinedload(Student.user)))).options(
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
-            Lesson.course_id == course_id, Lesson.id == lessons_id
+                Lesson.course_id == course_id, Lesson.id == lessons_id
         )).first()
         if not lesson:
             raise NotFound
@@ -82,7 +82,7 @@ class LessonCrud(BaseCrud):
             lesson_data: LessonBase,
             permission: UserPermission
 
-    ) -> None:
+    ) -> int:
         user: User = self.get_user_by_email(User, permission.user_email)
         course: Course = self.get_current_item(course_id, Course).first()
         if not user or not course:
