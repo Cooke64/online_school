@@ -11,15 +11,16 @@ export default function PollPage() {
   const { course_id, lesson_id } = useParams();
   const [isLoading, setIsLoading] = React.useState(true);
   const [questions, setQuestions] = React.useState([]);
+  const [descr, setDescr] = React.useState("");
   const [currentQuestion, setCurrentQuestion] = React.useState(0);
   const [counterCorrectAnswer, setCounterCorrectAnswer] = React.useState(0);
   const [hasfinished, setHasFinished] = React.useState(false);
   const [needPassPoll, setNeedPassPoll] = React.useState(2);
 
   React.useEffect(() => {
-    console.log("res");
     api.getLessonPoll(lesson_id).then((res) => {
       setQuestions(res.question_list);
+      setDescr(res.poll_description);
       setIsLoading(false);
     });
   }, [lesson_id]);
@@ -75,6 +76,9 @@ export default function PollPage() {
           <h3>
             Вопрос {currentQuestion + 1} из {questions.length}
           </h3>
+          <div className={cls.descr}>
+            <h3>{descr ? descr : "Описание опроса отсутствует."}</h3>
+          </div>
           {isLoading ? (
             <div>
               <Loader />

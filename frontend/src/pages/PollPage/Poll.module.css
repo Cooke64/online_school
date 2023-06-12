@@ -12,7 +12,7 @@
     border-radius: 0.5rem;
     background-color: #fff;
     padding: 2rem;
-    align-items: center;
+    text-align: center;
   }
   .box img {
     height: 5rem;
@@ -50,3 +50,10 @@ h3 {
     color: var(--main_color);
   }
   
+  .descr {
+    border-radius: 0.5rem;
+    background-color: #fff;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }

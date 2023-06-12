@@ -235,6 +235,21 @@ class Api {
       }
     ).then(this.checkResponse)
   }
+
+  createPoll ({
+    courseId, lessonId, pollDescr
+  }) {
+    const body = JSON.stringify({
+      pollDescr
+    })
+    return fetch(
+      `http://127.0.0.1:8000/poll/create_poll/${courseId}/${lessonId}`, {
+        method: 'post',
+        headers: this.headers,
+        body: body
+      }
+    ).then(this.checkResponse)
+  }
 }
 
 const token = localStorage.getItem('token')
