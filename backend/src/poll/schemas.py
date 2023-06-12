@@ -4,11 +4,12 @@ from src.utils.base_schemas import OrmBaseModel
 
 
 class PollBase(BaseModel):
-    title: str
+    poll_description: str | None
 
 
-class QuestionBase(BaseModel):
+class QuestionBase(OrmBaseModel):
     question_text: str
+    required_to_correct: int | None
 
 
 class AnswerBase(OrmBaseModel):
@@ -24,12 +25,12 @@ class AddAnswers(OrmBaseModel):
     answers_list: list[AnswerBase]
 
 
-class ShowQuestion(OrmBaseModel):
+class ShowQuestion(QuestionBase):
     id: int
-    question_text: str
     answers_list: list[ShowAnser]
 
 
 class ShowLessonPoll(OrmBaseModel):
     id: int
+    poll_description: str | None
     question_list: list[ShowQuestion]

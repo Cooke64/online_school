@@ -67,6 +67,10 @@ section {
 .btn_block {
   background-color: var(--main_color);
 }
+
+.btn_red{
+  background-color: #e74c3c;
+}
 .btn_inline {
   display: inline-block;
   width: 100%;

@@ -1,6 +1,9 @@
-from sqlalchemy.orm import joinedload, Query
+from sqlalchemy import exists
+from sqlalchemy.orm import Query
+from sqlalchemy.orm import joinedload
 
 from src.database import BaseCrud
+from .excteptions import AddExisted
 from .models import Poll, Question, Answer
 from .schemas import PollBase, QuestionBase, AnswerBase, AddAnswers
 from ..auth.utils.auth_bearer import UserPermission
@@ -11,6 +14,7 @@ from ..users.models import User
 
 
 class PollCrud(BaseCrud):
+
     def get_teacher_by_email(self, email: str) -> Teacher:
         teacher = self.session.query(
             Teacher).join(User).filter(
@@ -54,8 +58,11 @@ class PollCrud(BaseCrud):
         return query.first()
 
     def _create_poll(self, poll_data: PollBase, lesson_id: int) -> Poll:
-        new_poll = Poll(lesson_id=lesson_id, **poll_data.dict())
-        return self.create_item(new_poll)
+        if not self.session.query(
+                exists().where(Poll.lesson_id == lesson_id)).scalar():
+            new_poll = Poll(lesson_id=lesson_id, **poll_data.dict())
+            return self.create_item(new_poll)
+        raise AddExisted
 
     def add_poll_to_lesson(
             self, course_id: int, lesson_id: int,
@@ -83,6 +90,7 @@ class PollCrud(BaseCrud):
                                    permission=permission)
         new_question = self._create_question(poll_id, question)
         poll.question_list.append(new_question)
+        return self.get_json_reposnse(f'Вопрос добавленс номером {new_question.id}', 201)
 
     def remove_question(self, poll_id, question_id,
                         permission: UserPermission):
@@ -110,7 +118,6 @@ class PollCrud(BaseCrud):
         question = self.get_current_item(question_id, Question).first()
         if question:
             for answer in answeers_list.answers_list:
-                print(answer)
                 new_answer = self._create_answer_instanse(question_id, answer)
                 question.answers_list.append(new_answer)
             return self.get_json_reposnse('Добавлено', 201)
@@ -123,3 +130,4 @@ class PollCrud(BaseCrud):
         ).first()
         if query:
             return query
+        return NotFound

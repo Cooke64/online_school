@@ -40,9 +40,16 @@ export default function CreatePollPage() {
   const addPoll = (e) => {
     e.preventDefault();
     console.log({
-      answers_list: answers
-    })
+      answers_list: answers,
+    });
+  };
+
+  const removeFields = (index) => {
+    let data = [...answers];
+    data.splice(index, 1)
+    setAnswers(data)
   }
+
   return (
     <section>
       <h1 className="section_header">Добавить опрос к уроку</h1>
@@ -64,7 +71,7 @@ export default function CreatePollPage() {
         <div>
           <form>
             {answers.map((answer, index) => (
-              <div className={cls.statistic} key={index}>
+              <div className={cls.answer_item} key={index}>
                 <p>Добавить вопрос тесту</p>
                 <BaseInput
                   type="text"
@@ -81,7 +88,12 @@ export default function CreatePollPage() {
                   checked={answer.is_correct}
                   name="is_correct"
                 ></input>
+                <div>
+                  <BaseButton className="btn_red" onClick={() => removeFields(index)}>Удалить вопрос</BaseButton>
+                </div>
+                <hr/>
               </div>
+              
             ))}
             <BaseButton className="btn_block" onClick={addAnotherAnswer}>
               Добавить еще

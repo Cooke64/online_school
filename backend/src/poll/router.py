@@ -11,7 +11,7 @@ from src.poll.schemas import PollBase, QuestionBase, AddAnswers, ShowLessonPoll
 router = APIRouter(prefix='/poll', tags=['Опрос'])
 
 
-@router.get('/', )
+@router.get('/')
 def get_main(poll_crud: PollCrud = Depends()):
     return poll_crud.get_all_polls()
 
@@ -24,8 +24,8 @@ def create_poll(
         poll_data: PollBase,
         permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_poll_to_lesson(course_id, lesson_id, poll_data,
-                                        permission)
+    return poll_crud.add_poll_to_lesson(
+        course_id, lesson_id, poll_data, permission)
 
 
 @router.delete('/remove_poll/{course_id}/{lesson_id}',

@@ -12,14 +12,14 @@
   width: 100%;
   object-fit: cover;
 }
-form {
+.row form {
   flex: 1 1 30rem;
   background-color: #fff;
   border-radius: 0.5rem;
   padding: 2rem;
   text-align: center;
 }
-form h3 {
+.row form h3 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   color: var(--black);
