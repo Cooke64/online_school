@@ -37,9 +37,6 @@ class BaseCrud:
     def __init__(self, session: Session = Depends(get_db)):
         self.session = session
 
-    def __getattr__(self, item):
-        return self.__dict__[item]
-
     def get_user_by_email(self, Model, email):
         return self.session.query(Model).filter(Model.email == email).first()
 

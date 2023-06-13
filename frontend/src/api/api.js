@@ -237,13 +237,13 @@ class Api {
   }
 
   createPoll ({
-    courseId, lessonId, pollDescr
+    courseId, lessonId, pollData
   }) {
     const body = JSON.stringify({
-      pollDescr
+      pollData
     })
     return fetch(
-      `http://127.0.0.1:8000/poll/create_poll/${courseId}/${lessonId}`, {
+      `http://127.0.0.1:8000/poll/add_poll/${courseId}/${lessonId}`, {
         method: 'post',
         headers: this.headers,
         body: body

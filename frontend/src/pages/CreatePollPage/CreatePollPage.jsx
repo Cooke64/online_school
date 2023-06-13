@@ -7,6 +7,7 @@ import BaseButton from "../../components/UI/BaseButton/BaseButton";
 
 export default function CreatePollPage() {
   const { lesson_id } = useParams();
+
   const [questionText, setQuestionText] = React.useState("");
   const [isQuestion, setIsQuestion] = React.useState(true);
   const [answers, setAnswers] = React.useState([
@@ -28,7 +29,6 @@ export default function CreatePollPage() {
 
   const handleFormChange = (index, event) => {
     let data = [...answers];
-    console.log(event.target.type);
     if (event.target.type === "checkbox") {
       data[index][event.target.name] = event.target.checked;
     } else {
@@ -55,6 +55,12 @@ export default function CreatePollPage() {
       <h1 className="section_header">Добавить опрос к уроку</h1>
       {isQuestion ? (
         <form>
+          <p>Добавить описание тесту</p>
+          <BaseInput
+            type="text"
+            placeholder="Введи описание опроса"
+            className={cls.box}
+          />
           <p>Добавить вопрос тесту</p>
           <BaseInput
             type="text"

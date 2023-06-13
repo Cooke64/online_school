@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends
 
 from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.poll.crud import PollCrud
-from src.poll.schemas import PollBase, QuestionBase, AddAnswers, ShowLessonPoll
+from src.poll.schemas import PollBase, QuestionBase, AddAnswers, \
+    ShowLessonPoll, AddPoll
 
 router = APIRouter(prefix='/poll', tags=['Опрос'])
 
@@ -69,3 +70,15 @@ def get_poll_from_lessons(
         lesson_id: int,
         poll_crud: PollCrud = Depends()):
     return poll_crud.get_lesson_poll(lesson_id)
+
+
+@router.post('/add_poll/{course_id}/{lesson_id}',
+             summary='Создать новый опрос c вопросами и ответами', )
+def add_poll(
+        course_id: int,
+        lesson_id: int,
+        poll_data: AddPoll,
+        permission: UserPermission = Depends(get_permission),
+        poll_crud: PollCrud = Depends()):
+    return poll_crud.add_new_poll(
+        course_id, lesson_id, poll_data, permission)

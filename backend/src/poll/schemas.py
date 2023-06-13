@@ -30,6 +30,12 @@ class ShowQuestion(QuestionBase):
     answers_list: list[ShowAnser]
 
 
+class AddPoll(OrmBaseModel):
+    poll_description: str | None
+    question: QuestionBase
+    answers: AddAnswers
+
+
 class ShowLessonPoll(OrmBaseModel):
     id: int
     poll_description: str | None
