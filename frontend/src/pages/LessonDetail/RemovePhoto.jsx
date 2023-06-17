@@ -7,8 +7,8 @@ import api from "../../api/api";
 export default function RemovePhoto(lessonId, photoId) {
   const clickHandler = (e) => {
     e.preventDefault();
-    console.log(photoId);
-    api.removePhoto(lessonId, photoId)
+    console.log(lessonId, photoId);
+    // api.removePhoto(lessonId, photoId)
   };
 
   return (

@@ -9,6 +9,16 @@ export default function CreatePollPage() {
   const { lesson_id } = useParams();
 
   const [questionText, setQuestionText] = React.useState("");
+  const [poll, setPoll] = React.useState({
+    poll_description: "string",
+    question_list: [
+      {
+        question_text: "string",
+        required_to_correct: 0,
+        answers_list: [],
+      },
+    ],
+  });
   const [isQuestion, setIsQuestion] = React.useState(true);
   const [answers, setAnswers] = React.useState([
     {
@@ -16,6 +26,22 @@ export default function CreatePollPage() {
       is_correct: false,
     },
   ]);
+
+  const addPoll = (e) => {
+    e.preventDefault();
+    setPoll(...poll, {
+      poll_description: "string",
+      question_list: [
+        {
+          question_text: questionText,
+          required_to_correct: 0,
+          answers_list: answers,
+        },
+      ],
+    });
+    console.log(poll);
+  };
+
   const onClickHandler = (e) => {
     e.preventDefault();
     setIsQuestion(false);
@@ -37,18 +63,11 @@ export default function CreatePollPage() {
     setAnswers(data);
   };
 
-  const addPoll = (e) => {
-    e.preventDefault();
-    console.log({
-      answers_list: answers,
-    });
-  };
-
   const removeFields = (index) => {
     let data = [...answers];
-    data.splice(index, 1)
-    setAnswers(data)
-  }
+    data.splice(index, 1);
+    setAnswers(data);
+  };
 
   return (
     <section>
@@ -95,11 +114,15 @@ export default function CreatePollPage() {
                   name="is_correct"
                 ></input>
                 <div>
-                  <BaseButton className="btn_red" onClick={() => removeFields(index)}>Удалить вопрос</BaseButton>
+                  <BaseButton
+                    className="btn_red"
+                    onClick={() => removeFields(index)}
+                  >
+                    Удалить вопрос
+                  </BaseButton>
                 </div>
-                <hr/>
+                <hr />
               </div>
-              
             ))}
             <BaseButton className="btn_block" onClick={addAnotherAnswer}>
               Добавить еще

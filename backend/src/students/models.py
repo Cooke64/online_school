@@ -5,6 +5,7 @@ from sqlalchemy import Column as _, Integer, String, ForeignKey, \
 from sqlalchemy.orm import relationship, backref
 
 from src.database import BaseModel
+from src.students_awards.models import StudentAward
 from src.users.models import User
 
 
@@ -63,3 +64,5 @@ class Student(BaseModel):
         'LessonComment',
         back_populates='student'
     )
+
+    student_award = relationship(StudentAward, back_populates='student')

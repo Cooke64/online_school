@@ -9,6 +9,7 @@ from src.config import settings
 
 
 def get_base_for_alembic():
+    from src.students_awards.models import Award, StudentAward
     from src.course.models import Course, Lesson, CoursePreviewImage
     from src.students.models import Student
     from src.teachers.models import Teacher

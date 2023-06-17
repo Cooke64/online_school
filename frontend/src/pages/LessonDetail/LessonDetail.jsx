@@ -12,12 +12,13 @@ import RemovePhoto from "./RemovePhoto";
 
 const ImageWithText = ({ photo, text, teacherList }) => {
   const { course_id, lesson_id } = useParams();
+  console.log(photo)
   const { isAuth } = useAuth();
   return (
     <>
       <div className={cls.container}>
         {teacherList.includes(isAuth.userData.username) && (
-          <RemovePhoto photoId={photo.id} lessonId={lesson_id} />
+          <RemovePhoto lessonId={lesson_id} photoId={photo.id}/>
         )}
         <Image64
           key={photo.id}

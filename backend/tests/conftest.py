@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
 from src.database import Base, get_db
-from src.main import incculde_routers
+from src.utils.create_router import create_router
 from tests.utils.create_fake_bd import create_fake_bd
 from tests.utils.users import auth_teachers, auth_students, UserHeaders
 
@@ -20,7 +20,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def start_application():
     app = FastAPI()
-    incculde_routers(app)
+    create_router(app)
     return app
 
 
@@ -40,7 +40,7 @@ def app() -> Generator[FastAPI, Any, None]:
 
 
 @pytest.fixture(scope="function")
-def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
+def db_session(app: FastAPI) -> Generator:
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionTesting(bind=connection)
@@ -59,7 +59,6 @@ def client(
             yield db_session
         finally:
             pass
-
     app.dependency_overrides[get_db] = get_test_db
     with TestClient(app) as client:
         yield client
@@ -78,6 +77,6 @@ def auth_student(client: TestClient, db_session: Session) -> UserHeaders:
 
 
 @pytest.fixture(scope="function")
-def get_fake_db(client: TestClient, db_session: Session) -> UserHeaders:
-    """Авторизация студента"""
+def get_fake_db(client: TestClient, db_session: Session) -> None:
+    """Создание базы данных"""
     return create_fake_bd(db_session)

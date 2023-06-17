@@ -22,3 +22,6 @@ class MainCrud(BaseCrud):
             Course.is_free == True
         ).limit(3).all()
         return q
+
+
+        

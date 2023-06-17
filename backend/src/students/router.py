@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.exceptions import NotFound
 from src.students.crud import StudentCrud
+from src.students_awards.awards_crud import AwardCrud
 from src.users.models import User
 
 router = APIRouter(prefix='/student', tags=['Данные о студенте'])
@@ -11,7 +12,8 @@ router = APIRouter(prefix='/student', tags=['Данные о студенте'])
 @router.get('/my_courses')
 def get_all_users_courses(
         permission: UserPermission = Depends(get_permission),
-        user_crud: StudentCrud = Depends()
+        user_crud: StudentCrud = Depends(),
+        awards: AwardCrud = Depends()
 ):
     """
     Возвращает информацию о пользователе.

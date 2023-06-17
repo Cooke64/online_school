@@ -3,7 +3,7 @@ from tests.utils.users import UserHeaders
 data = {
     'title': 'title',
     'description': 'description',
-    'rating': 4
+    'is_free': False
 }
 
 

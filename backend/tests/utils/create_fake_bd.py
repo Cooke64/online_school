@@ -26,7 +26,7 @@ def create_free_courses(teacher, session: Session):
 
 
 def create_course_with_free_lessons(teacher, session: Session):
-    COURSE_DATA.update({'is_free': False})
+    COURSE_DATA.update({'is_free': True})
     last_item = Course(**COURSE_DATA)
     last_item.teachers.append(teacher)
     last_course = create_item(last_item, session)
@@ -39,7 +39,7 @@ def create_course_with_free_lessons(teacher, session: Session):
 
 
 def create_not_free_course_with_not_free_lessons(teacher, session: Session):
-    COURSE_DATA.update({'is_free': False})
+    COURSE_DATA.update({'is_free': True})
     course = Course(**COURSE_DATA)
     course.teachers.append(teacher)
     new_course = create_item(course, session)
@@ -58,4 +58,3 @@ def create_fake_bd(session: Session):
     create_free_courses(teacher, session)
     create_course_with_free_lessons(teacher, session)
     create_not_free_course_with_not_free_lessons(teacher, session)
-
