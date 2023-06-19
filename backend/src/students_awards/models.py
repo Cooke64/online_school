@@ -3,7 +3,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-from src.database import BaseModel
+from src.BaseModel import BaseModel
 
 
 class StudentAward(BaseModel):

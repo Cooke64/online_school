@@ -15,7 +15,8 @@ class TeachersCrud(BaseCrud):
         return self.session.query(TeacherCourse).filter(
             TeacherCourse.user_id == teacher_id).count()
 
-    def _get_total_rating(self, teacher_id, courses: list[Course]):
+    def _get_total_rating(self, teacher_id: int,
+                          courses: list[Course]) -> float | int:
         count = self._count_courses(teacher_id)
         all_courses_rating = 0
         commas_after_ratig = 2
@@ -28,7 +29,7 @@ class TeachersCrud(BaseCrud):
         return round(all_courses_rating / count,
                      commas_after_ratig) if count else 0
 
-    def _get_total_reviews(self, courses: list[Course]):
+    def _get_total_reviews(self, courses: list[Course]) -> int:
         res = 0
         for course in courses:
             res += self.session.query(CourseReview).filter(
@@ -85,8 +86,8 @@ class TeacherProfileCrud(TeachersCrud):
             Course.teachers.contains(teacher)
         )).count()
 
-    def get_teacher_profile(self, permission: UserPermission):
-        user = self.get_user_by_email(User, permission.user_email)
+    def get_teacher_profile(self):
+        user = self.user
         teacher: Teacher = self.session.query(Teacher).options(
             joinedload(Teacher.courses)).filter(
             Teacher.user == user).first()

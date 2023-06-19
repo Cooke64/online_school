@@ -1,29 +1,18 @@
+import typing
 from typing import Any
 
 from fastapi import Depends
-from sqlalchemy import Column as _, Integer, exists
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, Session, Query
+from sqlalchemy import exists
+from sqlalchemy.orm import Session, Query
 from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from src.auth.utils.jwt_bearer import get_current_user
 from src.config import settings
 from src.exceptions import NotFound
-
-Base = declarative_base()
-
-
-class BaseModel(Base):
-    __abstract__ = True
-    id = _(
-        Integer(), nullable=False,
-        unique=True, primary_key=True, autoincrement=True
-    )
-
-    def __repr__(self):
-        return "<{0.__class__.__name__}(id={0.id!r})>".format(self)
-
+from src.users.models import User
 
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -33,12 +22,43 @@ def get_db(request: Request):
     return request.state.db
 
 
-class BaseCrud:
-    def __init__(self, session: Session = Depends(get_db)):
-        self.session = session
+class UserPermission(typing.NamedTuple):
+    role: str
+    user_email: str
 
-    def get_user_by_email(self, Model, email):
-        return self.session.query(Model).filter(Model.email == email).first()
+
+class BaseCrud:
+    def __init__(self, session: Session = Depends(get_db),
+                 email: str = Depends(get_current_user)):
+        self.session: Session = session
+        self.__email: str | None = email
+
+    @property
+    def user(self):
+        user = self.get_user(self.__email)
+        if not user:
+            raise NotFound
+        if user and user.is_active:
+            return user
+
+    @property
+    def email(self):
+        return self.__email
+
+    @property
+    def is_student(self):
+        if self.user:
+            return self.user.role == 'Student'
+
+    @property
+    def is_teacher(self):
+        if self.user:
+            return self.user.role == 'Teacher'
+
+    def get_user(self, email: str | None = None) -> User:
+        if not email:
+            email = self.__email
+        return self.session.query(User).filter(User.email == email).first()
 
     def get_all_items(self, Model) -> list:
         return self.session.query(Model).all()

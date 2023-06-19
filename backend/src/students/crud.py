@@ -1,15 +1,12 @@
 from datetime import timedelta
-from typing import Any
 
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Query, joinedload
 
-from src.auth.utils.auth_bearer import UserPermission
 from src.course.models import Course, Lesson
 from src.database import BaseCrud
 from src.exceptions import NotFound
 from src.students.models import StudentCourse, StudentPassedLesson
-from src.users.models import User
 
 
 class StudentCrud(BaseCrud):
@@ -25,13 +22,13 @@ class StudentCrud(BaseCrud):
         """Получить список оплаченных курсов."""
         purchased_courses = self.session.query(Course).join(
             StudentCourse).filter(and_(
-            StudentCourse.student_id == student_id,
-            StudentCourse.has_paid == True
+                StudentCourse.student_id == student_id,
+                StudentCourse.has_paid == True
         )).all()
         return purchased_courses
 
     def _get_passed_lessons(self, student_id: int, course_id: int = 1) -> list[
-        StudentPassedLesson]:
+            StudentPassedLesson]:
         """Получить список пройденныйх уроков в курсе"""
         query = self.get_lessons_passed_by_user(student_id)
         return query.all()
@@ -47,23 +44,29 @@ class StudentCrud(BaseCrud):
         ).all()
         return last_day, last_month
 
-    def get_students_courses(self, permission: UserPermission) -> dict[
-        str, User | Any]:
-        user = self.get_user_by_email(User, permission.user_email)
-        if not user:
+    def get_students_courses(self) -> dict:
+        if not self.user:
             raise NotFound
-        purchased_courses = self._get_purchased_courses(user.student.id)
+        purchased_courses = self._get_purchased_courses(self.user.student.id)
         passsed_today, last_month = self.get_lessons_passed_today(
-            user.student.id)
-        left_comments = 123
-        evalueted_courses = 123
+            self.user.student.id)
         return {
             'purchased_courses': purchased_courses,
             'pass_lessons_today': passsed_today,
             'pass_lessons_last_month': last_month,
-            'left_comments': left_comments,
-            'evalueted_courses': evalueted_courses
+            'left_comments': 123,
+            'evalueted_courses': 123
         }
 
     def get_student_statistics(self):
         pass
+
+    def get_passed_lessons(self):
+        if not self.user:
+            raise NotFound
+        passsed_today, last_month = self.get_lessons_passed_today(
+            self.user.student.id)
+        return {
+            'pass_lessons_today': passsed_today,
+            'pass_lessons_last_month': last_month,
+        }

@@ -3,7 +3,7 @@ from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship, backref
 
-from src.database import BaseModel
+from src.BaseModel import BaseModel
 from src.scripts.choice_field import ChoiceType
 
 

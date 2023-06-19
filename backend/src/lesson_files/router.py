@@ -5,7 +5,6 @@ from starlette import status
 from starlette.background import BackgroundTasks
 from starlette.responses import StreamingResponse
 
-from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.exceptions import DetailedHTTPException
 from src.lesson_files.crud import MediaCrud
 from src.lesson_files.utils.create_file import (
@@ -102,13 +101,12 @@ def get_photo_from_lesson(
     description='Удалить фото в  уроке по его id.',
     summary='Удалить фото'
 )
-def remove_comment(
+def remove_photo(
         lesson_id: int = Path(..., gt=0),
         photo_id: int = Path(..., gt=0),
         media_crud: MediaCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
 ):
-    media_crud.remove_photo(lesson_id, photo_id, permission)
+    media_crud.remove_photo(lesson_id, photo_id)
 
 
 @router.get('/{lesson_id}/video/{video_id}')

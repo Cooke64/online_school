@@ -4,7 +4,7 @@ import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from src.database import BaseModel
+from src.BaseModel import BaseModel
 
 
 class LessonComment(BaseModel):

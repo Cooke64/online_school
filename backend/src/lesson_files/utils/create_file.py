@@ -34,7 +34,13 @@ def upload_file_and_push_to_db(
     os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
 
 
-def create_preview_to_course(file_obj: UploadFile, course_id: int, course_crud: CourseCrud = Depends()):
+def create_preview_to_course(
+        file_obj: UploadFile,
+        course_id: int,
+        course_crud: CourseCrud = Depends()
+):
+    if not course_crud.is_teacher:
+        raise PermissionError
     data_to_save = create_blob_obj(file_obj)
     file_type = get_type_content(file_obj.content_type)
     file_path = read_and_show_file(data_to_save, file_type)
@@ -46,8 +52,9 @@ def create_preview_to_course(file_obj: UploadFile, course_id: int, course_crud: 
     os.remove(f'{BASE_DIRECTORY}/{file_obj.filename}')
 
 
-def upload_user_pic(file_obj: UploadFile, permission, user_crud: UserCrud = Depends()):
-    pass
+def upload_user_pic(file_obj: UploadFile, user_crud: UserCrud = Depends()):
+    user = user_crud.user
+    print(user)
 
 
 def get_type_content(file_type: str):

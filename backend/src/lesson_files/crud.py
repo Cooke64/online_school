@@ -1,9 +1,8 @@
 from sqlalchemy import and_
 
-from src.auth.utils.auth_bearer import UserPermission
 from src.course.models import Lesson
 from src.database import BaseCrud
-from src.exceptions import NotFound
+from src.exceptions import NotFound, PermissionDenied
 from src.lesson_files.models import LessonPhoto, LessonVideo
 
 
@@ -57,9 +56,8 @@ class MediaCrud(BaseCrud):
 
     def remove_photo(
             self, photo_id: int, lesson_id: int,
-            permission: UserPermission):
+            ):
         photo = self.get_photo_item(photo_id, lesson_id)
-        teacher = self.get_user_by_email(permission.user_email)
-        if not photo:
-            raise NotFound
+        if not self.is_teacher:
+            raise PermissionDenied
         self.remove_item(photo.id, LessonPhoto)

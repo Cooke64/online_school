@@ -1,7 +1,6 @@
 from sqlalchemy import func, exists, and_
 from sqlalchemy.orm import joinedload
 
-from src.auth.utils.auth_bearer import UserPermission
 from src.course import exceptions as ex
 from src.course.models import (
     Course,
@@ -13,6 +12,7 @@ from src.course.models import (
 from src.course.shemas import CreateCourse, ReviewBase
 from src.course.utils import Rating
 from src.database import BaseCrud
+from src.exceptions import PermissionDenied
 from src.students.models import Student, StudentCourse, StudentPassedLesson
 from src.teachers.models import Teacher
 from src.users.models import User
@@ -46,27 +46,27 @@ class CourseCrud(BaseCrud):
             return round(rating[0], commas_after_ratig)
         return 0
 
-    def __update_rating(self, permission: UserPermission, course_id: int,
+    def __update_rating(self, course_id: int,
                         new_rating: Rating) -> None:
-        student = self.get_student_by_email(permission.user_email).id
+        student = self.get_student_by_email(self.email).id
         self.session.query(CourseRating).filter(and_(
             CourseRating.course_id == course_id,
             CourseRating.student_id == student)
         ).update({'rating': new_rating.value}, synchronize_session='fetch')
         self.session.commit()
 
-    def add_rating_to_course(self, permission: UserPermission, course_id: int,
+    def add_rating_to_course(self, course_id: int,
                              rating: Rating) -> None:
         """Добавление рейтинга курсу. Если уже рейтинг поставлен, то
         рейзит ошибку 400. В таком случае рейтинг можно удалить или обнавить.
         """
-        student = self.get_student_by_email(permission.user_email).id
+        student = self.get_student_by_email(self.email).id
         course = self.get_current_item(course_id, Course).first()
         if self.session.query(exists().where(and_(
                 CourseRating.course_id == course_id,
                 CourseRating.student_id == student)
         )).scalar():
-            self.__update_rating(permission, course_id, rating)
+            self.__update_rating(course_id, rating)
             return
         if not course:
             raise ex.NotFoundCourse
@@ -77,14 +77,15 @@ class CourseCrud(BaseCrud):
     def create_new_course(
             self,
             course_data: CreateCourse,
-            permission: UserPermission
     ) -> Course:
         """
         Создает новый курс.
             - Добавляет автора по его емейлу
             - Возвращает объект модели Course
         """
-        teacher = self.get_teacher_by_email(permission.user_email)
+        teacher = self.get_teacher_by_email(self.email)
+        if not self.is_teacher:
+            raise PermissionDenied
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
@@ -110,8 +111,11 @@ class CourseCrud(BaseCrud):
             Lesson.course_id == course_id).count()
         if result:
             rating_to_show = self._get_course_rating(result.id)
-            return {'course': result, 'rating': rating_to_show,
-                    'count_lessons': count_lessons}
+            return {
+                'course': result,
+                'rating': rating_to_show,
+                'count_lessons': count_lessons
+            }
         raise ex.NotFoundCourse
 
     def _create_passed_lesson(self, student_id: int, lesson_id: int,
@@ -135,11 +139,11 @@ class CourseCrud(BaseCrud):
                 lesson_item = lessons_list[num]
                 self._create_passed_lesson(student_id, lesson_item.id)
 
-    def add_course_by_user(self, course_id: int, permission: UserPermission):
+    def add_course_by_user(self, course_id: int):
         """
         Добавляет курс в список курсов студента.
         """
-        student = self.get_student_by_email(permission.user_email)
+        student = self.get_student_by_email(self.email)
         course = self.get_current_item(course_id, Course).first()
         if course in student.courses:
             raise ex.AddExisted
@@ -148,9 +152,9 @@ class CourseCrud(BaseCrud):
         if course.lessons:
             self._update_user_passed_lessons(student.id, course.lessons)
 
-    def pay_for_course(self, course_id: int, permission: UserPermission):
+    def pay_for_course(self, course_id: int):
         """Оплата курса пользователем. has_payd = True"""
-        user = self.get_user_by_email(User, permission.user_email)
+        user = self.user
         if user:
             user_course = self.session.query(
                 StudentCourse).filter(
@@ -168,25 +172,24 @@ class CourseCrud(BaseCrud):
     def update_course(self,
                       course_id: int,
                       data_to_update,
-                      permission: UserPermission):
+                      ):
         course = self.get_current_item(course_id, Course).first()
-        teacher = self.get_teacher_by_email(permission.user_email)
+        teacher = self.get_teacher_by_email(self.email)
         if teacher not in course.teachers:
             raise ex.HasNotPermission
         return self.update_item(course_id, Course, data_to_update)
 
-    def delete_course(self, course_id: int, permission: UserPermission):
+    def delete_course(self, course_id: int):
         course = self.get_current_item(course_id, Course).first()
-        teacher = self.get_teacher_by_email(permission.user_email)
+        teacher = self.get_teacher_by_email(self.email)
         if teacher not in course.teachers:
             raise ex.HasNotPermission
         self.remove_item(course_id, Course)
 
-    def remove_course_from_list(self, course_id: int,
-                                permission: UserPermission):
+    def remove_course_from_list(self, course_id: int):
         """Удаление пользователем курса из добавленных в список для прохождения."""
         course = self.get_current_item(course_id, Course).first()
-        student = self.get_student_by_email(permission.user_email)
+        student = self.get_student_by_email(self.email)
         if course not in student.courses:
             raise ex.NotFoundCourse
         student.courses.remove(course)
@@ -195,25 +198,27 @@ class CourseCrud(BaseCrud):
     def add_review_to_course(
             self,
             course_id: int,
-            permission: UserPermission,
             text: ReviewBase
     ):
         """Добавить отзыв на курс."""
+        if not self.is_student:
+            raise PermissionDenied
         course = self.get_current_item(course_id, Course).first()
-        student = self.get_student_by_email(permission.user_email)
+        student = self.get_student_by_email(self.email)
         new_review = CourseReview(
             student_id=student.id, course_id=course.id, text=text.text)
         self.create_item(new_review)
 
     def delete_review(
             self,
-            permission: UserPermission,
             review_id: int,
             course_id: int
     ):
-        review: CourseReview = self.get_current_item(review_id,
-                                                     CourseReview).first()
-        student = self.get_student_by_email(permission.user_email)
+        review: CourseReview = self.get_current_item(
+            review_id, CourseReview).first()
+        student = self.get_student_by_email(self.email)
+        if not self.is_student:
+            raise PermissionDenied
         if not (
                 review.student_id == student.id and review.course_id == course_id):
             raise ex.HasNotPermission
@@ -223,15 +228,16 @@ class CourseCrud(BaseCrud):
             self,
             course_id: int,
             file_obj: bytes,
-            file_type: str,
-            teacher_emal: str = '1@1.com'):
+            file_type: str,):
         """Добавить фото превью к уроку."""
+        if not self.is_teacher:
+            raise PermissionDenied
         course: Course = self.get_current_item(course_id, Course).first()
-        teacher = self.get_teacher_by_email(teacher_emal)
+        teacher = self.get_teacher_by_email(self.email)
         if teacher not in course.teachers:
             raise ex.HasNotPermission
         if course.course_preview:
-            course_prev: CoursePreviewImage = self.get_current_item(
+            course_prev = self.get_current_item(
                 course.course_preview.id, CoursePreviewImage).first()
             course_prev.photo_blob = file_obj
             course_prev.photo_typee = file_type

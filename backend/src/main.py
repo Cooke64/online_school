@@ -7,7 +7,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
 
-from .config import settings
 from .database import SessionLocal
 from .utils.create_router import create_router
 

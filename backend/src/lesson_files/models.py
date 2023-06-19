@@ -1,7 +1,9 @@
 from sqlalchemy.orm import relationship
 
-from src.database import BaseModel
+
 import sqlalchemy as sa
+
+from src.BaseModel import BaseModel
 
 
 class LessonVideo(BaseModel):

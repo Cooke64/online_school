@@ -4,7 +4,6 @@ from sqlalchemy.orm import joinedload
 from src.database import BaseCrud
 from .models import Poll, Question, Answer
 from .schemas import PollBase, QuestionBase, AnswerBase, AddAnswers, AddPoll
-from ..auth.utils.auth_bearer import UserPermission
 from ..course.models import Course, Lesson
 from ..exceptions import PermissionDenied, NotFound, BadRequest
 from ..teachers.models import Teacher
@@ -21,8 +20,7 @@ class PollCrud(BaseCrud):
             raise NotFound
         return teacher
 
-    def _check_lesson_teacher(self, course_id: int | None = None, *, lesson_id,
-                              permission: UserPermission) -> None:
+    def _check_lesson_teacher(self, course_id: int | None = None, *, lesson_id) -> None:
         """
         Проверяет, что роль у авторизованного пользователя учитель.
         Далее идет проверка, что действительно есть такой урок,
@@ -34,9 +32,9 @@ class PollCrud(BaseCrud):
             raise BadRequest
         if not course_id:
             course_id = lesson.course.id
-        if not permission.role == 'Teacher':
+        if not self.is_teacher:
             raise PermissionDenied
-        teacher = self.get_teacher_by_email(permission.user_email)
+        teacher = self.get_teacher_by_email(self.email)
         course: Course = self.get_current_item(course_id, Course).first()
         if teacher not in course.teachers:
             raise PermissionDenied
@@ -66,17 +64,15 @@ class PollCrud(BaseCrud):
     def add_poll_to_lesson(
             self, course_id: int, lesson_id: int,
             poll_data: PollBase,
-            permission: UserPermission
     ) -> Poll:
         """Добавление опроса к уроку. Опрос должен быть уникальным. При попытке создать второй
         опрос к уроку возвращает id записи существующего опроса.
         """
-        self._check_lesson_teacher(course_id=course_id, lesson_id=lesson_id,
-                                   permission=permission)
+        self._check_lesson_teacher(course_id=course_id, lesson_id=lesson_id)
         return self._create_poll(poll_data, lesson_id)
 
-    def remove_poll(self, lesson_id: int, permission: UserPermission):
-        self._check_lesson_teacher(lesson_id=lesson_id, permission=permission)
+    def remove_poll(self, lesson_id: int):
+        self._check_lesson_teacher(lesson_id=lesson_id)
         lesson_poll = self._get_lesson_poll(lesson_id)
         self.remove_item(lesson_poll.id, Poll)
         return self.get_json_reposnse('Удален', 204)
@@ -85,25 +81,21 @@ class PollCrud(BaseCrud):
         new_question = Question(poll_id=poll_id, **question.dict())
         return self.create_item(new_question)
 
-    def add_question(self, poll_id: int, question: QuestionBase,
-                     permission: UserPermission) -> Question:
+    def add_question(self, poll_id: int, question: QuestionBase) -> Question:
         """
         Добавляет вопрос к опросу. Создает новую запись в бд, может
         быть неограниченное колличество вопросов в опросе. Список ответов может быть пустым.
         Может быть указано количество правильных ответов в вопросе. Дефолтное значение 0.
         """
         poll: Poll = self._get_current_poll(poll_id).first()
-        self._check_lesson_teacher(lesson_id=poll.lesson_id,
-                                   permission=permission)
+        self._check_lesson_teacher(lesson_id=poll.lesson_id)
         new_question = self._create_question_instanse(poll_id, question)
         poll.question_list.append(new_question)
         return new_question
 
-    def remove_question(self, poll_id, question_id,
-                        permission: UserPermission):
+    def remove_question(self, poll_id, question_id):
         poll: Poll = self._get_current_poll(poll_id).first()
-        self._check_lesson_teacher(lesson_id=poll.lesson_id,
-                                   permission=permission)
+        self._check_lesson_teacher(lesson_id=poll.lesson_id)
         self.remove_item(question_id, Question)
         return self.get_json_reposnse('Удален', 204)
 
@@ -114,14 +106,12 @@ class PollCrud(BaseCrud):
         return self.create_item(new_answer)
 
     def add_answers_list(self, poll_id: int, question_id: int,
-                         answeers_list: AddAnswers,
-                         permission: UserPermission):
+                         answeers_list: AddAnswers):
         """Получает список всех ответов к вопросу, при иттерации создается
         новая сущность модели ANswer, добавляется в
         answers_list - список ответовов к вопросу """
         poll: Poll = self._get_current_poll(poll_id).first()
-        self._check_lesson_teacher(lesson_id=poll.lesson_id,
-                                   permission=permission)
+        self._check_lesson_teacher(lesson_id=poll.lesson_id)
         question = self.get_current_item(question_id, Question).first()
         if question:
             is_list = answeers_list.answers_list
@@ -142,14 +132,13 @@ class PollCrud(BaseCrud):
 
     def add_new_poll(self,
                      course_id: int, lesson_id: int,
-                     poll_data: AddPoll, permission: UserPermission):
+                     poll_data: AddPoll):
         poll_desc = PollBase(poll_description=poll_data.poll_description)
         poll = self.add_poll_to_lesson(
-            course_id, lesson_id, poll_desc, permission)
+            course_id, lesson_id, poll_desc)
         poll_id = poll if isinstance(poll, int) else poll.id
         question = self.add_question(
             poll_id,
             poll_data.question,
-            permission)
-        self.add_answers_list(poll_id, question.id, poll_data.answers,
-                              permission)
+            )
+        self.add_answers_list(poll_id, question.id, poll_data.answers)

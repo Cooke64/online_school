@@ -4,7 +4,7 @@ from sqlalchemy import Column as _, Integer, String, ForeignKey, \
     DateTime, Boolean, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 
-from src.database import BaseModel
+from src.BaseModel import BaseModel
 from src.students_awards.models import StudentAward
 from src.users.models import User
 

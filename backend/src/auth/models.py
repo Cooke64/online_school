@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from sqlalchemy.orm import relationship
 
-from src.database import BaseModel
+from src.BaseModel import BaseModel
 
 
 class Verification(BaseModel):

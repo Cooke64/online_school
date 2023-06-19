@@ -4,10 +4,14 @@
 """
 from fastapi import APIRouter, Depends
 
-from src.auth.utils.auth_bearer import UserPermission, get_permission
 from src.poll.crud import PollCrud
-from src.poll.schemas import PollBase, QuestionBase, AddAnswers, \
-    ShowLessonPoll, AddPoll
+from src.poll.schemas import (
+    PollBase,
+    QuestionBase,
+    AddAnswers,
+    ShowLessonPoll,
+    AddPoll
+)
 
 router = APIRouter(prefix='/poll', tags=['Опрос'])
 
@@ -23,19 +27,16 @@ def create_poll(
         course_id: int,
         lesson_id: int,
         poll_data: PollBase,
-        permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_poll_to_lesson(
-        course_id, lesson_id, poll_data, permission)
+    return poll_crud.add_poll_to_lesson(course_id, lesson_id, poll_data)
 
 
 @router.delete('/remove_poll/{course_id}/{lesson_id}',
                summary='Удалить опрос', )
 def remove_poll(
         lesson_id: int,
-        permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.remove_poll(lesson_id, permission)
+    return poll_crud.remove_poll(lesson_id)
 
 
 @router.post('/add_question/{poll_id}',
@@ -43,9 +44,8 @@ def remove_poll(
 def add_question_to_poll(
         poll_id: int,
         question: QuestionBase,
-        permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_question(poll_id, question, permission)
+    return poll_crud.add_question(poll_id, question)
 
 
 @router.post('/add_answers/{poll_id}/{question_id}',
@@ -54,13 +54,11 @@ def add_question_to_poll(
         poll_id: int,
         question_id: int,
         answers_list: AddAnswers,
-        permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
     """Позволяет добавить неограниченный список ответов к вопросу
     Ответ содержит в себе тело ответа и булевую переменную, обозначающую истинность овтета.
     """
-    return poll_crud.add_answers_list(
-        poll_id, question_id, answers_list, permission)
+    return poll_crud.add_answers_list(poll_id, question_id, answers_list)
 
 
 @router.get('/lesson_poll/{lesson_id}',
@@ -78,7 +76,5 @@ def add_poll(
         course_id: int,
         lesson_id: int,
         poll_data: AddPoll,
-        permission: UserPermission = Depends(get_permission),
         poll_crud: PollCrud = Depends()):
-    return poll_crud.add_new_poll(
-        course_id, lesson_id, poll_data, permission)
+    return poll_crud.add_new_poll(course_id, lesson_id, poll_data)

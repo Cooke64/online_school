@@ -1,14 +1,10 @@
 import time
-import typing
 
 from fastapi import Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
 from ...config import settings
-from ...database import BaseCrud
-from ...exceptions import PermissionDenied
-from ...users.models import RolesType, User
 
 
 def decode_jwt(token: str) -> dict:
@@ -57,8 +53,3 @@ async def get_current_user(token: str = Depends(JWTBearer())) -> dict:
             algorithms=settings.ALGORITHM
         )
         return payload.get("sub")
-
-
-class UserPermission(typing.NamedTuple):
-    role: str
-    user_email: str

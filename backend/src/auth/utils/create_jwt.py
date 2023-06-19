@@ -1,6 +1,3 @@
-"""
-This file is responsible for signing, creating or decode and returning JWTds.
-"""
 from datetime import datetime, timedelta
 
 import jwt
@@ -19,4 +16,3 @@ def create_jwt(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY,
                              algorithm=settings.ALGORITHM)
     return encoded_jwt
-

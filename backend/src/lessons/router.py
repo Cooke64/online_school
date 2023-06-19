@@ -1,10 +1,6 @@
 from fastapi import APIRouter, Depends, Path
 from starlette import status
 
-from src.auth.utils.auth_bearer import (
-    UserPermission,
-    get_permission
-)
 from src.lessons.crud import LessonCrud
 from src.lessons.shemas import LessonBase, CommentBase, ShowLessonDetail
 
@@ -25,14 +21,12 @@ def get_lesson_from_current_course(
         course_id: int,
         lessons_id: int,
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission)
 ):
     """
     Возвращает урок по его id из курса. Если урок платный, или пользователь не получил доступ
     к курсу, то возвращает ответ 403.
     """
-    return lesson_crud.get_lesson_from_course(course_id, lessons_id,
-                                              permission)
+    return lesson_crud.get_lesson_from_course(course_id, lessons_id)
 
 
 @router.post('/{course_id}', status_code=status.HTTP_201_CREATED)
@@ -40,25 +34,23 @@ def add_lessons_to_course(
         course_id: int,
         lesson_data: LessonBase,
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission)
 ):
     """
     Добавить курсу по его id новый урок.
     """
-    return lesson_crud.add_lesson_to_course(course_id, lesson_data, permission)
+    return lesson_crud.add_lesson_to_course(course_id, lesson_data)
 
 
 @router.post('/pass/{lessons_id}')
 def pass_lesson(
         lessons_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission)
 ):
     """
     Делает пометку в бд, что студент прошел данный урок и текущего курса.
     Обновляет время прохождения урока.
     """
-    return lesson_crud.make_lessone_done(lessons_id, permission)
+    return lesson_crud.make_lessone_done(lessons_id)
 
 
 @router.post(
@@ -72,11 +64,9 @@ def add_comment(
         lesson_id: int = Path(..., gt=0),
         course_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
-
 ):
     lesson_crud.add_comment_to_lesson(
-        comment_data, lesson_id, course_id, permission)
+        comment_data, lesson_id, course_id)
 
 
 @router.delete(
@@ -89,9 +79,8 @@ def remove_comment(
         comment_id: int = Path(..., gt=0),
         lesson_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
 ):
-    lesson_crud.remove_comment_from_lesson(comment_id, lesson_id, permission)
+    lesson_crud.remove_comment_from_lesson(comment_id, lesson_id)
 
 
 @router.delete(
@@ -104,6 +93,5 @@ def remove_comment(
         course_id: int = Path(..., gt=0),
         lesson_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
-        permission: UserPermission = Depends(get_permission),
 ):
-    lesson_crud.remove_lesson(course_id, lesson_id, permission)
+    return lesson_crud.remove_lesson(course_id, lesson_id)
