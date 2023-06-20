@@ -111,13 +111,10 @@ class LessonCrud(BaseCrud):
             self,
             text: CommentBase,
             lesson_id: int,
-            course_id: int,
+            course_id: int = None,
     ):
         """Добавить отзыв на урок."""
-        student = self.session.query(
-            Student).join(User).filter(
-            User.email == self.email
-        ).first()
+        student = self.user.student
         new_comment = LessonComment(
             student_id=student.id,
             lesson_id=lesson_id,
@@ -128,10 +125,7 @@ class LessonCrud(BaseCrud):
     def remove_comment_from_lesson(
             self, comment_id: int, lesson_id: int,
             ):
-        student = self.session.query(
-            Student).join(User).filter(
-            User.email == self.email
-        ).first()
+        student = self.user.student
         comment = self.session.query(LessonComment).filter(
             and_(
                 LessonComment.student_id == student.id,

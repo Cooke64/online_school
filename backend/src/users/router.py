@@ -13,6 +13,7 @@ from .shemas import (
 )
 from ..auth.utils.auth_bearer import get_current_user
 from ..lesson_files.utils.create_file import upload_user_pic
+from ..students_awards.awards_crud import AwardCrud
 
 router = APIRouter(prefix='/user', tags=['Пользователи'])
 
@@ -22,7 +23,8 @@ router = APIRouter(prefix='/user', tags=['Пользователи'])
     response_model=UserShowProfile,
     summary='Страница данных о пользователе',
 )
-def get_user_page(user_crud: UserCrud = Depends()):
+def get_user_page(user_crud: UserCrud = Depends(),
+                  award_crud: AwardCrud = Depends()):
     """Данные о пользователе. Данные о студенет/преподавателе
     выводятся через отдельный эндпоинт"""
     return user_crud.get_user()

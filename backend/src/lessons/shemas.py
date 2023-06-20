@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from src.teachers.shemas import ShowTeacherInCourseList
 from src.utils.base_schemas import OrmBaseModel
 
 

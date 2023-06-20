@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import sqlalchemy as sa
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from src.BaseModel import BaseModel

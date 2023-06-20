@@ -18,8 +18,8 @@ def get_base_for_alembic():
     from src.lesson_files.models import LessonPhoto, LessonVideo
     from src.lessons.models import LessonComment
     from src.poll.models import Poll, Question
-    from src.database import Base
-    return Base
+    from src.BaseModel import BaseModel
+    return BaseModel
 
 
 config = context.config
