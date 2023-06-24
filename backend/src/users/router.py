@@ -23,10 +23,15 @@ router = APIRouter(prefix='/user', tags=['Пользователи'])
     response_model=UserShowProfile,
     summary='Страница данных о пользователе',
 )
-def get_user_page(user_crud: UserCrud = Depends(),
-                  award_crud: AwardCrud = Depends()):
+def get_user_page(
+        task: BackgroundTasks,
+        user_crud: UserCrud = Depends(),
+        award_crud: AwardCrud = Depends()):
     """Данные о пользователе. Данные о студенет/преподавателе
     выводятся через отдельный эндпоинт"""
+    task.add_task(
+        award_crud.get_student_award,
+    )
     return user_crud.get_user()
 
 

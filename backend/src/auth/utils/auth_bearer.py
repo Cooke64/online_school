@@ -6,9 +6,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
 from ...config import settings
-from ...database import BaseCrud
-from ...exceptions import PermissionDenied
-from ...users.models import RolesType, User
 
 
 def decode_jwt(token: str) -> dict:

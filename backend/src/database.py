@@ -11,7 +11,7 @@ from starlette.responses import JSONResponse
 
 from src.auth.utils.jwt_bearer import get_current_user
 from src.config import settings
-from src.exceptions import NotFound
+from src.exceptions import NotFound, PermissionDenied
 from src.users.models import User
 
 engine = create_engine(settings.DATABASE_URL)
@@ -36,24 +36,27 @@ class BaseCrud:
     @property
     def user(self):
         user = self.get_user(self.__email)
-        if not user:
-            raise NotFound
         if user and user.is_active:
             return user
+        raise PermissionDenied
 
     @property
     def email(self):
-        return self.__email
+        if self.__email:
+            return self.__email
+        raise NotFound
 
     @property
     def is_student(self):
         if self.user:
             return self.user.role == 'Student'
+        raise PermissionDenied
 
     @property
     def is_teacher(self):
         if self.user:
             return self.user.role == 'Teacher'
+        raise PermissionDenied
 
     def get_user(self, email: str | None = None) -> User:
         if not email:

@@ -35,7 +35,7 @@ class StudentCrud(BaseCrud):
         return purchased_courses
 
     def get_lessons_passed_today(self):
-        query = self._get_student_passed_lesson()
+        query = self.session.query(StudentPassedLesson)
         last_day = query.filter(
             StudentPassedLesson.when_pass == func.current_date()
         ).all()
