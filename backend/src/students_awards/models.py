@@ -36,7 +36,8 @@ class Award(BaseModel):
     student_award = relationship(StudentAward, back_populates='award')
 
 
-class AwardsTypes(Enum):
-    comments = 'Comments'
-    passed_lessons = 'PassedLessons'
-    passed_by_day = 'PassedByDay'
+class AwardsTypes(str, Enum):
+    comments = 'comments'
+    passed_lessons = 'passed_lessons'
+    passed_by_day = 'passed_by_day'
+    passed_all_courses = 'passed_all_courses'

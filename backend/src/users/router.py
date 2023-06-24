@@ -30,7 +30,7 @@ def get_user_page(
     """Данные о пользователе. Данные о студенет/преподавателе
     выводятся через отдельный эндпоинт"""
     task.add_task(
-        award_crud.get_student_award,
+        award_crud.create_student_award,
     )
     return user_crud.get_user()
 

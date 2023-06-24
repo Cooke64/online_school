@@ -54,8 +54,8 @@ class StudentCrud(BaseCrud):
             'purchased_courses': purchased_courses,
             'pass_lessons_today': passsed_today,
             'pass_lessons_last_month': last_month,
-            'left_comments': 123,
-            'evalueted_courses': 123
+            'left_comments': self._get_student_comments(),
+            'evalueted_courses': self._get_student_passed_lesson()
         }
 
     def get_student_statistics(self):

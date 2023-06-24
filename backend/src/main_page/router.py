@@ -13,9 +13,4 @@ def get_all_users_courses(
     Возвращает информацию о пользователе.
     Показывает все курсы, на которые он подписан.
     """
-    d = {
-        'popular':main_crud.get_three_popular(),
-        'rating': main_crud.get_three_withmax_raiting(),
-        'top_free': main_crud.top_free()
-    }
-    return d
+    return main_crud.get_main_page_repsonse()
