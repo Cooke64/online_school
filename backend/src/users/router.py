@@ -5,6 +5,7 @@ from starlette.background import BackgroundTasks
 from starlette.responses import RedirectResponse
 
 from .crud import UserCrud
+from .models import StaffType
 from .shemas import (
     UserCreate,
     UserCreateShowResult,
@@ -53,6 +54,10 @@ def verify_new_user(
 
 
 class UserType(str, Enum):
+    superuser = 'superuser'
+    moderator = 'moderator'
+    admin = 'admin'
+    corrector = 'corrector'
     student = "student"
     teacher = "teacher"
 

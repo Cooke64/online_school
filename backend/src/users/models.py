@@ -37,10 +37,10 @@ class User(BaseModel):
 
 
 class StaffType(Enum):
-    superuser = 'Superuser'
-    moderator = 'Moderator'
-    admin = 'Admin'
-    corrector = 'Corrector'
+    superuser = 'superuser'
+    moderator = 'moderator'
+    admin = 'admin'
+    corrector = 'corrector'
 
 
 staf_as_dict = {i.name: i.value for i in StaffType}

@@ -9,6 +9,8 @@ class ChoiceType(types.TypeDecorator):
         super(ChoiceType, self).__init__(**kwargs)
 
     def process_bind_param(self, value, dialect):
+        print(value)
+        print(self.choices.items())
         return [k for k, v in self.choices.items() if v == value][0]
 
     def process_result_value(self, value, dialect):
