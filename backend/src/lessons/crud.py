@@ -8,7 +8,6 @@ from src.lessons.models import LessonComment
 from src.lessons.shemas import LessonBase, CommentBase
 from src.students.models import StudentCourse, StudentPassedLesson, Student
 from src.teachers.models import Teacher
-from src.users.models import User
 
 
 class LessonCrud(BaseCrud):
@@ -40,7 +39,7 @@ class LessonCrud(BaseCrud):
             self,
             course_id: int,
             lessons_id: int,
-            ) -> dict:
+    ) -> dict:
         lesson: Lesson = self.session.query(Lesson).join(Course).options(
             joinedload(Lesson.lesson_comment).options(joinedload(
                 LessonComment.student
@@ -48,7 +47,7 @@ class LessonCrud(BaseCrud):
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
                 Lesson.course_id == course_id, Lesson.id == lessons_id
-            )).first()
+        )).first()
         if not lesson:
             raise NotFound
         count_lessons = self.session.query(Lesson).filter(
@@ -67,7 +66,7 @@ class LessonCrud(BaseCrud):
                            [item.user.username for item in
                             lesson_teachers.teachers]
                        }
-        if (lesson and lesson.is_trial) or self.is_teacher:
+        if (lesson and lesson.is_trial) or (self.is_teacher or self.is_staff):
             return result_dict
         user = self.user
         if not user:
@@ -114,32 +113,35 @@ class LessonCrud(BaseCrud):
             course_id: int = None,
     ):
         """Добавить отзыв на урок."""
-        student = self.user.student
-        new_comment = LessonComment(
-            student_id=student.id,
-            lesson_id=lesson_id,
-            text=text.text
-        )
-        self.create_item(new_comment)
+        if self.is_student:
+            student = self.user.student
+            new_comment = LessonComment(
+                student_id=student.id,
+                lesson_id=lesson_id,
+                text=text.text
+            )
+            self.create_item(new_comment)
 
     def remove_comment_from_lesson(
             self, comment_id: int, lesson_id: int,
-            ):
-        student = self.user.student
-        comment = self.session.query(LessonComment).filter(
-            and_(
-                LessonComment.student_id == student.id,
-                LessonComment.lesson_id == lesson_id,
-                LessonComment.id == comment_id
-            )
-        ).first()
-        if not comment:
-            raise NotFound
-        self.remove_item(comment.id, LessonComment)
+    ):
+        if self.is_student or self.is_staff:
+            comment = self.session.query(LessonComment).filter(
+                and_(
+                    LessonComment.lesson_id == lesson_id,
+                    LessonComment.id == comment_id
+                )
+            ).first()
+            if not comment:
+                raise NotFound
+            self.remove_item(comment.id, LessonComment)
+        raise PermissionDenied
 
     def remove_lesson(self, course_id: int, lesson_id: int):
         course: Course = self.get_current_item(course_id, Course).first()
         user = self.user
-        if user.teacher not in course.teachers or not self.is_teacher:
-            raise PermissionDenied
-        self.remove_item(lesson_id, Lesson)
+        if self.is_staff or (
+                self.is_teacher and user.teacher in course.teachers
+        ):
+            self.remove_item(lesson_id, Lesson)
+        raise PermissionDenied

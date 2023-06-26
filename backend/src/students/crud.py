@@ -1,9 +1,8 @@
 from datetime import timedelta
 
 from sqlalchemy import and_, func
-from sqlalchemy.orm import Query, joinedload
 
-from src.course.models import Course, Lesson
+from src.course.models import Course
 from src.database import BaseCrud
 from src.exceptions import NotFound
 from src.lessons.models import LessonComment
@@ -31,7 +30,7 @@ class StudentCrud(BaseCrud):
             StudentCourse).filter(and_(
                 StudentCourse.student_id == self.user.student.id,
                 StudentCourse.has_paid == True
-        )).all()
+            )).all()
         return purchased_courses
 
     def get_lessons_passed_today(self):
@@ -57,9 +56,6 @@ class StudentCrud(BaseCrud):
             'left_comments': self._get_student_comments(),
             'evalueted_courses': self._get_student_passed_lesson()
         }
-
-    def get_student_statistics(self):
-        pass
 
     def get_passed_lessons(self):
         if not self.user:

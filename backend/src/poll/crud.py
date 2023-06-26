@@ -32,11 +32,9 @@ class PollCrud(BaseCrud):
             raise BadRequest
         if not course_id:
             course_id = lesson.course.id
-        if not self.is_teacher:
-            raise PermissionDenied
         teacher = self.get_teacher_by_email(self.email)
         course: Course = self.get_current_item(course_id, Course).first()
-        if teacher not in course.teachers:
+        if teacher not in course.teachers or not self.is_staff:
             raise PermissionDenied
 
     def get_all_polls(self) -> list[Poll]:
@@ -53,13 +51,14 @@ class PollCrud(BaseCrud):
             joinedload(Poll.lesson)).filter(Poll.lesson_id == lesson_id)
         return query.first()
 
-    def _create_poll(self, poll_data: PollBase, lesson_id: int) -> Poll | int:
+    def _create_poll(self, poll_data: PollBase, lesson_id: int) -> Poll:
+        """Возвращает имеющийся в бд объект модели """
         poll = self.session.query(Poll).filter(
             Poll.lesson_id == lesson_id).first()
         if not poll:
             new_poll = Poll(lesson_id=lesson_id, **poll_data.dict())
             return self.create_item(new_poll)
-        return poll.id
+        return poll
 
     def add_poll_to_lesson(
             self, course_id: int, lesson_id: int,

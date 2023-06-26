@@ -182,9 +182,9 @@ class CourseCrud(BaseCrud):
     def delete_course(self, course_id: int):
         course = self.get_current_item(course_id, Course).first()
         teacher = self.get_teacher_by_email(self.email)
-        if teacher not in course.teachers:
-            raise ex.HasNotPermission
-        self.remove_item(course_id, Course)
+        if teacher in course.teachers or self.is_staff:
+            self.remove_item(course_id, Course)
+        raise ex.HasNotPermission
 
     def remove_course_from_list(self, course_id: int):
         """Удаление пользователем курса из добавленных в список для прохождения."""
@@ -219,8 +219,8 @@ class CourseCrud(BaseCrud):
         student = self.get_student_by_email(self.email)
         if not self.is_student:
             raise PermissionDenied
-        if not (
-                review.student_id == student.id and review.course_id == course_id):
+        has_perm = review.student_id == student.id and review.course_id == course_id
+        if not has_perm or not self.is_staff:
             raise ex.HasNotPermission
         self.remove_item(review.id, CourseReview)
 

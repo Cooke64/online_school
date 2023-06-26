@@ -58,6 +58,6 @@ class MediaCrud(BaseCrud):
             self, photo_id: int, lesson_id: int,
             ):
         photo = self.get_photo_item(photo_id, lesson_id)
-        if not self.is_teacher:
+        if not self.is_teacher or not self.is_staff:
             raise PermissionDenied
         self.remove_item(photo.id, LessonPhoto)

@@ -1,7 +1,6 @@
 from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload
 
-from src.auth.utils.auth_bearer import UserPermission
 from src.course.models import Course, CourseRating, CourseReview, Lesson
 from src.database import BaseCrud
 from src.lessons.models import LessonComment
@@ -11,13 +10,14 @@ from src.users.models import User
 
 
 class TeachersCrud(BaseCrud):
-    def _count_courses(self, teacher_id):
+    def _count_courses(self, teacher_id: int) -> int:
+        """Возвращает количество курсов преподавателя."""
         return self.session.query(TeacherCourse).filter(
             TeacherCourse.user_id == teacher_id).count()
 
     def _get_total_rating(self, teacher_id: int,
                           courses: list[Course]) -> float | int:
-        count = self._count_courses(teacher_id)
+        teacher_courses = self._count_courses(teacher_id)
         all_courses_rating = 0
         commas_after_ratig = 2
         for course in courses:
@@ -26,8 +26,8 @@ class TeachersCrud(BaseCrud):
                 CourseRating.course_id == course.id).first()
             if rating[0]:
                 all_courses_rating += round(rating[0], commas_after_ratig)
-        return round(all_courses_rating / count,
-                     commas_after_ratig) if count else 0
+        return round(all_courses_rating / teacher_courses,
+                     commas_after_ratig) if teacher_courses else 0
 
     def _get_total_reviews(self, courses: list[Course]) -> int:
         res = 0

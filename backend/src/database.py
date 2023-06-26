@@ -12,7 +12,7 @@ from starlette.responses import JSONResponse
 from src.auth.utils.jwt_bearer import get_current_user
 from src.config import settings
 from src.exceptions import NotFound, PermissionDenied
-from src.users.models import User
+from src.users.models import User, RolesType
 
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -49,13 +49,19 @@ class BaseCrud:
     @property
     def is_student(self):
         if self.user:
-            return self.user.role == 'Student'
+            return self.user.role == RolesType.student.value
         raise PermissionDenied
 
     @property
     def is_teacher(self):
         if self.user:
-            return self.user.role == 'Teacher'
+            return self.user.role == RolesType.teacher.value
+        raise PermissionDenied
+
+    @property
+    def is_staff(self):
+        if self.user:
+            return self.user.role == RolesType.staff.value
         raise PermissionDenied
 
     def get_user(self, email: str | None = None) -> User:

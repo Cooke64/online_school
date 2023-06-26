@@ -1,11 +1,8 @@
-from enum import Enum
-
 from fastapi import APIRouter, Body, Depends, Path, UploadFile, File
 from starlette.background import BackgroundTasks
 from starlette.responses import RedirectResponse
 
-from .crud import UserCrud
-from .models import StaffType
+from .crud import UserCrud, UserType
 from .shemas import (
     UserCreate,
     UserCreateShowResult,
@@ -51,15 +48,6 @@ def verify_new_user(
     """
     user_crud.verify_user(email, link)
     return RedirectResponse('/course')
-
-
-class UserType(str, Enum):
-    superuser = 'superuser'
-    moderator = 'moderator'
-    admin = 'admin'
-    corrector = 'corrector'
-    student = "student"
-    teacher = "teacher"
 
 
 @router.post(
