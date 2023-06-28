@@ -95,3 +95,24 @@ def remove_comment(
         lesson_crud: LessonCrud = Depends(),
 ):
     return lesson_crud.remove_lesson(course_id, lesson_id)
+
+
+@router.post('/lesson_in_favorite/{lessons_id}', status_code=status.HTTP_201_CREATED)
+def add_lesson_in_favorite(
+        lessons_id: int = Path(..., gt=0),
+        lesson_crud: LessonCrud = Depends(),
+):
+    return lesson_crud.add_lesson_in_favorite(lessons_id)
+
+
+@router.delete(
+    '/lesson_in_favorite/{lesson_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Удалить из избранных.',
+    summary='Удалить урок из избранных.'
+)
+def remove_lesson_from_favorite(
+        lessons_id: int = Path(..., gt=0),
+        lesson_crud: LessonCrud = Depends()
+):
+    return lesson_crud.remove_lesson_from_favorite(lessons_id)

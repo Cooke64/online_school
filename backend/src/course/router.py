@@ -190,3 +190,29 @@ def add_review_to_course_by_student(
         course_crud=course_crud
     )
     return course_crud.get_json_reposnse('Успешно загружен', 201)
+
+
+@router.post(
+    '/course_in_favorite/{course_id}',
+    status_code=status.HTTP_201_CREATED,
+    description='Добавить в избранное.',
+    summary='Добавить курс в избранное.'
+)
+def add_course_in_favorite(
+        course_id: int = Path(..., gt=0),
+        course_crud: CourseCrud = Depends(),
+):
+    return course_crud.add_course_in_favorite(course_id)
+
+
+@router.delete(
+    'course_in_favorite/{course_id}',
+    status_code=status.HTTP_204_NO_CONTENT,
+    description='Удалить из избранных.',
+    summary='Удалить курс из избранных.'
+)
+def remove_course_from_favorite(
+        course_id: int = Path(..., gt=0),
+        course_crud: CourseCrud = Depends(),
+):
+    return course_crud.remove_course_from_favorite(course_id)

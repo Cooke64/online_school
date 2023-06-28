@@ -46,7 +46,7 @@ class LessonCrud(BaseCrud):
             ).options(joinedload(Student.user)))).options(
             joinedload(Lesson.photos)).options(
             joinedload(Lesson.videos)).filter(and_(
-                Lesson.course_id == course_id, Lesson.id == lessons_id
+            Lesson.course_id == course_id, Lesson.id == lessons_id
         )).first()
         if not lesson:
             raise NotFound
@@ -145,3 +145,21 @@ class LessonCrud(BaseCrud):
         ):
             self.remove_item(lesson_id, Lesson)
         raise PermissionDenied
+
+    def add_lesson_in_favorite(self, lesson_id: int):
+        student = self.user.student
+        lesson = self.get_current_item(lesson_id, Lesson).first()
+        if lesson in student.favorite_lessons:
+            raise NotFound
+        student.favorite_lessons.append(lesson)
+        self.session.commit()
+        return self.get_json_reposnse('Урок добавлен в избранное', 201)
+
+    def remove_lesson_from_favorite(self, lesson_id: int):
+        student = self.user.student
+        lesson = self.get_current_item(lesson_id, Lesson).first()
+        if lesson not in student.favorite_lessons:
+            raise NotFound
+        student.favorite_lessons.remove(lesson)
+        self.create_item(student)
+        return self.get_json_reposnse('Урок удален из избранных', 201)

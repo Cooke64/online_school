@@ -35,6 +35,11 @@ class Course(BaseModel):
         back_populates='course'
     )
     course_preview = relationship('CoursePreviewImage', back_populates='course', uselist=False)
+    favorite_student_course = relationship(
+        'Student',
+        secondary='favorite_courses',
+        back_populates='favorite_courses'
+    )
 
 
 class CoursePreviewImage(BaseModel):
@@ -91,3 +96,9 @@ class Lesson(BaseModel):
         back_populates='lesson'
     )
     lesson_poll = relationship('Poll', back_populates='lesson', uselist=False)
+
+    favorite_student_lessons = relationship(
+        'Student',
+        secondary='favorite_lessons',
+        back_populates='favorite_lessons'
+    )

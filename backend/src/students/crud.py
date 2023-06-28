@@ -1,12 +1,15 @@
 from datetime import timedelta
 
 from sqlalchemy import and_, func
+from sqlalchemy.orm import joinedload
 
-from src.course.models import Course
+from src.course.models import Course, Lesson
 from src.database import BaseCrud
 from src.exceptions import NotFound
 from src.lessons.models import LessonComment
-from src.students.models import StudentCourse, StudentPassedLesson
+from src.students.models import StudentCourse, StudentPassedLesson, \
+    FavoriteLesson, FavoriteCourse, Student
+from src.users.models import User
 
 
 class StudentCrud(BaseCrud):
@@ -65,3 +68,15 @@ class StudentCrud(BaseCrud):
             'pass_lessons_today': passsed_today,
             'pass_lessons_last_month': last_month,
         }
+
+    def get_favorite_lessons(self):
+        student = self.user.student
+        query = self.session.query(Lesson).options(
+            joinedload(Lesson.course)).join(FavoriteLesson).filter(
+            FavoriteLesson.student_id == student.id
+        ).all()
+        return query
+
+    def get_favorite_courses(self):
+        student = self.user.student
+        return student.favorite_courses

@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from src.students_awards.shemas import ShowDetailAwards
 from src.utils.base_schemas import OrmBaseModel
 
@@ -26,3 +28,16 @@ class ShowStudentData(OrmBaseModel):
     left_comments: int
     evalueted_courses: int
     awards: list[ShowDetailAwards]
+
+
+class CourseTitle(OrmBaseModel):
+    title: str = Field(None, alias='course_name')
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class FavoriteLessons(OrmBaseModel):
+    id: int
+    title: str
+    course: CourseTitle

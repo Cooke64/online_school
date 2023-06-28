@@ -249,3 +249,29 @@ class CourseCrud(BaseCrud):
             course_id=course_id
         )
         self.create_item(item)
+
+    def add_course_in_favorite(self, course_id: int):
+        """Добавить курс в избранные для пользователя.
+            - Если курс находится в избранных, то райзится ошибка
+            - Может быть доступно для пользователя со статусом Student
+        """
+        student = self.user.student
+        course = self.get_current_item(course_id, Course).first()
+        if course in student.favorite_courses:
+            raise ex.AddExisted
+        student.favorite_courses.append(course)
+        self.session.commit()
+        return self.get_json_reposnse('Курс добавлен в избранное', 201)
+
+    def remove_course_from_favorite(self, course_id: int):
+        """Удалить курс из избранных для пользователя.
+            - Если курса нет в избранных, то райзится ошибка
+            - Может быть доступно для пользователя со статусом Student
+        """
+        student = self.user.student
+        course = self.get_current_item(course_id, Course).first()
+        if course not in student.favorite_courses:
+            raise ex.NotFoundCourse
+        student.favorite_courses.remove(course)
+        self.create_item(student)
+        return self.get_json_reposnse('Курс удален из избранных', 204)
