@@ -70,7 +70,7 @@ def add_comment(
 
 
 @router.delete(
-    '/{lesson_id}/remove_comment/{comment_id}',
+    '/remove_comment/{lesson_id}/{comment_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить комментарий уроку по его id.',
     summary='Удалить комментарий'
@@ -84,7 +84,7 @@ def remove_comment(
 
 
 @router.delete(
-    '/{course_id}/{lesson_id}',
+    '/remove_lesson/{course_id}/{lesson_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить урок по его id.',
     summary='Удалить урок'
@@ -97,7 +97,10 @@ def remove_comment(
     return lesson_crud.remove_lesson(course_id, lesson_id)
 
 
-@router.post('/lesson_in_favorite/{lessons_id}', status_code=status.HTTP_201_CREATED)
+@router.post(
+    '/add_in_favorite/{lessons_id}',
+    status_code=status.HTTP_201_CREATED
+)
 def add_lesson_in_favorite(
         lessons_id: int = Path(..., gt=0),
         lesson_crud: LessonCrud = Depends(),
@@ -106,7 +109,7 @@ def add_lesson_in_favorite(
 
 
 @router.delete(
-    '/lesson_in_favorite/{lesson_id}',
+    '/remove_from_favorite/{lessons_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить из избранных.',
     summary='Удалить урок из избранных.'

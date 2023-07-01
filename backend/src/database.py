@@ -2,6 +2,7 @@ import typing
 from typing import Any
 
 from fastapi import Depends
+from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy import exists
 from sqlalchemy.orm import Session, Query
@@ -38,7 +39,6 @@ class BaseCrud:
         user = self.get_user(self.__email)
         if user and user.is_active:
             return user
-        raise PermissionDenied
 
     @property
     def email(self):
@@ -50,26 +50,26 @@ class BaseCrud:
     def is_student(self):
         if self.user:
             return self.user.role == RolesType.student.value
-        raise PermissionDenied
+        return False
 
     @property
     def is_teacher(self):
         if self.user:
             return self.user.role == RolesType.teacher.value
-        raise PermissionDenied
+        return False
 
     @property
     def is_staff(self):
         if self.user:
             return self.user.role == RolesType.staff.value
-        raise PermissionDenied
+        return False
 
     def get_user(self, email: str | None = None) -> User:
         if not email:
             email = self.__email
         return self.session.query(User).filter(User.email == email).first()
 
-    def get_all_items(self, Model) -> list:
+    def get_all_items(self, Model: Any) -> list[Any] | None:
         return self.session.query(Model).all()
 
     def get_current_item(self, id_item: int, Model: Any) -> Query:
@@ -96,7 +96,7 @@ class BaseCrud:
         self.session.refresh(item)
         return item
 
-    def remove_item(self, id_item: int, Model):
+    def remove_item(self, id_item: int, Model: Any):
         item = self.get_current_item(id_item, Model).first()
         if not item:
             raise NotFound
@@ -108,7 +108,8 @@ class BaseCrud:
             exists().where(Model.id == id_item)).scalar()
         return is_exists
 
-    def update_item(self, item_id, Model, data_to_update):
+    def update_item(self, item_id: int, Model: Any,
+                    data_to_update: BaseModel) -> Any:
         item = self.get_current_item(item_id, Model).first()
         for var, value in vars(data_to_update).items():
             setattr(item, var, value) if value else None
@@ -116,7 +117,7 @@ class BaseCrud:
         return item
 
     @staticmethod
-    def get_json_reposnse(message, status_code):
+    def get_json_reposnse(message: str, status_code: int) -> JSONResponse:
         return JSONResponse(
             status_code=status_code,
             content={"message": message}

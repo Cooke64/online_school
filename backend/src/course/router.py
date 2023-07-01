@@ -158,7 +158,7 @@ def add_review_to_course_by_student(
 
 
 @router.delete(
-    '/{course_id}/delete_review/{review_id}',
+    '/delete_review/{course_id}/{review_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить отзыв по id у курса по его id.',
     summary='Удалить отзыв'
@@ -206,7 +206,7 @@ def add_course_in_favorite(
 
 
 @router.delete(
-    'course_in_favorite/{course_id}',
+    '/course_in_favorite/{course_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить из избранных.',
     summary='Удалить курс из избранных.'

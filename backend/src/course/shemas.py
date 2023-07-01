@@ -63,10 +63,9 @@ class CourseListShow(OrmBaseModel):
 
 class CourseInDetail(CourseBase):
     id: int
-    created_at: datetime
     teachers: list[ShowTeacherInCourseList] | None
     lessons: list[LessonBase] | None
-    course_preview: CoursePreview
+    course_preview: CoursePreview | None
 
 
 class CourseDetail(BaseModel):
