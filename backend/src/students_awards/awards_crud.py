@@ -29,7 +29,7 @@ Data = collections.namedtuple('StudentData',
 class AwardCrud(StudentCrud):
     def is_passed_all_courses(self) -> bool:
         """Проверяет, прошел ли пользователь все уроки в курсах, которые он приобрел."""
-        student_id = self.user.student.id
+        student_id = self.student.id
         purchased_courses = self.session.query(StudentCourse).filter(
             StudentCourse.student_id == student_id
         ).all()
@@ -73,7 +73,7 @@ class AwardCrud(StudentCrud):
 
     def create_new_awward(self, award_data: AwardCreate) -> Award:
         # Проверка, что новая награда имеет column_name в списке доступных.
-        if self.is_teacher:
+        if self.teacher:
             if award_data.column_name not in [e.value for e in AwardsTypes]:
                 raise ex.BadRequest
             if not self.__check_award(award_data):
@@ -82,14 +82,14 @@ class AwardCrud(StudentCrud):
             return self.create_item(new_award)
 
     def __create_student_award(self, award_id: int):
-        user = self.user
+        student_id = self.student.id
         new_student_award = StudentAward(
-            student_id=user.student.id,
+            student_id=student_id,
             award_id=award_id,
 
         )
         if not self.session.query(StudentAward).filter(
-                StudentAward.student_id == self.user.student.id,
+                StudentAward.student_id == student_id,
                 StudentAward.award_id == award_id
         ).all():
             self.create_item(new_student_award)
@@ -112,5 +112,6 @@ class AwardCrud(StudentCrud):
         return self.get_all_items(Award)
 
     def remove_award(self, award_id):
-        self.remove_item(award_id, Award)
-        return self.get_json_reposnse('Награда удалена', 204)
+        if self.teacher:
+            self.remove_item(award_id, Award)
+            return self.get_json_reposnse('Награда удалена', 204)

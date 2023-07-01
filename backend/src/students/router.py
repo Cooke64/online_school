@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from src.exceptions import PermissionDenied
 from src.students.crud import StudentCrud
 from src.students.shemas import ShowStudentData, FavoriteLessons
 from src.students_awards.awards_crud import AwardCrud
@@ -23,6 +24,8 @@ def get_student_info(
          - Курсы, пройденные **полностью**
          - Награды
     """
+    if not award_crud.student:
+        raise PermissionDenied
     return user_crud.get_students_courses() | {
         'awards': award_crud.get_student_award()}
 

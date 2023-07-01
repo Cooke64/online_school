@@ -5,7 +5,6 @@ from starlette import status
 from starlette.background import BackgroundTasks
 from starlette.responses import StreamingResponse
 
-from src.exceptions import DetailedHTTPException
 from src.lesson_files.crud import MediaCrud
 from src.lesson_files.utils.create_file import (
     upload_file_and_push_to_db,
@@ -35,18 +34,18 @@ async def upload_video_to_lesson(
         Допускается загружать только установленные форматы видеофайлов,
         указанных в кортеже VIDEO_TYPES. Допускается загрузить только одно видео к уроку
     """
+    check = media_crud.check_lesson_teacher(lesson_id)
+    if check:
+        return check
     if video_file.content_type in VIDEO_TYPES:
-        try:
-            task.add_task(
-                upload_file_and_push_to_db,
-                file_obj=video_file,
-                media_crud=media_crud,
-                lesson_id=lesson_id,
-                is_photo=False
-            )
-            return media_crud.get_json_reposnse('Успешно загружен', 201)
-        except:
-            raise DetailedHTTPException
+        task.add_task(
+            upload_file_and_push_to_db,
+            file_obj=video_file,
+            media_crud=media_crud,
+            lesson_id=lesson_id,
+            is_photo=False
+        )
+        return media_crud.get_json_reposnse('Успешно загружен', 201)
     else:
         return media_crud.get_json_reposnse('Неправильный формат файла', 418)
 
@@ -69,6 +68,9 @@ async def upload_photo_to_lesson(
         Допускается загружать только установленные форматы фото, указанных в кортеже PHOTO_TYPES.
         Допускается загрузить неограниченное количество фотографий
     """
+    check = media_crud.check_lesson_teacher(lesson_id)
+    if check:
+        return check
     if photo.content_type in PHOTO_TYPES:
         task.add_task(
             upload_file_and_push_to_db,
@@ -78,8 +80,8 @@ async def upload_photo_to_lesson(
         )
         return media_crud.get_json_reposnse('Успешно загружен', 201)
     else:
-        return media_crud.get_json_reposnse('Неправильный формат файла',
-                                            418)
+        return media_crud.get_json_reposnse(
+            'Неправильный формат файла', 418)
 
 
 @router.get('/{lesson_id}/photo/{photo_id}')
@@ -106,7 +108,11 @@ def remove_photo(
         photo_id: int = Path(..., gt=0),
         media_crud: MediaCrud = Depends(),
 ):
+    check = media_crud.check_lesson_teacher(lesson_id)
+    if check:
+        return check
     media_crud.remove_photo(lesson_id, photo_id)
+    return media_crud.get_json_reposnse('Успешно удален', 204)
 
 
 @router.get('/{lesson_id}/video/{video_id}')

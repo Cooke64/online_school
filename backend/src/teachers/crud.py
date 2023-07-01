@@ -87,10 +87,7 @@ class TeacherProfileCrud(TeachersCrud):
         )).count()
 
     def get_teacher_profile(self):
-        user = self.user
-        teacher: Teacher = self.session.query(Teacher).options(
-            joinedload(Teacher.courses)).filter(
-            Teacher.user == user).first()
+        teacher = self.teacher
         courses = self._get_teacher_courses(teacher)
         result = {
             'courses': courses,

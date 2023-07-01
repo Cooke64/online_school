@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 
 from src.course.models import Course, Lesson
 from src.database import BaseCrud
-from src.exceptions import NotFound
+from src.exceptions import NotFound, PermissionDenied
 from src.lessons.models import LessonComment
 from src.students.models import StudentCourse, StudentPassedLesson, \
     FavoriteLesson, FavoriteCourse, Student
@@ -48,8 +48,8 @@ class StudentCrud(BaseCrud):
         return last_day, last_month
 
     def get_students_courses(self) -> dict:
-        if not self.user:
-            raise NotFound
+        if not self.student:
+            raise PermissionDenied
         purchased_courses = self._get_purchased_courses()
         passsed_today, last_month = self.get_lessons_passed_today()
         return {
@@ -61,8 +61,8 @@ class StudentCrud(BaseCrud):
         }
 
     def get_passed_lessons(self):
-        if not self.user:
-            raise NotFound
+        if not self.student:
+            raise PermissionDenied
         passsed_today, last_month = self.get_lessons_passed_today()
         return {
             'pass_lessons_today': passsed_today,
@@ -70,7 +70,7 @@ class StudentCrud(BaseCrud):
         }
 
     def get_favorite_lessons(self):
-        student = self.user.student
+        student = self.student
         query = self.session.query(Lesson).options(
             joinedload(Lesson.course)).join(FavoriteLesson).filter(
             FavoriteLesson.student_id == student.id
@@ -78,5 +78,5 @@ class StudentCrud(BaseCrud):
         return query
 
     def get_favorite_courses(self):
-        student = self.user.student
+        student = self.student
         return student.favorite_courses

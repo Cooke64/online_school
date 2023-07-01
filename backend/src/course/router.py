@@ -173,7 +173,6 @@ def add_review_to_course_by_student(
 
 @router.post(
     '/{course_id}/add_preview_photo',
-    status_code=status.HTTP_201_CREATED,
     description='Добавить курсу фотографию на превью.',
     summary='Добавить превью'
 )
@@ -189,7 +188,8 @@ def add_review_to_course_by_student(
         course_id=course_id,
         course_crud=course_crud
     )
-    return course_crud.get_json_reposnse('Успешно загружен', 201)
+    if not (course_crud.user and course_crud.is_teacher):
+        return course_crud.get_json_reposnse('Доступ закрыт', 403)
 
 
 @router.post(

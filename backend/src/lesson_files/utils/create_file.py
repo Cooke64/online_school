@@ -39,8 +39,6 @@ def create_preview_to_course(
         course_id: int,
         course_crud: CourseCrud = Depends()
 ):
-    if not course_crud.is_teacher:
-        raise PermissionError
     data_to_save = create_blob_obj(file_obj)
     file_type = get_type_content(file_obj.content_type)
     file_path = read_and_show_file(data_to_save, file_type)

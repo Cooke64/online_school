@@ -13,27 +13,11 @@ from src.course.shemas import CreateCourse, ReviewBase, UpdateCourse
 from src.course.utils import Rating
 from src.database import BaseCrud
 from src.exceptions import PermissionDenied
-from src.students.models import Student, StudentCourse, StudentPassedLesson
+from src.students.models import StudentCourse, StudentPassedLesson
 from src.teachers.models import Teacher
 
 
 class CourseCrud(BaseCrud):
-    def __get_teacher(self) -> Teacher:
-        if self.user:
-            teacher = self.user.teacher.id
-            if not teacher:
-                raise ex.NotFoundTeacher
-            return teacher
-        raise ex.PermissionDenied
-
-    def __get_student(self) -> Student:
-        if self.user:
-            student = self.user.student.id
-            if not student:
-                raise ex.NotFoundStudent
-            return student
-        raise ex.PermissionDenied
-
     def __get_course_rating(self, course_id: int) -> float | int:
         rating = self.session.query(func.avg(
             CourseRating.rating)).filter(
@@ -46,7 +30,7 @@ class CourseCrud(BaseCrud):
 
     def __update_rating(self, course_id: int,
                         new_rating: Rating) -> None:
-        student = self.__get_student()
+        student = self.student
         self.session.query(CourseRating).filter(and_(
             CourseRating.course_id == course_id,
             CourseRating.student_id == student)
@@ -58,7 +42,7 @@ class CourseCrud(BaseCrud):
         """Добавление рейтинга курсу. Если уже рейтинг поставлен, то
         рейзит ошибку 400. В таком случае рейтинг можно удалить или обнавить.
         """
-        student = self.__get_student()
+        student = self.student
         course = self.get_current_item(course_id, Course).first()
         if self.session.query(exists().where(and_(
                 CourseRating.course_id == course_id,
@@ -83,7 +67,7 @@ class CourseCrud(BaseCrud):
         """
         if not self.is_teacher:
             raise PermissionDenied
-        teacher = self.__get_teacher()
+        teacher = self.teacher
         new_item = Course(**course_data.dict())
         new_item.teachers.append(teacher)
         return self.create_item(new_item)
@@ -146,7 +130,7 @@ class CourseCrud(BaseCrud):
         """
         Добавляет курс в список курсов студента.
         """
-        student = self.__get_student()
+        student = self.student
         course = self.get_current_item(course_id, Course).first()
         if course in student.courses:
             raise ex.AddExisted
@@ -178,14 +162,14 @@ class CourseCrud(BaseCrud):
                       data_to_update: UpdateCourse,
                       ) -> Course:
         course = self.get_current_item(course_id, Course).first()
-        teacher = self.__get_teacher()
+        teacher = self.teacher
         if teacher not in course.teachers:
             raise ex.HasNotPermission
         return self.update_item(course_id, Course, data_to_update)
 
     def delete_course(self, course_id: int):
         course = self.get_current_item(course_id, Course).first()
-        teacher = self.__get_teacher()
+        teacher = self.teacher
         if teacher in course.teachers or self.is_staff:
             self.remove_item(course_id, Course)
         raise ex.HasNotPermission
@@ -193,7 +177,7 @@ class CourseCrud(BaseCrud):
     def remove_course_from_list(self, course_id: int):
         """Удаление пользователем курса из добавленных в список для прохождения."""
         course = self.get_current_item(course_id, Course).first()
-        student = self.__get_student()
+        student = self.student
         if course not in student.courses:
             raise ex.NotFoundCourse
         student.courses.remove(course)
@@ -208,7 +192,7 @@ class CourseCrud(BaseCrud):
         if not self.is_student:
             raise PermissionDenied
         course = self.get_current_item(course_id, Course).first()
-        student = self.__get_student()
+        student = self.student
         new_review = CourseReview(
             student_id=student.id, course_id=course.id, text=text.text)
         self.create_item(new_review)
@@ -220,7 +204,7 @@ class CourseCrud(BaseCrud):
     ):
         review = self.get_current_item(
             review_id, CourseReview).first()
-        student = self.__get_student()
+        student = self.student
         if not self.is_student:
             raise PermissionDenied
         has_perm = review.student_id == student.id and review.course_id == course_id
@@ -234,32 +218,31 @@ class CourseCrud(BaseCrud):
             file_obj: bytes,
             file_type: str, ):
         """Добавить фото превью к уроку."""
-        if not self.is_teacher:
-            raise PermissionDenied
         course: Course = self.get_current_item(course_id, Course).first()
-        teacher = self.__get_teacher()
-        if teacher not in course.teachers:
-            raise ex.HasNotPermission
-        if course.course_preview:
-            course_prev = self.get_current_item(
-                course.course_preview.id, CoursePreviewImage).first()
-            course_prev.photo_blob = file_obj
-            course_prev.photo_typee = file_type
-            self.session.commit()
-            return
-        item = CoursePreviewImage(
-            photo_blob=file_obj,
-            photo_type=file_type,
-            course_id=course_id
-        )
-        self.create_item(item)
+        if self.user and self.is_teacher:
+            if self.user.teacher in course.teachers:
+                if course.course_preview:
+                    course_prev = self.get_current_item(
+                        course.course_preview.id, CoursePreviewImage
+                    ).first()
+                    course_prev.photo_blob = file_obj
+                    course_prev.photo_typee = file_type
+                    self.session.commit()
+                    return
+                item = CoursePreviewImage(
+                    photo_blob=file_obj,
+                    photo_type=file_type,
+                    course_id=course_id
+                )
+                self.create_item(item)
 
     def add_course_in_favorite(self, course_id: int):
         """Добавить курс в избранные для пользователя.
             - Если курс находится в избранных, то райзится ошибка
             - Может быть доступно для пользователя со статусом Student
         """
-        student = self.user.student
+
+        student = self.student
         course = self.get_current_item(course_id, Course).first()
         if course in student.favorite_courses:
             raise ex.AddExisted
@@ -272,7 +255,7 @@ class CourseCrud(BaseCrud):
             - Если курса нет в избранных, то райзится ошибка
             - Может быть доступно для пользователя со статусом Student
         """
-        student = self.user.student
+        student = self.student
         course = self.get_current_item(course_id, Course).first()
         if course not in student.favorite_courses:
             raise ex.NotFoundCourse

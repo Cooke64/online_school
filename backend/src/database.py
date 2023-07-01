@@ -64,6 +64,18 @@ class BaseCrud:
             return self.user.role == RolesType.staff.value
         return False
 
+    @property
+    def student(self):
+        if self.user and self.is_student:
+            return self.user.student
+        raise PermissionDenied
+
+    @property
+    def teacher(self):
+        if self.user and self.is_teacher:
+            return self.user.teacher
+        raise PermissionDenied
+
     def get_user(self, email: str | None = None) -> User:
         if not email:
             email = self.__email

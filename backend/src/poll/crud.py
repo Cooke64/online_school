@@ -5,22 +5,13 @@ from src.database import BaseCrud
 from .models import Poll, Question, Answer
 from .schemas import PollBase, QuestionBase, AnswerBase, AddAnswers, AddPoll
 from ..course.models import Course, Lesson
-from ..exceptions import PermissionDenied, NotFound, BadRequest
-from ..teachers.models import Teacher
-from ..users.models import User
+from ..exceptions import PermissionDenied, NotFound
 
 
 class PollCrud(BaseCrud):
 
-    def get_teacher_by_email(self, email: str) -> Teacher:
-        teacher = self.session.query(
-            Teacher).join(User).filter(
-            User.email == email).first()
-        if not teacher:
-            raise NotFound
-        return teacher
-
-    def _check_lesson_teacher(self, course_id: int | None = None, *, lesson_id) -> None:
+    def _check_lesson_teacher(self, course_id: int | None = None, *,
+                              lesson_id) -> None:
         """
         Проверяет, что роль у авторизованного пользователя учитель.
         Далее идет проверка, что действительно есть такой урок,
@@ -28,11 +19,9 @@ class PollCrud(BaseCrud):
         Ничего не возвращает, при выполнении условия райзит ошибки.
         """
         lesson = self.get_current_item(lesson_id, Lesson).first()
-        if not lesson:
-            raise BadRequest
         if not course_id:
             course_id = lesson.course.id
-        teacher = self.get_teacher_by_email(self.email)
+        teacher = self.teacher
         course: Course = self.get_current_item(course_id, Course).first()
         if teacher not in course.teachers or not self.is_staff:
             raise PermissionDenied
@@ -52,7 +41,7 @@ class PollCrud(BaseCrud):
         return query.first()
 
     def _create_poll(self, poll_data: PollBase, lesson_id: int) -> Poll:
-        """Возвращает имеющийся в бд объект модели """
+        """Создает новый опрос или возвращает имеющийся в бд объект модели"""
         poll = self.session.query(Poll).filter(
             Poll.lesson_id == lesson_id).first()
         if not poll:
@@ -76,7 +65,8 @@ class PollCrud(BaseCrud):
         self.remove_item(lesson_poll.id, Poll)
         return self.get_json_reposnse('Удален', 204)
 
-    def _create_question_instanse(self, poll_id: int, question: QuestionBase) -> Question:
+    def _create_question_instanse(
+            self, poll_id: int, question: QuestionBase) -> Question:
         new_question = Question(poll_id=poll_id, **question.dict())
         return self.create_item(new_question)
 
@@ -86,11 +76,13 @@ class PollCrud(BaseCrud):
         быть неограниченное колличество вопросов в опросе. Список ответов может быть пустым.
         Может быть указано количество правильных ответов в вопросе. Дефолтное значение 0.
         """
-        poll: Poll = self._get_current_poll(poll_id).first()
-        self._check_lesson_teacher(lesson_id=poll.lesson_id)
-        new_question = self._create_question_instanse(poll_id, question)
-        poll.question_list.append(new_question)
-        return new_question
+        if self.is_teacher:
+            poll: Poll = self._get_current_poll(poll_id).first()
+            self._check_lesson_teacher(lesson_id=poll.lesson_id)
+            new_question = self._create_question_instanse(poll_id, question)
+            poll.question_list.append(new_question)
+            return new_question
+        raise PermissionDenied
 
     def remove_question(self, poll_id, question_id):
         poll: Poll = self._get_current_poll(poll_id).first()
@@ -109,15 +101,17 @@ class PollCrud(BaseCrud):
         """Получает список всех ответов к вопросу, при иттерации создается
         новая сущность модели ANswer, добавляется в
         answers_list - список ответовов к вопросу """
-        poll: Poll = self._get_current_poll(poll_id).first()
-        self._check_lesson_teacher(lesson_id=poll.lesson_id)
-        question = self.get_current_item(question_id, Question).first()
-        if question:
-            is_list = answeers_list.answers_list
-            for answer in is_list if is_list else answeers_list:
-                new_answer = self._create_answer_instanse(question_id, answer)
-                question.answers_list.append(new_answer)
-            return self.get_json_reposnse('Добавлено', 201)
+        if self.is_teacher:
+            poll: Poll = self._get_current_poll(poll_id).first()
+            self._check_lesson_teacher(lesson_id=poll.lesson_id)
+            question = self.get_current_item(question_id, Question).first()
+            if question:
+                is_list = answeers_list.answers_list
+                for answer in is_list if is_list else answeers_list:
+                    new_answer = self._create_answer_instanse(question_id, answer)
+                    question.answers_list.append(new_answer)
+                return self.get_json_reposnse('Добавлено', 201)
+        raise PermissionDenied
 
     def get_lesson_poll(self, lesson_id):
         query: Poll = self.session.query(Poll).options(
@@ -139,5 +133,5 @@ class PollCrud(BaseCrud):
         question = self.add_question(
             poll_id,
             poll_data.question,
-            )
+        )
         self.add_answers_list(poll_id, question.id, poll_data.answers)
