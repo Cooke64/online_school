@@ -76,7 +76,7 @@ def add_course_in_users_list(
     return {'course': 'added'}
 
 
-@router.post('/add/{course_id}/pay',
+@router.post('/pay_for_course/{course_id}',
              status_code=status.HTTP_201_CREATED,
              summary='Оплата курса курса, который добавлен пользователем'
              )
@@ -158,17 +158,16 @@ def add_review_to_course_by_student(
 
 
 @router.delete(
-    '/delete_review/{course_id}/{review_id}',
+    '/delete_review/{course_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     description='Удалить отзыв по id у курса по его id.',
     summary='Удалить отзыв'
 )
 def add_review_to_course_by_student(
         course_id: int = Path(..., gt=0),
-        review_id: int = Path(..., gt=0),
         course_crud: CourseCrud = Depends(),
 ):
-    course_crud.delete_review(review_id, course_id)
+    course_crud.delete_review(course_id)
 
 
 @router.post(

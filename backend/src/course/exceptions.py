@@ -20,3 +20,7 @@ class HasNotPermission(PermissionDenied):
 
 class AddExisted(BadRequest):
     DETAIL = ErrorCode.ADD_EXISTED
+
+
+class NotFoundObject(BadRequest):
+    DETAIL = ErrorCode.NotFoundObject

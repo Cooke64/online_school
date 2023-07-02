@@ -1,9 +1,9 @@
 from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
+from src.lessons import exceptions as ex
 from src.course.models import Course, Lesson
 from src.database import BaseCrud
-from src.exceptions import NotFound, PermissionDenied
 from src.lessons.models import LessonComment
 from src.lessons.shemas import LessonBase, CommentBase
 from src.students.models import StudentCourse, StudentPassedLesson, Student
@@ -33,19 +33,19 @@ class LessonCrud(BaseCrud):
             Course.id == course_id).first()
         if query:
             return query
-        raise NotFound
+        raise ex.NotFoundObject
 
     def __check_leesson_for_user(self, lesson: Lesson, course_id: int) -> None:
         user_type = self.is_teacher or self.is_staff
         is_trial = lesson and lesson.is_trial or user_type
         if not is_trial:
-            raise PermissionDenied
+            raise ex.NeedBuyCourse
         user = self.user
         if user:
             user_course = self._get_user_course(course_id, user.student.id)
             has_paid = user_course and user_course.has_paid
-            if not has_paid:
-                raise PermissionDenied
+            if not lesson.is_trial and not has_paid:
+                raise ex.NeedBuyCourse
 
     def get_lesson_from_course(
             self,
@@ -61,7 +61,7 @@ class LessonCrud(BaseCrud):
             Lesson.course_id == course_id, Lesson.id == lessons_id
         )).first()
         if not lesson:
-            raise NotFound
+            raise ex.NotFoundObject
         count_lessons = self.session.query(Lesson).filter(
             Lesson.course_id == course_id).count()
         lesson_teachers: Course = self.session.query(Course).options(
@@ -90,7 +90,7 @@ class LessonCrud(BaseCrud):
         teacher = self.teacher
         course: Course = self.get_current_item(course_id, Course).first()
         if teacher not in course.teachers:
-            raise PermissionDenied
+            raise ex.PermissionDenied
         if self.check_item_exists(course_id, Course):
             return self._create_lesson_instanse(course.id, lesson_data).id
 
@@ -98,19 +98,33 @@ class LessonCrud(BaseCrud):
             self,
             lessons_id: int,
     ) -> StudentPassedLesson | None:
-        if self.student:
+        """Длеает пометку в бд, что студент прошел урок при условии:
+            - Курс должен быть куплен или урок должен быть бесплатным
+            - Делает только одну уникальную пометку, что урок пройден или генерит ошибку
+            - Подставляет дату, когда был пройден урок - текущее время и дата
+        """
+        student = self.student
+        course = self.session.query(Course).join(Lesson).filter(
+            Lesson.id == lessons_id
+        ).first()
+        lesson = self.get_current_item(lessons_id, Lesson).first()
+        has_paid = self.session.query(StudentCourse).filter(
+            StudentCourse.course_id == course.id,
+            StudentCourse.student_id == student.id
+        ).first()
+        if lesson.is_trial or (has_paid and has_paid.has_paid):
             passed_lesson: StudentPassedLesson = self.session.query(
                 StudentPassedLesson).filter(
-                student_id=self.student.id,
-                lesson_id=lessons_id,
+                StudentPassedLesson.student_id == student.id,
+                StudentPassedLesson.lesson_id == lessons_id,
             ).first()
             if not passed_lesson:
-                raise NotFound
-            passed_lesson.when_pass = func.now()
-            passed_lesson.has_pass = True
-            self.session.commit()
-            return passed_lesson
-        raise PermissionDenied
+                passed_lesson.when_pass = func.now()
+                passed_lesson.has_pass = True
+                self.session.commit()
+                return passed_lesson
+            raise ex.NeedBuyCourse
+        raise ex.PermissionDenied
 
     def add_comment_to_lesson(
             self,
@@ -126,7 +140,7 @@ class LessonCrud(BaseCrud):
                 text=text.text
             )
             self.create_item(new_comment)
-        raise PermissionDenied
+        raise ex.HasNotPermission
 
     def remove_comment_from_lesson(
             self, comment_id: int, lesson_id: int,
@@ -139,9 +153,9 @@ class LessonCrud(BaseCrud):
                 )
             ).first()
             if not comment:
-                raise NotFound
+                raise ex.NotFoundObject
             self.remove_item(comment.id, LessonComment)
-        raise PermissionDenied
+        raise ex.HasNotPermission
 
     def remove_lesson(self, course_id: int, lesson_id: int):
         """Удалить курс может авор курса или модератор."""
@@ -151,22 +165,22 @@ class LessonCrud(BaseCrud):
                 self.is_teacher and user.teacher in course.teachers
         ):
             self.remove_item(lesson_id, Lesson)
-        raise PermissionDenied
+        raise ex.HasNotPermission
 
     def add_lesson_in_favorite(self, lesson_id: int):
         student = self.student
         lesson = self.get_current_item(lesson_id, Lesson).first()
-        if lesson in student.favorite_lessons:
-            raise NotFound
-        student.favorite_lessons.append(lesson)
-        self.session.commit()
-        return self.get_json_reposnse('Урок добавлен в избранное', 201)
+        if lesson not in student.favorite_lessons:
+            student.favorite_lessons.append(lesson)
+            self.session.commit()
+            return self.get_json_reposnse('Урок добавлен в избранное', 201)
+        return self.get_json_reposnse('Урок уже был добавлен в избранное', 400)
 
     def remove_lesson_from_favorite(self, lesson_id: int):
         student = self.student
         lesson = self.get_current_item(lesson_id, Lesson).first()
         if lesson not in student.favorite_lessons:
-            raise NotFound
+            raise ex.NotFoundObject
         student.favorite_lessons.remove(lesson)
         self.create_item(student)
         return self.get_json_reposnse('Урок удален из избранных', 201)

@@ -33,7 +33,7 @@ class CourseCrud(BaseCrud):
         student = self.student
         self.session.query(CourseRating).filter(and_(
             CourseRating.course_id == course_id,
-            CourseRating.student_id == student)
+            CourseRating.student_id == student.id)
         ).update({'rating': new_rating.value}, synchronize_session='fetch')
         self.session.commit()
 
@@ -46,14 +46,14 @@ class CourseCrud(BaseCrud):
         course = self.get_current_item(course_id, Course).first()
         if self.session.query(exists().where(and_(
                 CourseRating.course_id == course_id,
-                CourseRating.student_id == student)
+                CourseRating.student_id == student.id)
         )).scalar():
             self.__update_rating(course_id, rating)
             return
         if not course:
             raise ex.NotFoundCourse
         course_rating = CourseRating(
-            student_id=student, course_id=course.id, rating=rating.value)
+            student_id=student.id, course_id=course.id, rating=rating.value)
         self.create_item(course_rating)
 
     def create_new_course(
@@ -103,16 +103,21 @@ class CourseCrud(BaseCrud):
     def __create_passed_lesson(self, student_id: int, lesson_id: int,
                                pass_=False):
         """Создает запись в бд, что студент прошел урок."""
-        open_lesson = StudentPassedLesson(
-            student_id=student_id,
-            lesson_id=lesson_id,
-            has_pass=pass_,
-            when_pass=func.current_date()
-        )
-        self.create_item(open_lesson)
+        passed_lesson = self.session.query(StudentPassedLesson).filter(
+            StudentPassedLesson.student_id == student_id,
+            StudentPassedLesson.lesson_id == lesson_id
+        ).first()
+        if not passed_lesson:
+            open_lesson = StudentPassedLesson(
+                student_id=student_id,
+                lesson_id=lesson_id,
+                has_pass=pass_,
+                when_pass=func.current_date()
+            )
+            self.create_item(open_lesson)
 
     def __update_user_passed_lessons(
-            self, student_id: int, lessons_list: list[Lesson]
+            self, student_id: int, lessons_list: list[Lesson] | None
     ) -> None:
         """При добавлении курса пользователем добавляет запись в БД, что
             пользователь прошел первый урок, который становится доступный
@@ -199,17 +204,17 @@ class CourseCrud(BaseCrud):
 
     def delete_review(
             self,
-            review_id: int,
             course_id: int
     ):
-        review = self.get_current_item(
-            review_id, CourseReview).first()
         student = self.student
-        if not self.is_student:
-            raise PermissionDenied
-        has_perm = review.student_id == student.id and review.course_id == course_id
-        if not has_perm or not self.is_staff:
+        if not self.is_student or not self.is_staff:
             raise ex.HasNotPermission
+        review = self.session.query(CourseReview).filter(
+            CourseReview.course_id == course_id,
+            CourseReview.student_id == student.id
+        ).first()
+        if not review:
+            raise ex.NotFoundObject
         self.remove_item(review.id, CourseReview)
 
     def add_preview(
