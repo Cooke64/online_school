@@ -27,7 +27,7 @@ class UserType(str, Enum):
 class UserCrud(BaseCrud, SendMail):
 
     @staticmethod
-    def __update_userdata_and_get_phone(
+    def __update_userdata(
             _dict: UserCreate
     ) -> tuple[dict[str], str]:
         """
@@ -68,6 +68,7 @@ class UserCrud(BaseCrud, SendMail):
         ролью Staff активный при регистрации.
         """
         user_id = user.id
+        print(role, RolesType.teacher.value)
         if role == RolesType.teacher.value:
             item = Teacher(user_id=user_id)
         elif role == RolesType.student.value:
@@ -76,6 +77,7 @@ class UserCrud(BaseCrud, SendMail):
             item = Staff(user_id=user_id, staff_role=role)
             user.is_active = True
             self.session.commit()
+        print(item)
         return item
 
     def create_user(self, user_type: UserType, user_data: UserCreate) -> [
@@ -86,9 +88,7 @@ class UserCrud(BaseCrud, SendMail):
             - Для нового преподавателя или студента отправка письма для подтверждения учетной записи;
         Каждый пользователь должен иметь уникальный email для регистрации.
         """
-        user_dict, *_ = self.__update_userdata_and_get_phone(
-            user_data
-        )
+        user_dict, *_ = self.__update_userdata(user_data)
         role = self.__get_role_type(user_type)
         if self.get_user(user_data.email):
             raise PermissionDenied

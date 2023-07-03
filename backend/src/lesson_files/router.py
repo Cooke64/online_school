@@ -12,7 +12,7 @@ from src.lesson_files.utils.create_file import (
     get_type_content
 )
 
-router = APIRouter(prefix='/lesson/content', tags=['Страница видео урок'])
+router = APIRouter(prefix='/lesson_content', tags=['Страница видео урок'])
 VIDEO_TYPES = ('video/mp4', 'video/quicktime')
 PHOTO_TYPES = ('image/png', 'image/jpeg', 'image/jpg')
 

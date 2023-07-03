@@ -28,7 +28,7 @@ def create_awards(
 
 
 @router.delete(
-    '/remove/{course_id}',
+    '/remove/{award_id}',
     status_code=status.HTTP_204_NO_CONTENT,
     summary='Удаление награды.'
 )

@@ -177,6 +177,7 @@ class CourseCrud(BaseCrud):
         teacher = self.teacher
         if teacher in course.teachers or self.is_staff:
             self.remove_item(course_id, Course)
+            return self.get_json_reposnse('Курс удален', 204)
         raise ex.HasNotPermission
 
     def remove_course_from_list(self, course_id: int):

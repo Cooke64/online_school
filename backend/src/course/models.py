@@ -16,29 +16,41 @@ class Course(BaseModel):
     students = relationship(
         'Student',
         secondary='student_courses',
-        back_populates='courses'
+        back_populates='courses',
     )
     teachers = relationship(
         'Teacher',
         secondary='teacher_courses',
-        back_populates='courses'
+        back_populates='courses',
     )
 
     ratings = relationship(
         'Student',
         secondary='courses_rating',
-        back_populates='courses_rating'
+        back_populates='courses_rating',
+        cascade="all, delete",
+        passive_deletes=True
     )
 
     reviews = relationship(
         'CourseReview',
-        back_populates='course'
+        back_populates='course',
+        cascade="all, delete",
+        passive_deletes=True
     )
-    course_preview = relationship('CoursePreviewImage', back_populates='course', uselist=False)
+    course_preview = relationship(
+        'CoursePreviewImage',
+        back_populates='course',
+        uselist=False,
+        cascade="all, delete",
+        passive_deletes=True
+    )
     favorite_student_course = relationship(
         'Student',
         secondary='favorite_courses',
-        back_populates='favorite_courses'
+        back_populates='favorite_courses',
+        cascade="all, delete",
+        passive_deletes=True
     )
 
 
@@ -47,7 +59,7 @@ class CoursePreviewImage(BaseModel):
     photo_blob = sa.Column(sa.LargeBinary, nullable=False)
     photo_type = sa.Column(sa.String, nullable=True)
     course_id = sa.Column(
-        sa.Integer, sa.ForeignKey('courses.id'))
+        sa.Integer, sa.ForeignKey('courses.id', ondelete="CASCADE"))
     course = relationship('Course', back_populates='course_preview')
 
 
@@ -57,7 +69,7 @@ class CourseReview(BaseModel):
         UniqueConstraint('student_id', 'course_id'),
     )
     student_id = sa.Column(sa.Integer, sa.ForeignKey('students.id'))
-    course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id'))
+    course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id', ondelete="CASCADE"))
     text = sa.Column(sa.Text, nullable=False)
     created_at = sa.Column(sa.DateTime, nullable=False,
                            default=datetime.utcnow)
@@ -71,7 +83,7 @@ class CourseRating(BaseModel):
         UniqueConstraint('student_id', 'course_id'),
     )
     student_id = sa.Column(sa.Integer, sa.ForeignKey('students.id'))
-    course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id'))
+    course_id = sa.Column(sa.Integer, sa.ForeignKey('courses.id', ondelete="CASCADE"))
     rating = sa.Column(sa.Integer, nullable=False, default=5)
 
 

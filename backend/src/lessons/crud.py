@@ -1,9 +1,9 @@
 from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
-from src.lessons import exceptions as ex
 from src.course.models import Course, Lesson
 from src.database import BaseCrud
+from src.lessons import exceptions as ex
 from src.lessons.models import LessonComment
 from src.lessons.shemas import LessonBase, CommentBase
 from src.students.models import StudentCourse, StudentPassedLesson, Student
@@ -41,11 +41,13 @@ class LessonCrud(BaseCrud):
         if not is_trial:
             raise ex.NeedBuyCourse
         user = self.user
-        if user:
+        if user and self.is_student:
             user_course = self._get_user_course(course_id, user.student.id)
             has_paid = user_course and user_course.has_paid
             if not lesson.is_trial and not has_paid:
                 raise ex.NeedBuyCourse
+            return
+        raise ex.HasNotPermission
 
     def get_lesson_from_course(
             self,
@@ -159,12 +161,14 @@ class LessonCrud(BaseCrud):
 
     def remove_lesson(self, course_id: int, lesson_id: int):
         """Удалить курс может авор курса или модератор."""
-        course: Course = self.get_current_item(course_id, Course).first()
-        user = self.user
-        if self.is_staff or (
-                self.is_teacher and user.teacher in course.teachers
-        ):
+        is_teacher = self.session.query(Course).filter(
+            and_(
+                Course.id == course_id,
+                Course.teachers.contains(self.user.teacher)
+            )).first()
+        if self.is_staff or is_teacher:
             self.remove_item(lesson_id, Lesson)
+            return self.get_json_reposnse('Урок удален', 204)
         raise ex.HasNotPermission
 
     def add_lesson_in_favorite(self, lesson_id: int):

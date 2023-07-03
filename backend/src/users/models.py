@@ -8,9 +8,9 @@ from src.scripts.choice_field import ChoiceType
 
 
 class RolesType(Enum):
-    staff = 'Staff'
-    student = 'Student'
-    teacher = 'Teacher'
+    staff = 'staff'
+    student = 'student'
+    teacher = 'teacher'
 
 
 roles_as_dict = {i.name: i.value for i in RolesType}

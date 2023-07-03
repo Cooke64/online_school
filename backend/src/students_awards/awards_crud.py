@@ -96,10 +96,11 @@ class AwardCrud(StudentCrud):
 
     def create_student_award(self):
         awards_list: list[Award] = self.get_all_items(Award)
-        for award in awards_list:
-            for name, value in self.get_student_data().items():
-                if name == award.column_name and value:
-                    self.__create_student_award(award.id)
+        if self.is_student:
+            for award in awards_list:
+                for name, value in self.get_student_data().items():
+                    if name == award.column_name and value:
+                        self.__create_student_award(award.id)
 
     def get_student_award(self):
         query = self.session.query(StudentAward).options(

@@ -140,7 +140,7 @@ def delete_course(
     """Удаление курса. Доступно авторизованному пользователю со статусом Учитель.
         - Учитель должен быть в списке учителей курса.
     """
-    course_crud.delete_course(course_id)
+    return course_crud.delete_course(course_id)
 
 
 @router.post(
