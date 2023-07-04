@@ -24,6 +24,9 @@ def create_awards(
 def create_awards(
         award_data: AwardCreate,
         award_crud: AwardCrud = Depends()):
+    """Название колонки выбирать из списка:
+        **column_name = 'comments','passed_lessons', 'passed_by_day','passed_all_courses'**
+    """
     return award_crud.create_new_awward(award_data)
 
 

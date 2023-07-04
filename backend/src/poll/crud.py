@@ -70,7 +70,7 @@ class PollCrud(BaseCrud):
         new_question = Question(poll_id=poll_id, **question.dict())
         return self.create_item(new_question)
 
-    def add_question(self, poll_id: int, question: QuestionBase) -> Question:
+    def add_question(self, poll_id: int, question: QuestionBase):
         """
         Добавляет вопрос к опросу. Создает новую запись в бд, может
         быть неограниченное колличество вопросов в опросе. Список ответов может быть пустым.
@@ -80,7 +80,7 @@ class PollCrud(BaseCrud):
         self._check_lesson_teacher(lesson_id=poll.lesson_id)
         new_question = self._create_question_instanse(poll_id, question)
         poll.question_list.append(new_question)
-        return new_question
+        return self.get_json_reposnse('Добавлен вопрос к опросу', 200)
 
     def remove_question(self, poll_id, question_id):
         poll: Poll = self._get_current_poll(poll_id).first()
@@ -128,8 +128,6 @@ class PollCrud(BaseCrud):
         poll = self.add_poll_to_lesson(
             course_id, lesson_id, poll_desc)
         poll_id = poll if isinstance(poll, int) else poll.id
-        question = self.add_question(
-            poll_id,
-            poll_data.question,
-        )
-        self.add_answers_list(poll_id, question.id, poll_data.answers)
+        new_question = self._create_question_instanse(poll_id, poll_data.question)
+        poll.question_list.append(new_question)
+        self.add_answers_list(poll_id, new_question.id, poll_data.answers)
