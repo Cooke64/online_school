@@ -2,8 +2,9 @@ from sqlalchemy import and_
 
 from src.course.models import Lesson, Course
 from src.database import BaseCrud
-from src.exceptions import NotFound, PermissionDenied
+from src.exceptions import NotFound, PermissionDenied, NotAuthenticated
 from src.lesson_files.models import LessonPhoto, LessonVideo
+from src.lesson_files.constants import ErrorCode as ex
 
 
 class MediaCrud(BaseCrud):
@@ -15,13 +16,11 @@ class MediaCrud(BaseCrud):
             Lesson.id == lesson_id
         ).first()
         if not course:
-            return self.get_json_reposnse('Такого курса не существует', 404)
+            return self.get_json_reposnse(*ex.NOT_FOUND_COURSE)
         if not self.user:
-            return self.get_json_reposnse(
-                'Нет прав для получения доступа к уроку', 403)
+            raise NotAuthenticated
         if self.user.teacher not in course.teachers:
-            return self.get_json_reposnse(
-                    'Нет прав для получения доступа к уроку', 403)
+            return self.get_json_reposnse(*ex.HAS_NOT_RIGHT)
 
     def upload_content(
             self,

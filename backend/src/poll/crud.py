@@ -11,7 +11,7 @@ from ..exceptions import PermissionDenied, NotFound
 class PollCrud(BaseCrud):
 
     def _check_lesson_teacher(self, course_id: int | None = None, *,
-                              lesson_id) -> None:
+                              lesson_id: int) -> None:
         """
         Проверяет, что роль у авторизованного пользователя учитель.
         Далее идет проверка, что действительно есть такой урок,
@@ -23,7 +23,7 @@ class PollCrud(BaseCrud):
             course_id = lesson.course.id
         teacher = self.teacher
         course: Course = self.get_current_item(course_id, Course).first()
-        if teacher not in course.teachers or not self.is_staff:
+        if teacher not in course.teachers:
             raise PermissionDenied
 
     def get_all_polls(self) -> list[Poll]:
@@ -74,15 +74,13 @@ class PollCrud(BaseCrud):
         """
         Добавляет вопрос к опросу. Создает новую запись в бд, может
         быть неограниченное колличество вопросов в опросе. Список ответов может быть пустым.
-        Может быть указано количество правильных ответов в вопросе. Дефолтное значение 0.
+            - Может быть указано количество правильных ответов в вопросе. Дефолтное значение 0.
         """
-        if self.is_teacher:
-            poll: Poll = self._get_current_poll(poll_id).first()
-            self._check_lesson_teacher(lesson_id=poll.lesson_id)
-            new_question = self._create_question_instanse(poll_id, question)
-            poll.question_list.append(new_question)
-            return new_question
-        raise PermissionDenied
+        poll: Poll = self._get_current_poll(poll_id).first()
+        self._check_lesson_teacher(lesson_id=poll.lesson_id)
+        new_question = self._create_question_instanse(poll_id, question)
+        poll.question_list.append(new_question)
+        return new_question
 
     def remove_question(self, poll_id, question_id):
         poll: Poll = self._get_current_poll(poll_id).first()

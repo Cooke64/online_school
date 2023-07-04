@@ -4,7 +4,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, Path
 from starlette import status
 from starlette.background import BackgroundTasks
 from starlette.responses import StreamingResponse
-
+from src.lesson_files.constants import ErrorCode as ex
 from src.lesson_files.crud import MediaCrud
 from src.lesson_files.utils.create_file import (
     upload_file_and_push_to_db,
@@ -45,9 +45,9 @@ async def upload_video_to_lesson(
             lesson_id=lesson_id,
             is_photo=False
         )
-        return media_crud.get_json_reposnse('Успешно загружен', 201)
+        return media_crud.get_json_reposnse(*ex.CREATED)
     else:
-        return media_crud.get_json_reposnse('Неправильный формат файла', 418)
+        return media_crud.get_json_reposnse(*ex.WRONG_TYPE)
 
 
 @router.post(
@@ -78,10 +78,9 @@ async def upload_photo_to_lesson(
             media_crud=media_crud,
             lesson_id=lesson_id
         )
-        return media_crud.get_json_reposnse('Успешно загружен', 201)
+        return media_crud.get_json_reposnse(*ex.CREATED)
     else:
-        return media_crud.get_json_reposnse(
-            'Неправильный формат файла', 418)
+        return media_crud.get_json_reposnse(*ex.WRONG_TYPE)
 
 
 @router.get('/{lesson_id}/photo/{photo_id}')
@@ -112,7 +111,7 @@ def remove_photo(
     if check:
         return check
     media_crud.remove_photo(lesson_id, photo_id)
-    return media_crud.get_json_reposnse('Успешно удален', 204)
+    return media_crud.get_json_reposnse(*ex.DELETED)
 
 
 @router.get('/{lesson_id}/video/{video_id}')

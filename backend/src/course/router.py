@@ -5,6 +5,7 @@ from src.auth.utils.auth_bearer import (
     JWTBearer,
 )
 from src.course.crud import CourseCrud
+from src.course.models import Course
 from src.course.shemas import (
     CreateCourse,
     UpdateCourse,
@@ -175,20 +176,22 @@ def add_review_to_course_by_student(
     description='Добавить курсу фотографию на превью.',
     summary='Добавить превью'
 )
-def add_review_to_course_by_student(
+def add_preview_photo(
         course_id: int,
         task: BackgroundTasks,
         photo: UploadFile = File(...),
         course_crud: CourseCrud = Depends(),
 ):
+    course = course_crud.get_current_item(course_id, Course).first()
+    if course_crud.user.teacher not in course.teachers:
+        return course_crud.get_json_reposnse('Доступ закрыт', 403)
     task.add_task(
         create_preview_to_course,
         file_obj=photo,
         course_id=course_id,
         course_crud=course_crud
     )
-    if not (course_crud.user and course_crud.is_teacher):
-        return course_crud.get_json_reposnse('Доступ закрыт', 403)
+    return course_crud.get_json_reposnse('Добавлено превью к курсу', 201)
 
 
 @router.post(

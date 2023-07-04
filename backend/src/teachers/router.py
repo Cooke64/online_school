@@ -6,19 +6,24 @@ from .shemas import TeacherShow, TeacherShowDetail
 router = APIRouter(prefix='/teachers', tags=['Преподаватели'])
 
 
-@router.get('/', response_model=list[TeacherShow])
+@router.get('/', response_model=list[TeacherShow], summary='Список преподаватей')
 def get_teacher_list(
         teachers_crud: TeachersCrud = Depends(),
 ):
-    return teachers_crud.get_teachers_data()
+    """Возвращает список преподавателей с краткой информацие
+     о них, статистикой их курсов
+        - количество курсов
+        - количество отзывов на курсы
+        - общий рейтинг всех курсов преподавателя
+     """
+    return teachers_crud.get_teachers()
 
 
 @router.get('/profile')
 def get_teacher_profile_page(
         teachers_crud: TeacherProfileCrud = Depends(),
 ):
-    """
-    Информация для преподавателя о статистике его курсов и его учеников.
+    """Информация для преподавателя о статистике его курсов и его учеников.
         - Список курса преподавателя;
         - Количество комментариев к его курсам;
         - Общий рейтинг его курсов;

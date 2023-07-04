@@ -225,22 +225,20 @@ class CourseCrud(BaseCrud):
             file_type: str, ):
         """Добавить фото превью к уроку."""
         course: Course = self.get_current_item(course_id, Course).first()
-        if self.user and self.is_teacher:
-            if self.user.teacher in course.teachers:
-                if course.course_preview:
-                    course_prev = self.get_current_item(
-                        course.course_preview.id, CoursePreviewImage
-                    ).first()
-                    course_prev.photo_blob = file_obj
-                    course_prev.photo_typee = file_type
-                    self.session.commit()
-                    return
-                item = CoursePreviewImage(
-                    photo_blob=file_obj,
-                    photo_type=file_type,
-                    course_id=course_id
-                )
-                self.create_item(item)
+        if course.course_preview:
+            course_prev = self.get_current_item(
+                course.course_preview.id, CoursePreviewImage
+            ).first()
+            course_prev.photo_blob = file_obj
+            course_prev.photo_typee = file_type
+            self.session.commit()
+            return
+        item = CoursePreviewImage(
+            photo_blob=file_obj,
+            photo_type=file_type,
+            course_id=course_id
+        )
+        self.create_item(item)
 
     def add_course_in_favorite(self, course_id: int):
         """Добавить курс в избранные для пользователя.

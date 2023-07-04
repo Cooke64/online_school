@@ -1,7 +1,6 @@
 from typing import Any
 
 from fastapi import HTTPException, status
-from starlette.responses import JSONResponse
 
 
 class DetailedHTTPException(HTTPException):
@@ -15,22 +14,22 @@ class DetailedHTTPException(HTTPException):
 
 class PermissionDenied(DetailedHTTPException):
     STATUS_CODE = status.HTTP_403_FORBIDDEN
-    DETAIL = "Permission denied"
+    DETAIL = "Нет прав доступа"
 
 
 class NotFound(DetailedHTTPException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
-    DETAIL = 'Not found'
+    DETAIL = 'Объект не найден'
 
 
 class BadRequest(DetailedHTTPException):
     STATUS_CODE = status.HTTP_400_BAD_REQUEST
-    DETAIL = "Bad Request"
+    DETAIL = "Неправильный запрос"
 
 
 class NotAuthenticated(DetailedHTTPException):
     STATUS_CODE = status.HTTP_401_UNAUTHORIZED
-    DETAIL = "User not authenticated"
+    DETAIL = "Пользователь не авторизован"
 
     def __init__(self) -> None:
         super().__init__(headers={"WWW-Authenticate": "Bearer"})
