@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, constr, validator
 
+from src.users.models import RolesType
 from src.utils.base_schemas import OrmBaseModel
 
 
@@ -60,6 +61,6 @@ class UserShowProfile(OrmBaseModel):
     username: str
     first_name: str
     last_name: str
-    role: str
+    role: RolesType
     is_active: bool
     email: str

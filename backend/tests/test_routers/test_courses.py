@@ -8,15 +8,22 @@ data = {
 
 
 def test_create_course(client, auth_teacher: UserHeaders):
-    response = client.post('/course', json=data, headers=auth_teacher.user_1)
+    headers = auth_teacher.user_1
+    response = client.post('/course', json=data, headers=headers)
     assert response.status_code == 201
     assert response.json()['title'] == 'title'
+    response = client.get('/course/1')
+    assert response.status_code == 200
+    response = client.get('/course/2')
+    assert response.status_code == 404
 
 
 def test_get_course_by_id(client, get_fake_db):
     response = client.get('/course/1')
     assert response.status_code == 200
     assert response.json().get('course')['title'] == 'title'
+    response = client.get('/course/2')
+    assert response.status_code == 404
 
 
 def test_not_auth_make_course(client):

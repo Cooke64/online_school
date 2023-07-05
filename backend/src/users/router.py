@@ -27,10 +27,12 @@ def get_user_page(
         award_crud: AwardCrud = Depends()):
     """Данные о пользователе. Данные о студенет/преподавателе
     выводятся через отдельный эндпоинт"""
-    task.add_task(
-        award_crud.create_student_award,
-    )
-    return user_crud.get_user()
+    if award_crud.user:
+        task.add_task(
+            award_crud.create_student_award,
+        )
+        return user_crud.get_user()
+    return award_crud.get_json_reposnse('Не авторизован', 403)
 
 
 @router.get(

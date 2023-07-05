@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 
 from src.course.models import Course, Lesson
-
-from tests.utils.crud import create_user, create_item, create_teacher
+from src.teachers.models import Teacher
+from tests.utils.crud import create_user, create_item, create_teacher, \
+    create_student
 from tests.utils.users import UserData
-
 
 COURSE_DATA = {
     'title': 'title',
@@ -17,6 +17,9 @@ LESSON_DATA = {
     'is_trial': True,
 }
 
+USER_DATA = UserData('1@mail.ru', 'user1', '1234567')
+USER_DATA_INACTIVE = UserData('2@2.ru', '2', '2')
+
 
 def create_free_courses(teacher, session: Session):
     for _ in range(2):
@@ -25,7 +28,7 @@ def create_free_courses(teacher, session: Session):
         create_item(new_item, session)
 
 
-def create_course_with_free_lessons(teacher, session: Session):
+def create_course_with_free_lessons(teacher: Teacher, session: Session):
     COURSE_DATA.update({'is_free': True})
     last_item = Course(**COURSE_DATA)
     last_item.teachers.append(teacher)
@@ -38,7 +41,8 @@ def create_course_with_free_lessons(teacher, session: Session):
         create_item(new_lesson, session)
 
 
-def create_not_free_course_with_not_free_lessons(teacher, session: Session):
+def create_not_free_course_with_not_free_lessons(teacher: Teacher,
+                                                 session: Session):
     COURSE_DATA.update({'is_free': True})
     course = Course(**COURSE_DATA)
     course.teachers.append(teacher)
@@ -52,9 +56,12 @@ def create_not_free_course_with_not_free_lessons(teacher, session: Session):
 
 
 def create_fake_bd(session: Session):
-    user_data = UserData('1@mail.ru', 'user1', '1234567')
-    user = create_user(*user_data, session)
+    user = create_user(*USER_DATA, session=session)
     teacher = create_teacher(user.id, session)
+
+    user_inactive = create_user(*USER_DATA_INACTIVE, session=session,
+                                is_active=False, is_teacher=False)
+    create_student(user_inactive.id, session)
     create_free_courses(teacher, session)
     create_course_with_free_lessons(teacher, session)
     create_not_free_course_with_not_free_lessons(teacher, session)

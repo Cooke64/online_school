@@ -14,12 +14,13 @@ def create_item(data, session: Session):
 
 
 def create_user(
-        email,
-        username,
-        password,
+        email: str,
+        username: str,
+        password: str,
         session: Session,
-        is_teacher=True
-        ):
+        is_teacher: bool = True,
+        is_active: bool = True
+):
     role = RolesType.teacher.value if is_teacher else RolesType.student.value
     user_data = User(
         email=email,
@@ -28,6 +29,7 @@ def create_user(
         last_name=username,
         password=get_password_hash(password),
         role=role,
+        is_active=is_active
     )
     return create_item(user_data, session)
 

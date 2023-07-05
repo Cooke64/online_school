@@ -10,7 +10,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-from src.database import Base, get_db
+from src.BaseModel import Base
+from src.database import get_db
 from src.utils.create_router import create_router
 from tests.utils.create_fake_bd import create_fake_bd
 from tests.utils.users import auth_teachers, auth_students, UserHeaders
@@ -78,5 +79,10 @@ def auth_student(client: TestClient, db_session: Session) -> UserHeaders:
 
 @pytest.fixture(scope="function")
 def get_fake_db(client: TestClient, db_session: Session) -> None:
-    """Создание базы данных"""
+    """Создание базы данных, в которой:
+        - Пользователеь с ролью teacher
+        - Три бесплатных курса без уроков
+        - Один бесплатный курс с тремя уроками
+        - Один платный курс с одинм уроком
+        """
     return create_fake_bd(db_session)
