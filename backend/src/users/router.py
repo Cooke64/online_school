@@ -42,19 +42,17 @@ def get_user_page(
 )
 def verify_new_user(
         link: str = Path(...),
-        email=Depends(get_current_user),
         user_crud: UserCrud = Depends()
 ):
     """Верификация пользователя. Пользователь должен быть авторизован.
     При успешной авторизации редирект на страницу с курсами.
     """
-    user_crud.verify_user(email, link)
+    user_crud.verify_user(link)
     return RedirectResponse('/course')
 
 
 @router.post(
     '/sign_up/{user_type}',
-    response_model=UserCreateShowResult,
     summary='Регистрация нового пользователя'
 )
 def sign_up_user(user: UserCreate = Body(

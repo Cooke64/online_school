@@ -1,17 +1,15 @@
-from tests.utils.create_fake_bd import USER_DATA
-
 user_data = {
-  "username": "user",
-  "first_name": "firstname",
-  "last_name": "last_name",
-  "email": '1@mail.ru',
-  "password": "1234567",
-  "phone": "12345678"
+    "username": "user",
+    "first_name": "firstname",
+    "last_name": "last_name",
+    "email": '1@1.ru',
+    "password": "1",
+    "phone": "1"
 }
 
 data_to_enter = {
-    "email": '1@mail.ru',
-    "password": "1234567",
+    "email": '1@1.ru',
+    "password": "1",
 }
 
 data_to_enter_inactive = {
@@ -27,7 +25,6 @@ wrong_user = {
 def test_create_user(client):
     response = client.post('/user/sign_up/student', json=user_data)
     assert response.status_code == 200
-    assert response.json()["email"] == data_to_enter.get('email')
     response = client.post('/user/login', json=data_to_enter)
     assert response.status_code == 200
 
@@ -50,7 +47,25 @@ def test_my_page(client, get_fake_db):
     assert response.json()["role"] == 'teacher'
 
 
-def test_inactive_user(client, get_fake_db):
-    response = client.post('/user/login', json=data_to_enter_inactive)
+def test_inactive_user_enter_to_me(client, get_fake_db):
+    headers = client.post('/user/login', json=data_to_enter_inactive).json()
+    response = client.get('/user/me', headers=headers)
+    assert response.status_code == 403
+
+
+def test_make_user_active(client):
+    """Проверка, что новый пользователь регистрируется на сайте
+        - попытка зайти в профиль неактивному пользователю после авторизации
+        - отправка кода подтверждения и активации
+        - авторизация и успешный заход в личный кабинет пользователя
+    """
+    response = client.post('/user/sign_up/student', json=user_data)
+    code = response.json().get("code")
+    response = client.post('/user/login', json=data_to_enter)
     response = client.get('/user/me', headers=response.json())
     assert response.status_code == 403
+    client.get(f'/user/verify_user/{code}')
+    response = client.post('/user/login', json=data_to_enter)
+    response = client.get('/user/me', headers=response.json())
+    assert response.status_code == 200
+    assert response.json()["username"] == user_data.get('username')

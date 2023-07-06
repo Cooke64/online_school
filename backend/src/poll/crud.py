@@ -77,6 +77,8 @@ class PollCrud(BaseCrud):
             - Может быть указано количество правильных ответов в вопросе. Дефолтное значение 0.
         """
         poll: Poll = self._get_current_poll(poll_id).first()
+        if not poll:
+            raise NotFound
         self._check_lesson_teacher(lesson_id=poll.lesson_id)
         new_question = self._create_question_instanse(poll_id, question)
         poll.question_list.append(new_question)
@@ -84,6 +86,8 @@ class PollCrud(BaseCrud):
 
     def remove_question(self, poll_id, question_id):
         poll: Poll = self._get_current_poll(poll_id).first()
+        if not poll:
+            raise NotFound
         self._check_lesson_teacher(lesson_id=poll.lesson_id)
         self.remove_item(question_id, Question)
         return self.get_json_reposnse('Удален', 204)

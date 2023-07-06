@@ -1,9 +1,13 @@
 from sqlalchemy.orm import Session
 
 from src.course.models import Course, Lesson
+from src.poll.models import Poll
 from src.teachers.models import Teacher
-from tests.utils.crud import create_user, create_item, create_teacher, \
-    create_student
+from tests.utils.crud import (
+    create_user,
+    create_item,
+    create_teacher,
+    create_student)
 from tests.utils.users import UserData
 
 COURSE_DATA = {
@@ -17,7 +21,11 @@ LESSON_DATA = {
     'is_trial': True,
 }
 
-USER_DATA = UserData('1@mail.ru', 'user1', '1234567')
+POLL_DATA = {
+    "poll_description": "string"
+}
+
+USER_DATA = UserData('1@1.ru', '1', '1')
 USER_DATA_INACTIVE = UserData('2@2.ru', '2', '2')
 
 
@@ -41,8 +49,8 @@ def create_course_with_free_lessons(teacher: Teacher, session: Session):
         create_item(new_lesson, session)
 
 
-def create_not_free_course_with_not_free_lessons(teacher: Teacher,
-                                                 session: Session):
+def create_not_free_course_with_not_free_lessons(
+        teacher: Teacher, session: Session):
     COURSE_DATA.update({'is_free': True})
     course = Course(**COURSE_DATA)
     course.teachers.append(teacher)
@@ -55,6 +63,17 @@ def create_not_free_course_with_not_free_lessons(teacher: Teacher,
     create_item(new_lesson, session)
 
 
+def create_awards(sesssion: Session):
+    return sesssion
+
+
+def create_poll(session: Session):
+    lessons_list: list[Lesson] = session.query(Lesson).all()
+    for lesson in lessons_list:
+        new_poll = Poll(lesson_id=lesson.id, **POLL_DATA)
+        create_item(new_poll, session)
+
+
 def create_fake_bd(session: Session):
     user = create_user(*USER_DATA, session=session)
     teacher = create_teacher(user.id, session)
@@ -65,3 +84,4 @@ def create_fake_bd(session: Session):
     create_free_courses(teacher, session)
     create_course_with_free_lessons(teacher, session)
     create_not_free_course_with_not_free_lessons(teacher, session)
+    create_poll(session)

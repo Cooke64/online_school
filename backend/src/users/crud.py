@@ -59,7 +59,6 @@ class UserCrud(BaseCrud, SendMail):
             email,
             item_in_bd.link
         )
-        print(item_in_bd.link)
         return item_in_bd.link
 
     def __create_role_instanse(self, role: str, user: User) -> Any:
@@ -68,7 +67,6 @@ class UserCrud(BaseCrud, SendMail):
         ролью Staff активный при регистрации.
         """
         user_id = user.id
-        print(role, RolesType.teacher.value)
         if role == RolesType.teacher.value:
             item = Teacher(user_id=user_id)
         elif role == RolesType.student.value:
@@ -77,7 +75,6 @@ class UserCrud(BaseCrud, SendMail):
             item = Staff(user_id=user_id, staff_role=role)
             user.is_active = True
             self.session.commit()
-        print(item)
         return item
 
     def create_user(self, user_type: UserType, user_data: UserCreate) -> [
@@ -97,19 +94,25 @@ class UserCrud(BaseCrud, SendMail):
         item = self.__create_role_instanse(user_type.value, created_user)
         self.create_item(item)
         if role in [RolesType.teacher.value, RolesType.student.value]:
-            self.__create_and_send_verify_code(created_user.id, created_user.email)
+            code = self.__create_and_send_verify_code(created_user.id,
+                                                      created_user.email)
+            return {'code': code}
         return user_dict
 
-    def verify_user(self, email: str, link: str):
-        user: User = self.get_user(email)
-        verify_user = self.session.query(Verification).filter(
+    def verify_user(self, link: str):
+        """Получает user из таблицы Verification по уникальному коду.
+            - обновляет запись User.is_activ на активного
+        """
+        verify_item: Verification = self.session.query(Verification).filter(
             and_(
                 Verification.link == link,
-                Verification.user_to_verify_id == user.id
             )
         ).first()
-        if not verify_user:
+        if not verify_item:
             raise NotFound
+        user = self.get_current_item(
+            verify_item.user_to_verify_id, User
+        ).first()
         user.is_active = True
         self.session.commit()
 
@@ -124,7 +127,7 @@ class UserCrud(BaseCrud, SendMail):
         access_token = create_jwt(data={"sub": user.email})
         return {'Authorization': f'Bearer {access_token}'}
 
-    def amke_user_inactive(self, user_id: int):
+    def make_user_inactive(self, user_id: int):
         """При необходимости пользователь со статусом Staff
         может заблокировать пользоваьеля, сделав user.is_activ = False
         """
