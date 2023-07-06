@@ -14,7 +14,7 @@ class AddExisted(BadRequest):
     DETAIL = ErrorCode.ADD_EXISTED
 
 
-class NotFoundObject(BadRequest):
+class NotFoundObject(NotFound):
     DETAIL = ErrorCode.NOT_FOUND_OBJECT
 
 

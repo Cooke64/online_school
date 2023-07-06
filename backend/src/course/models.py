@@ -56,6 +56,9 @@ class Course(BaseModel):
 
 class CoursePreviewImage(BaseModel):
     __tablename__ = 'course_preview_photos'
+    __table_args__ = (
+        UniqueConstraint('id', 'course_id'),
+    )
     photo_blob = sa.Column(sa.LargeBinary, nullable=False)
     photo_type = sa.Column(sa.String, nullable=True)
     course_id = sa.Column(

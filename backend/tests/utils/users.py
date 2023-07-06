@@ -10,7 +10,8 @@ from tests.utils.crud import (
     create_student
 )
 
-Header = dict[str] | None
+Token = str
+Header = dict[Token] | None
 
 
 class UserData(typing.NamedTuple):
@@ -20,8 +21,8 @@ class UserData(typing.NamedTuple):
 
 
 class UserHeaders(typing.NamedTuple):
-    user_1: dict
-    user_2: dict
+    user_1: dict | None
+    user_2: dict | None
 
 
 def get_headers(
@@ -71,8 +72,8 @@ def auth_students(client: TestClient, session: Session) -> UserHeaders:
     Создает и авторизует двух студентов.
     Возвращает UserHeaders с их валидным токеном.
     """
-    u_1 = UserData('3@mail.ru', 'user3', '1234567')
-    u_2 = UserData('4@mail.ru', 'user4', '1234567')
+    u_1 = UserData('3@3.ru', '3', '1234567')
+    u_2 = UserData('4@3.ru', '3', '1234567')
     user_header_1 = get_users_headers(u_1, client, session)
     user_header_2 = get_users_headers(u_2, client, session)
     return UserHeaders(user_header_1, user_header_2)
