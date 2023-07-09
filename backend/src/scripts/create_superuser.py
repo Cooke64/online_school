@@ -1,6 +1,6 @@
 from src.config import admin_data
 from src.course.models import Course
-from src.database import SessionLocal
+from src.main_crud import SessionLocal
 from src.users.models import StaffType, Staff, User, RolesType
 
 

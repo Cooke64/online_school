@@ -2,7 +2,7 @@ from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload
 
 from src.course.models import Course, CourseRating, CourseReview, Lesson
-from src.database import BaseCrud
+from src.main_crud import BaseCrud
 from src.lessons.models import LessonComment
 from src.students.models import StudentCourse
 from src.teachers.models import Teacher, TeacherCourse

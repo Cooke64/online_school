@@ -11,8 +11,8 @@ from src.course.models import (
 )
 from src.course.shemas import CreateCourse, ReviewBase, UpdateCourse
 from src.course.utils import Rating
-from src.database import BaseCrud
 from src.exceptions import PermissionDenied
+from src.main_crud import BaseCrud
 from src.students.models import StudentCourse, StudentPassedLesson
 from src.teachers.models import Teacher
 

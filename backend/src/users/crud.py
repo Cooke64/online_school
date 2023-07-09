@@ -3,7 +3,7 @@ from typing import Any
 
 from sqlalchemy import and_
 
-from src.database import BaseCrud
+from src.main_crud import BaseCrud
 from src.students.models import Student
 from .models import User, RolesType, Staff
 from .shemas import UserCreate

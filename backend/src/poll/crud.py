@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
 
-from src.database import BaseCrud
+from src.main_crud import BaseCrud
 from .models import Poll, Question, Answer
 from .schemas import PollBase, QuestionBase, AnswerBase, AddAnswers, AddPoll
 from ..course.models import Course, Lesson

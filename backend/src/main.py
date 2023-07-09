@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from .database import SessionLocal
+from .main_crud import SessionLocal
 from .utils.create_router import create_router
 
 

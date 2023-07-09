@@ -1,7 +1,7 @@
 from sqlalchemy import and_
 
 from src.course.models import Lesson, Course
-from src.database import BaseCrud
+from src.main_crud import BaseCrud
 from src.exceptions import NotFound, PermissionDenied, NotAuthenticated
 from src.lesson_files.models import LessonPhoto, LessonVideo
 from src.lesson_files.constants import ErrorCode as ex

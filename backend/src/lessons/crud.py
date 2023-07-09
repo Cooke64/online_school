@@ -2,7 +2,7 @@ from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload
 
 from src.course.models import Course, Lesson
-from src.database import BaseCrud
+from src.main_crud import BaseCrud
 from src.lessons import exceptions as ex
 from src.lessons.models import LessonComment
 from src.lessons.shemas import LessonBase, CommentBase

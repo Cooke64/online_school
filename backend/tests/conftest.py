@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
 from src.BaseModel import Base
-from src.database import get_db
+from src.main_crud import get_db
 from src.utils.create_router import create_router
 from tests.utils.create_fake_bd import create_fake_bd
 from tests.utils.users import auth_teachers, auth_students, UserHeaders
@@ -59,7 +59,7 @@ def client(
         try:
             yield db_session
         finally:
-            pass
+            db_session.close()
     app.dependency_overrides[get_db] = get_test_db
     with TestClient(app) as client:
         yield client

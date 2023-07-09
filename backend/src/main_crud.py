@@ -13,7 +13,6 @@ from starlette.responses import JSONResponse
 from src.auth.utils.jwt_bearer import get_current_user
 from src.config import settings
 from src.exceptions import NotFound, PermissionDenied
-from src.teachers.models import Teacher
 from src.users.models import User, RolesType
 
 engine = create_engine(settings.DATABASE_URL)
@@ -135,3 +134,9 @@ class BaseCrud:
             status_code=status_code,
             content={"message": message}
         )
+
+    def get_filtered_item(self, model: str, **kwargs) -> Any:
+        query = self.session.query(model).filter_by(**kwargs).first()
+        if query:
+            return query
+        raise NotFound
